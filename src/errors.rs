@@ -8,6 +8,11 @@ error_chain! {
             description("custom error")
             display("{}", message)
         }
+
+        InvalidDataType(type_name: String) {
+            description("data type not supported")
+            display("data type not supported: {}", type_name)
+        }
     }
 }
 

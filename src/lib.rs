@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate error_chain;
+extern crate serde;
 
 mod errors;
 mod ser;

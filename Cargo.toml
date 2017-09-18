@@ -5,3 +5,4 @@ authors = ["Janito Vaqueiro Ferreira Filho <janito.vff@gmail.com>"]
 
 [dependencies]
 error-chain = "0.11"
+serde = "1.0"

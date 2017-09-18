@@ -1,4 +1,5 @@
 use std::fmt::Display;
+use std::io;
 
 use serde::{ser, de};
 
@@ -13,6 +14,15 @@ error_chain! {
             description("data type not supported")
             display("data type not supported: {}", type_name)
         }
+
+        SerializeInteger(value: i32) {
+            description("failed to serialize integer")
+            display("failed to serialize integer: {}", value)
+        }
+    }
+
+    foreign_links {
+        Io(io::Error);
     }
 }
 

@@ -1,29 +1,28 @@
-use std::io::Write;
-
+use byteorder::{BigEndian, WriteBytesExt};
 use serde::ser;
 use serde::ser::Serialize;
 
-use super::{Error, ErrorKind, Result};
+use super::errors::{Error, ErrorKind, Result, ResultExt};
 
 pub struct Serializer<'w, W>
 where
-    W: Write + 'w,
+    W: WriteBytesExt + 'w,
 {
-    writer: &'w W
+    writer: &'w mut W
 }
 
 impl<'w, W> Serializer<'w, W>
 where
-    W: Write + 'w,
+    W: WriteBytesExt + 'w,
 {
-    pub fn new(writer: &'w W) -> Self {
+    pub fn new(writer: &'w mut W) -> Self {
         Serializer { writer }
     }
 }
 
 impl<'w, W> ser::Serializer for &'w mut Serializer<'w, W>
 where
-    W: Write + 'w,
+    W: WriteBytesExt + 'w,
 {
     type Ok = ();
     type Error = Error;
@@ -40,16 +39,19 @@ where
         bail!(ErrorKind::InvalidDataType("bool".to_string()))
     }
 
-    fn serialize_i8(self, _value: i8) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("i8".to_string()))
+    fn serialize_i8(self, value: i8) -> Result<()> {
+        self.serialize_i32(value as i32)
     }
 
-    fn serialize_i16(self, _value: i16) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("i16".to_string()))
+    fn serialize_i16(self, value: i16) -> Result<()> {
+        self.serialize_i32(value as i32)
     }
 
-    fn serialize_i32(self, _value: i32) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("i32".to_string()))
+    fn serialize_i32(self, value: i32) -> Result<()> {
+        self.writer.write_i32::<BigEndian>(value)
+            .chain_err(|| ErrorKind::SerializeInteger(value))?;
+
+        Ok(())
     }
 
     fn serialize_i64(self, _value: i64) -> Result<()> {
@@ -204,7 +206,7 @@ where
 
 impl<'w, W> ser::SerializeSeq for &'w mut Serializer<'w, W>
 where
-    W: Write + 'w,
+    W: WriteBytesExt + 'w,
 {
     type Ok = ();
     type Error = Error;
@@ -223,7 +225,7 @@ where
 
 impl<'w, W> ser::SerializeTuple for &'w mut Serializer<'w, W>
 where
-    W: Write + 'w,
+    W: WriteBytesExt + 'w,
 {
     type Ok = ();
     type Error = Error;
@@ -242,7 +244,7 @@ where
 
 impl<'w, W> ser::SerializeTupleStruct for &'w mut Serializer<'w, W>
 where
-    W: Write + 'w,
+    W: WriteBytesExt + 'w,
 {
     type Ok = ();
     type Error = Error;
@@ -261,7 +263,7 @@ where
 
 impl<'w, W> ser::SerializeTupleVariant for &'w mut Serializer<'w, W>
 where
-    W: Write + 'w,
+    W: WriteBytesExt + 'w,
 {
     type Ok = ();
     type Error = Error;
@@ -280,7 +282,7 @@ where
 
 impl<'w, W> ser::SerializeMap for &'w mut Serializer<'w, W>
 where
-    W: Write + 'w,
+    W: WriteBytesExt + 'w,
 {
     type Ok = ();
     type Error = Error;
@@ -306,7 +308,7 @@ where
 
 impl<'w, W> ser::SerializeStruct for &'w mut Serializer<'w, W>
 where
-    W: Write + 'w,
+    W: WriteBytesExt + 'w,
 {
     type Ok = ();
     type Error = Error;
@@ -329,7 +331,7 @@ where
 
 impl<'w, W> ser::SerializeStructVariant for &'w mut Serializer<'w, W>
 where
-    W: Write + 'w,
+    W: WriteBytesExt + 'w,
 {
     type Ok = ();
     type Error = Error;
@@ -352,4 +354,58 @@ where
 
 pub fn to_bytes() -> Vec<u8> {
     Vec::new()
+}
+
+#[cfg(test)]
+mod tests {
+    use serde::ser::Serializer as SerdeSerializer;
+
+    use super::Serializer;
+
+    #[test]
+    fn serialize_i8() {
+        let mut buffer = Vec::new();
+        let value = -120;
+
+        Serializer::new(&mut buffer).serialize_i8(value).unwrap();
+
+        let expected_byte = 0xff - (-value as u8) + 1;
+
+        assert_eq!(buffer, vec![0xff, 0xff, 0xff, expected_byte]);
+    }
+
+    #[test]
+    fn serialize_i16() {
+        let mut buffer = Vec::new();
+        let value = -15000;
+
+        Serializer::new(&mut buffer).serialize_i16(value).unwrap();
+
+        let expected_value = 0xffff - (-value as u16) + 1;
+        let expected_msb = (expected_value >> 8) as u8;
+        let expected_lsb = (expected_value & 0xff) as u8;
+
+        assert_eq!(buffer, vec![0xff, 0xff, expected_msb, expected_lsb]);
+    }
+
+    #[test]
+    fn serialize_i32() {
+        let mut buffer = Vec::new();
+        let value = -1785082;
+
+        Serializer::new(&mut buffer).serialize_i32(value).unwrap();
+
+        let mut expected_value = 0xffffffff - (-value as u32) + 1;
+        let mut expected_bytes = Vec::with_capacity(4);
+
+        for _ in 0..4 {
+            let byte = (expected_value >> 24) as u8;
+
+            expected_bytes.push(byte);
+
+            expected_value <<= 8;
+        }
+
+        assert_eq!(buffer, expected_bytes);
+    }
 }

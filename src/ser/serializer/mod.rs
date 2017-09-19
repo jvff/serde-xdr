@@ -43,16 +43,19 @@ where
         bail!(ErrorKind::InvalidDataType("i64".to_string()))
     }
 
-    fn serialize_u8(self, _value: u8) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("u8".to_string()))
+    fn serialize_u8(self, value: u8) -> Result<()> {
+        self.serialize_u32(value as u32)
     }
 
-    fn serialize_u16(self, _value: u16) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("u16".to_string()))
+    fn serialize_u16(self, value: u16) -> Result<()> {
+        self.serialize_u32(value as u32)
     }
 
-    fn serialize_u32(self, _value: u32) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("u32".to_string()))
+    fn serialize_u32(self, value: u32) -> Result<()> {
+        self.writer.write_u32::<BigEndian>(value)
+            .chain_err(|| ErrorKind::SerializeUnsignedInteger(value))?;
+
+        Ok(())
     }
 
     fn serialize_u64(self, _value: u64) -> Result<()> {

@@ -19,6 +19,11 @@ error_chain! {
             description("failed to serialize integer")
             display("failed to serialize integer: {}", value)
         }
+
+        SerializeUnsignedInteger(value: u32) {
+            description("failed to serialize unsigned integer")
+            display("failed to serialize unsigned integer: {}", value)
+        }
     }
 
     foreign_links {

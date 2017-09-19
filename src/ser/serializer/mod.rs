@@ -25,6 +25,7 @@ where
 
     fn serialize_bool(self, value: bool) -> Result<Self> {
         self.serialize_u32(if value { 1 } else { 0 })
+            .chain_err(|| ErrorKind::SerializeBool(value))
     }
 
     fn serialize_i8(self, value: i8) -> Result<Self> {

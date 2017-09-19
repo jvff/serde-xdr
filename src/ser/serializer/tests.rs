@@ -281,3 +281,21 @@ fn serialize_string_with_3_byte_padding() {
 
     assert_eq!(buffer, bytes_of_str(value, 3));
 }
+
+#[test]
+fn serialize_void() {
+    let mut buffer = Vec::new();
+
+    Serializer::new(&mut buffer).serialize_unit().unwrap();
+
+    assert_eq!(buffer.len(), 0);
+}
+
+#[test]
+fn serialize_unit_struct() {
+    let mut buffer = Vec::new();
+
+    Serializer::new(&mut buffer).serialize_unit_struct("name").unwrap();
+
+    assert_eq!(buffer.len(), 0);
+}

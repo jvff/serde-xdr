@@ -141,11 +141,11 @@ where
     }
 
     fn serialize_unit(self) -> Result<Self> {
-        bail!(ErrorKind::InvalidDataType("unit".to_string()))
+        Ok(self)
     }
 
     fn serialize_unit_struct(self, _name: &'static str) -> Result<Self> {
-        bail!(ErrorKind::InvalidDataType("unit_struct".to_string()))
+        Ok(self)
     }
 
     fn serialize_unit_variant(

@@ -87,3 +87,21 @@ fn serialize_enum() {
 
     assert_eq!(buffer, bytes_of(variant_index));
 }
+
+#[test]
+fn serialize_true() {
+    let mut buffer = Vec::new();
+
+    Serializer::new(&mut buffer).serialize_bool(true).unwrap();
+
+    assert_eq!(buffer, bytes_of(1));
+}
+
+#[test]
+fn serialize_false() {
+    let mut buffer = Vec::new();
+
+    Serializer::new(&mut buffer).serialize_bool(false).unwrap();
+
+    assert_eq!(buffer, bytes_of(0));
+}

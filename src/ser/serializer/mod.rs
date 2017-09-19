@@ -20,8 +20,8 @@ where
     type SerializeStruct = Self;
     type SerializeStructVariant = Self;
 
-    fn serialize_bool(self, _value: bool) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("bool".to_string()))
+    fn serialize_bool(self, value: bool) -> Result<()> {
+        self.serialize_u32(if value { 1 } else { 0 })
     }
 
     fn serialize_i8(self, value: i8) -> Result<()> {

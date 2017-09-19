@@ -124,29 +124,6 @@ where
     }
 }
 
-impl<'w, W> ser::SerializeStruct for Serializer<'w, W>
-where
-    W: WriteBytesExt + 'w,
-{
-    type Ok = Self;
-    type Error = Error;
-
-    fn serialize_field<T>(
-        &mut self,
-        _key: &'static str,
-        _value: &T,
-    ) -> Result<()>
-    where
-        T: ?Sized + Serialize,
-    {
-        unreachable!("struct is not supported")
-    }
-
-    fn end(self) -> Result<Self> {
-        unreachable!("struct is not supported")
-    }
-}
-
 impl<'w, W> ser::SerializeStructVariant for Serializer<'w, W>
 where
     W: WriteBytesExt + 'w,

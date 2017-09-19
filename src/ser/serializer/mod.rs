@@ -4,6 +4,7 @@ use byteorder::{BigEndian, WriteBytesExt};
 use serde::ser;
 use serde::ser::Serialize;
 
+use self::struct_serializer::StructSerializer;
 use super::Serializer;
 use super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
@@ -19,7 +20,7 @@ where
     type SerializeTupleStruct = Self;
     type SerializeTupleVariant = Self;
     type SerializeMap = Self;
-    type SerializeStruct = Self;
+    type SerializeStruct = StructSerializer<'w, W>;
     type SerializeStructVariant = Self;
 
     fn serialize_bool(self, value: bool) -> Result<Self> {
@@ -237,10 +238,10 @@ where
 
     fn serialize_struct(
         self,
-        _name: &'static str,
+        name: &'static str,
         _length: usize,
     ) -> Result<Self::SerializeStruct> {
-        bail!(ErrorKind::InvalidDataType("struct".to_string()))
+        Ok(StructSerializer::new(name, self))
     }
 
     fn serialize_struct_variant(
@@ -253,6 +254,8 @@ where
         bail!(ErrorKind::InvalidDataType("struct_variant".to_string()))
     }
 }
+
+mod struct_serializer;
 
 #[cfg(test)]
 mod tests;

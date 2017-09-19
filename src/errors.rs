@@ -47,7 +47,21 @@ error_chain! {
 
         SerializeStruct(name: String) {
             description("failed to serialize struct")
-            display("failed to serialize stuct: {}", name)
+            display("failed to serialize struct: {}", name)
+        }
+
+        SerializeStructFatalError(name: String) {
+            description("fatal failure while serializing struct")
+            display("fatal failure while serializing struct: {}", name)
+        }
+
+        SerializeStructField(struct_name: String, field_name: String) {
+            description("failed to serialize struct field")
+            display(
+                "failed to serialize struct field: {}::{}",
+                struct_name,
+                field_name,
+            )
         }
 
         SerializeUnionVariant(name: String, variant: String) {

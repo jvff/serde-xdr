@@ -4,7 +4,7 @@ use serde::ser::Serializer as SerdeSerializer;
 
 use super::Serializer;
 
-fn bytes_of(mut value: u32) -> Vec<u8> {
+pub fn bytes_of(mut value: u32) -> Vec<u8> {
     let mut bytes = Vec::with_capacity(4);
 
     for _ in 0..4 {
@@ -18,7 +18,7 @@ fn bytes_of(mut value: u32) -> Vec<u8> {
     bytes
 }
 
-fn bytes_of_hyper(mut value: u64) -> Vec<u8> {
+pub fn bytes_of_hyper(mut value: u64) -> Vec<u8> {
     let mut bytes = Vec::with_capacity(8);
 
     for _ in 0..8 {
@@ -32,7 +32,7 @@ fn bytes_of_hyper(mut value: u64) -> Vec<u8> {
     bytes
 }
 
-fn bytes_of_f32(value: f32) -> Vec<u8> {
+pub fn bytes_of_f32(value: f32) -> Vec<u8> {
     let bits: u32;
 
     unsafe {
@@ -42,7 +42,7 @@ fn bytes_of_f32(value: f32) -> Vec<u8> {
     bytes_of(bits)
 }
 
-fn bytes_of_f64(value: f64) -> Vec<u8> {
+pub fn bytes_of_f64(value: f64) -> Vec<u8> {
     let bits: u64;
 
     unsafe {
@@ -52,7 +52,7 @@ fn bytes_of_f64(value: f64) -> Vec<u8> {
     bytes_of_hyper(bits)
 }
 
-fn bytes_of_str(string: &str, padding_length: usize) -> Vec<u8> {
+pub fn bytes_of_str(string: &str, padding_length: usize) -> Vec<u8> {
     let padded_length = 4 + string.len() + 1 + padding_length;
 
     let mut bytes = bytes_of(string.len() as u32);

@@ -147,6 +147,13 @@ where
     }
 }
 
-pub fn to_bytes() -> Vec<u8> {
-    Vec::new()
+pub fn to_bytes<T>(value: &T) -> Result<Vec<u8>>
+where
+    T: Serialize,
+{
+    let mut bytes = Vec::new();
+
+    value.serialize(Serializer::new(&mut bytes))?;
+
+    Ok(bytes)
 }

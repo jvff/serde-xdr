@@ -136,11 +136,15 @@ where
             .chain_err(|| ErrorKind::SerializeNone)
     }
 
-    fn serialize_some<T>(self, _value: &T) -> Result<Self>
+    fn serialize_some<T>(self, value: &T) -> Result<Self>
     where
         T: ?Sized + Serialize,
     {
-        bail!(ErrorKind::InvalidDataType("some(?)".to_string()))
+        let serializer = self.serialize_u32(1)
+            .chain_err(|| ErrorKind::SerializeSome)?;
+
+        value.serialize(serializer)
+            .chain_err(|| ErrorKind::SerializeSome)
     }
 
     fn serialize_unit(self) -> Result<Self> {

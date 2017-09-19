@@ -337,3 +337,17 @@ fn serialize_none() {
 
     assert_eq!(buffer, bytes_of(0));
 }
+
+#[test]
+fn serialize_some() {
+    let mut buffer = Vec::new();
+    let value: u32 = 1000;
+
+    Serializer::new(&mut buffer).serialize_some(&value).unwrap();
+
+    let mut expected_bytes = bytes_of(1);
+
+    expected_bytes.append(&mut bytes_of(value));
+
+    assert_eq!(buffer, expected_bytes);
+}

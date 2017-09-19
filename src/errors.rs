@@ -54,6 +54,10 @@ error_chain! {
             display("failed to serialize opaque data of {} bytes", size)
         }
 
+        SerializeSome {
+            description("failed to serialize some optional data")
+        }
+
         SerializeString(string: String) {
             description("failed to serialize string")
             display("failed to serialize string: {}", string)

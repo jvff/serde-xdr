@@ -311,3 +311,20 @@ fn serialize_wrapped_type() {
 
     assert_eq!(buffer, bytes_of(value));
 }
+
+#[test]
+fn serialize_union() {
+    let mut buffer = Vec::new();
+    let value = "a simple string";
+    let variant_index = 5;
+
+    Serializer::new(&mut buffer)
+        .serialize_newtype_variant("union", variant_index, "variant", value)
+        .unwrap();
+
+    let mut expected_bytes = bytes_of(variant_index);
+
+    expected_bytes.append(&mut bytes_of_str(value, 0));
+
+    assert_eq!(buffer, expected_bytes);
+}

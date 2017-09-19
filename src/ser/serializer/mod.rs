@@ -171,15 +171,29 @@ where
 
     fn serialize_newtype_variant<T>(
         self,
-        _name: &'static str,
-        _variant_index: u32,
-        _variant: &'static str,
-        _value: &T,
+        name: &'static str,
+        variant_index: u32,
+        variant: &'static str,
+        value: &T,
     ) -> Result<Self>
     where
         T: ?Sized + Serialize,
     {
-        bail!(ErrorKind::InvalidDataType("newtype_variant".to_string()))
+        let serializer = self.serialize_u32(variant_index)
+            .chain_err(|| {
+                ErrorKind::SerializeUnionVariant(
+                    name.to_string(),
+                    variant.to_string(),
+                )
+            })?;
+
+        value.serialize(serializer)
+            .chain_err(|| {
+                ErrorKind::SerializeUnionVariant(
+                    name.to_string(),
+                    variant.to_string(),
+                )
+            })
     }
 
     fn serialize_seq(

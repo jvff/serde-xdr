@@ -50,6 +50,11 @@ error_chain! {
             display("failed to serialize stuct: {}", name)
         }
 
+        SerializeUnionVariant(name: String, variant: String) {
+            description("failed to serialize union variant")
+            display("failed to serialize union variant: {}::{}", name, variant)
+        }
+
         SerializeUnsignedHyperInteger(value: u64) {
             description("failed to serialize unsigned hyper integer")
             display("failed to serialize unsigned hyper integer: {}", value)

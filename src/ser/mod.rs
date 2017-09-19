@@ -22,11 +22,11 @@ where
 
 mod serializer;
 
-impl<'w, W> ser::SerializeSeq for &'w mut Serializer<'w, W>
+impl<'w, W> ser::SerializeSeq for Serializer<'w, W>
 where
     W: WriteBytesExt + 'w,
 {
-    type Ok = ();
+    type Ok = Self;
     type Error = Error;
 
     fn serialize_element<T>(&mut self, _value: &T) -> Result<()>
@@ -36,16 +36,16 @@ where
         unreachable!("seq is not supported")
     }
 
-    fn end(self) -> Result<()> {
+    fn end(self) -> Result<Self> {
         unreachable!("seq is not supported")
     }
 }
 
-impl<'w, W> ser::SerializeTuple for &'w mut Serializer<'w, W>
+impl<'w, W> ser::SerializeTuple for Serializer<'w, W>
 where
     W: WriteBytesExt + 'w,
 {
-    type Ok = ();
+    type Ok = Self;
     type Error = Error;
 
     fn serialize_element<T>(&mut self, _value: &T) -> Result<()>
@@ -55,16 +55,16 @@ where
         unreachable!("tuple is not supported")
     }
 
-    fn end(self) -> Result<()> {
+    fn end(self) -> Result<Self> {
         unreachable!("tuple is not supported")
     }
 }
 
-impl<'w, W> ser::SerializeTupleStruct for &'w mut Serializer<'w, W>
+impl<'w, W> ser::SerializeTupleStruct for Serializer<'w, W>
 where
     W: WriteBytesExt + 'w,
 {
-    type Ok = ();
+    type Ok = Self;
     type Error = Error;
 
     fn serialize_field<T>(&mut self, _value: &T) -> Result<()>
@@ -74,16 +74,16 @@ where
         unreachable!("tuple_struct is not supported")
     }
 
-    fn end(self) -> Result<()> {
+    fn end(self) -> Result<Self> {
         unreachable!("tuple_struct is not supported")
     }
 }
 
-impl<'w, W> ser::SerializeTupleVariant for &'w mut Serializer<'w, W>
+impl<'w, W> ser::SerializeTupleVariant for Serializer<'w, W>
 where
     W: WriteBytesExt + 'w,
 {
-    type Ok = ();
+    type Ok = Self;
     type Error = Error;
 
     fn serialize_field<T>(&mut self, _value: &T) -> Result<()>
@@ -93,16 +93,16 @@ where
         unreachable!("tuple_struct is not supported")
     }
 
-    fn end(self) -> Result<()> {
+    fn end(self) -> Result<Self> {
         unreachable!("tuple_variant is not supported")
     }
 }
 
-impl<'w, W> ser::SerializeMap for &'w mut Serializer<'w, W>
+impl<'w, W> ser::SerializeMap for Serializer<'w, W>
 where
     W: WriteBytesExt + 'w,
 {
-    type Ok = ();
+    type Ok = Self;
     type Error = Error;
 
     fn serialize_key<T>(&mut self, _key: &T) -> Result<()>
@@ -119,16 +119,16 @@ where
         unreachable!("map is not supported")
     }
 
-    fn end(self) -> Result<()> {
+    fn end(self) -> Result<Self> {
         unreachable!("map is not supported")
     }
 }
 
-impl<'w, W> ser::SerializeStruct for &'w mut Serializer<'w, W>
+impl<'w, W> ser::SerializeStruct for Serializer<'w, W>
 where
     W: WriteBytesExt + 'w,
 {
-    type Ok = ();
+    type Ok = Self;
     type Error = Error;
 
     fn serialize_field<T>(
@@ -142,16 +142,16 @@ where
         unreachable!("struct is not supported")
     }
 
-    fn end(self) -> Result<()> {
+    fn end(self) -> Result<Self> {
         unreachable!("struct is not supported")
     }
 }
 
-impl<'w, W> ser::SerializeStructVariant for &'w mut Serializer<'w, W>
+impl<'w, W> ser::SerializeStructVariant for Serializer<'w, W>
 where
     W: WriteBytesExt + 'w,
 {
-    type Ok = ();
+    type Ok = Self;
     type Error = Error;
 
     fn serialize_field<T>(
@@ -165,7 +165,7 @@ where
         unreachable!("struct_variant is not supported")
     }
 
-    fn end(self) -> Result<()> {
+    fn end(self) -> Result<Self> {
         unreachable!("struct_variant is not supported")
     }
 }

@@ -1,3 +1,5 @@
+use std::mem;
+
 use serde::ser::Serializer as SerdeSerializer;
 
 use super::Serializer;
@@ -28,6 +30,16 @@ fn bytes_of_hyper(mut value: u64) -> Vec<u8> {
     }
 
     bytes
+}
+
+fn bytes_of_f32(value: f32) -> Vec<u8> {
+    let bits: u32;
+
+    unsafe {
+        bits = mem::transmute::<f32, u32>(value);
+    }
+
+    bytes_of(bits)
 }
 
 #[test]
@@ -138,4 +150,14 @@ fn serialize_u64() {
     Serializer::new(&mut buffer).serialize_u64(value).unwrap();
 
     assert_eq!(buffer, bytes_of_hyper(value));
+}
+
+#[test]
+fn serialize_f32() {
+    let mut buffer = Vec::new();
+    let value = 0.002708;
+
+    Serializer::new(&mut buffer).serialize_f32(value).unwrap();
+
+    assert_eq!(buffer, bytes_of_f32(value));
 }

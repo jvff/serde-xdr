@@ -68,8 +68,11 @@ where
         Ok(())
     }
 
-    fn serialize_f32(self, _value: f32) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("f32".to_string()))
+    fn serialize_f32(self, value: f32) -> Result<()> {
+        self.writer.write_f32::<BigEndian>(value)
+            .chain_err(|| ErrorKind::SerializeFloat(value))?;
+
+        Ok(())
     }
 
     fn serialize_f64(self, _value: f64) -> Result<()> {

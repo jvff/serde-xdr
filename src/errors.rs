@@ -15,6 +15,11 @@ error_chain! {
             display("data type not supported: {}", type_name)
         }
 
+        SerializeFloat(value: f32) {
+            description("failed to serialize float")
+            display("failed to serialize float: {}", value)
+        }
+
         SerializeHyperInteger(value: i64) {
             description("failed to serialize hyper integer")
             display("failed to serialize hyper integer: {}", value)

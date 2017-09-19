@@ -299,3 +299,15 @@ fn serialize_unit_struct() {
 
     assert_eq!(buffer.len(), 0);
 }
+
+#[test]
+fn serialize_wrapped_type() {
+    let mut buffer = Vec::new();
+    let value = 4230;
+
+    Serializer::new(&mut buffer)
+        .serialize_newtype_struct("wrapped_u32", &value)
+        .unwrap();
+
+    assert_eq!(buffer, bytes_of(value));
+}

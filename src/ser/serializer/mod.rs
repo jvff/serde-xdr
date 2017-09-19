@@ -159,13 +159,14 @@ where
 
     fn serialize_newtype_struct<T>(
         self,
-        _name: &'static str,
-        _value: &T,
+        name: &'static str,
+        value: &T,
     ) -> Result<Self>
     where
         T: ?Sized + Serialize,
     {
-        bail!(ErrorKind::InvalidDataType("newtype_struct".to_string()))
+        value.serialize(self)
+            .chain_err(|| ErrorKind::SerializeStruct(name.to_string()))
     }
 
     fn serialize_newtype_variant<T>(

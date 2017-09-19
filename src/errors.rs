@@ -45,6 +45,11 @@ error_chain! {
             display("failed to serialize string: {}", string)
         }
 
+        SerializeStruct(name: String) {
+            description("failed to serialize struct")
+            display("failed to serialize stuct: {}", name)
+        }
+
         SerializeUnsignedHyperInteger(value: u64) {
             description("failed to serialize unsigned hyper integer")
             display("failed to serialize unsigned hyper integer: {}", value)

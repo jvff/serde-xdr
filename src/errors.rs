@@ -15,9 +15,19 @@ error_chain! {
             display("data type not supported: {}", type_name)
         }
 
+        SerializeHyperInteger(value: i64) {
+            description("failed to serialize hyper integer")
+            display("failed to serialize hyper integer: {}", value)
+        }
+
         SerializeInteger(value: i32) {
             description("failed to serialize integer")
             display("failed to serialize integer: {}", value)
+        }
+
+        SerializeUnsignedHyperInteger(value: u64) {
+            description("failed to serialize unsigned hyper integer")
+            display("failed to serialize unsigned hyper integer: {}", value)
         }
 
         SerializeUnsignedInteger(value: u32) {

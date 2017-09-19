@@ -16,6 +16,20 @@ fn bytes_of(mut value: u32) -> Vec<u8> {
     bytes
 }
 
+fn bytes_of_hyper(mut value: u64) -> Vec<u8> {
+    let mut bytes = Vec::with_capacity(8);
+
+    for _ in 0..8 {
+        let byte = (value >> 56) as u8;
+
+        bytes.push(byte);
+
+        value <<= 8;
+    }
+
+    bytes
+}
+
 #[test]
 fn serialize_i8() {
     let mut buffer = Vec::new();
@@ -104,4 +118,24 @@ fn serialize_false() {
     Serializer::new(&mut buffer).serialize_bool(false).unwrap();
 
     assert_eq!(buffer, bytes_of(0));
+}
+
+#[test]
+fn serialize_i64() {
+    let mut buffer = Vec::new();
+    let value = 6_980_010_427_672;
+
+    Serializer::new(&mut buffer).serialize_i64(value).unwrap();
+
+    assert_eq!(buffer, bytes_of_hyper(value as u64));
+}
+
+#[test]
+fn serialize_u64() {
+    let mut buffer = Vec::new();
+    let value = 27_422_481_429;
+
+    Serializer::new(&mut buffer).serialize_u64(value).unwrap();
+
+    assert_eq!(buffer, bytes_of_hyper(value));
 }

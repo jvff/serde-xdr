@@ -39,8 +39,11 @@ where
         Ok(())
     }
 
-    fn serialize_i64(self, _value: i64) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("i64".to_string()))
+    fn serialize_i64(self, value: i64) -> Result<()> {
+        self.writer.write_i64::<BigEndian>(value)
+            .chain_err(|| ErrorKind::SerializeHyperInteger(value))?;
+
+        Ok(())
     }
 
     fn serialize_u8(self, value: u8) -> Result<()> {
@@ -58,8 +61,11 @@ where
         Ok(())
     }
 
-    fn serialize_u64(self, _value: u64) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("u64".to_string()))
+    fn serialize_u64(self, value: u64) -> Result<()> {
+        self.writer.write_u64::<BigEndian>(value)
+            .chain_err(|| ErrorKind::SerializeUnsignedHyperInteger(value))?;
+
+        Ok(())
     }
 
     fn serialize_f32(self, _value: f32) -> Result<()> {

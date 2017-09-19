@@ -25,6 +25,11 @@ error_chain! {
             display("failed to serialize double: {}", value)
         }
 
+        SerializeEnum(name: String, variant: String) {
+            description("failed to serialize enum variant")
+            display("failed to serialize enum variant: {}::{}", name, variant)
+        }
+
         SerializeFloat(value: f32) {
             description("failed to serialize float")
             display("failed to serialize float: {}", value)

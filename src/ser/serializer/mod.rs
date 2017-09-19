@@ -152,11 +152,14 @@ where
 
     fn serialize_unit_variant(
         self,
-        _name: &'static str,
+        name: &'static str,
         variant_index: u32,
-        _variant: &'static str,
+        variant: &'static str,
     ) -> Result<Self> {
         self.serialize_u32(variant_index)
+            .chain_err(|| {
+                ErrorKind::SerializeEnum(name.to_string(), variant.to_string())
+            })
     }
 
     fn serialize_newtype_struct<T>(

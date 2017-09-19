@@ -35,6 +35,11 @@ error_chain! {
             display("failed to serialize integer: {}", value)
         }
 
+        SerializeOpaque(size: usize) {
+            description("failed to serialize opaque")
+            display("failed to serialize opaque data of {} bytes", size)
+        }
+
         SerializeUnsignedHyperInteger(value: u64) {
             description("failed to serialize unsigned hyper integer")
             display("failed to serialize unsigned hyper integer: {}", value)

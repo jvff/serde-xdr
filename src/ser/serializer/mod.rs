@@ -90,8 +90,21 @@ where
         bail!(ErrorKind::InvalidDataType("str".to_string()))
     }
 
-    fn serialize_bytes(self, _value: &[u8]) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("str".to_string()))
+    fn serialize_bytes(self, value: &[u8]) -> Result<()> {
+        let length = value.len();
+        let full_padding = [0u8; 3];
+        let padding_size = 4 - (length + 3) % 4 - 1;
+        let (padding, _) = full_padding.split_at(padding_size);
+
+        self.writer
+            .write_all(value)
+            .chain_err(|| ErrorKind::SerializeOpaque(length))?;
+
+        self.writer
+            .write_all(padding)
+            .chain_err(|| ErrorKind::SerializeOpaque(length))?;
+
+        Ok(())
     }
 
     fn serialize_none(self) -> Result<()> {

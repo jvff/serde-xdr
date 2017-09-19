@@ -104,10 +104,10 @@ where
     fn serialize_unit_variant(
         self,
         _name: &'static str,
-        _variant_index: u32,
+        variant_index: u32,
         _variant: &'static str,
     ) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("unit_variant".to_string()))
+        self.serialize_u32(variant_index)
     }
 
     fn serialize_newtype_struct<T>(

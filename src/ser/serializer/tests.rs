@@ -75,3 +75,15 @@ fn serialize_u32() {
 
     assert_eq!(buffer, bytes_of(value));
 }
+
+#[test]
+fn serialize_enum() {
+    let mut buffer = Vec::new();
+    let variant_index = 300;
+
+    Serializer::new(&mut buffer)
+        .serialize_unit_variant("name", variant_index, "4")
+        .unwrap();
+
+    assert_eq!(buffer, bytes_of(variant_index));
+}

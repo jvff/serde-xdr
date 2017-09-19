@@ -132,7 +132,8 @@ where
     }
 
     fn serialize_none(self) -> Result<Self> {
-        bail!(ErrorKind::InvalidDataType("none".to_string()))
+        self.serialize_u32(0)
+            .chain_err(|| ErrorKind::SerializeNone)
     }
 
     fn serialize_some<T>(self, _value: &T) -> Result<Self>

@@ -45,6 +45,10 @@ error_chain! {
             display("failed to serialize integer: {}", value)
         }
 
+        SerializeNone {
+            description("failed to serialize 'none' optional variant")
+        }
+
         SerializeOpaque(size: usize) {
             description("failed to serialize opaque")
             display("failed to serialize opaque data of {} bytes", size)

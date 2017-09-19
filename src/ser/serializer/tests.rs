@@ -328,3 +328,12 @@ fn serialize_union() {
 
     assert_eq!(buffer, expected_bytes);
 }
+
+#[test]
+fn serialize_none() {
+    let mut buffer = Vec::new();
+
+    Serializer::new(&mut buffer).serialize_none().unwrap();
+
+    assert_eq!(buffer, bytes_of(0));
+}

@@ -2,6 +2,20 @@ use serde::ser::Serializer as SerdeSerializer;
 
 use super::Serializer;
 
+fn bytes_of(mut value: u32) -> Vec<u8> {
+    let mut bytes = Vec::with_capacity(4);
+
+    for _ in 0..4 {
+        let byte = (value >> 24) as u8;
+
+        bytes.push(byte);
+
+        value <<= 8;
+    }
+
+    bytes
+}
+
 #[test]
 fn serialize_i8() {
     let mut buffer = Vec::new();
@@ -9,9 +23,7 @@ fn serialize_i8() {
 
     Serializer::new(&mut buffer).serialize_i8(value).unwrap();
 
-    let expected_byte = 0xff - (-value as u8) + 1;
-
-    assert_eq!(buffer, vec![0xff, 0xff, 0xff, expected_byte]);
+    assert_eq!(buffer, bytes_of(value as u32));
 }
 
 #[test]
@@ -21,11 +33,7 @@ fn serialize_i16() {
 
     Serializer::new(&mut buffer).serialize_i16(value).unwrap();
 
-    let expected_value = 0xffff - (-value as u16) + 1;
-    let expected_msb = (expected_value >> 8) as u8;
-    let expected_lsb = (expected_value & 0xff) as u8;
-
-    assert_eq!(buffer, vec![0xff, 0xff, expected_msb, expected_lsb]);
+    assert_eq!(buffer, bytes_of(value as u32));
 }
 
 #[test]
@@ -35,18 +43,7 @@ fn serialize_i32() {
 
     Serializer::new(&mut buffer).serialize_i32(value).unwrap();
 
-    let mut expected_value = 0xffffffff - (-value as u32) + 1;
-    let mut expected_bytes = Vec::with_capacity(4);
-
-    for _ in 0..4 {
-        let byte = (expected_value >> 24) as u8;
-
-        expected_bytes.push(byte);
-
-        expected_value <<= 8;
-    }
-
-    assert_eq!(buffer, expected_bytes);
+    assert_eq!(buffer, bytes_of(value as u32));
 }
 
 #[test]
@@ -56,7 +53,7 @@ fn serialize_u8() {
 
     Serializer::new(&mut buffer).serialize_u8(value).unwrap();
 
-    assert_eq!(buffer, vec![0, 0, 0, value]);
+    assert_eq!(buffer, bytes_of(value as u32));
 }
 
 #[test]
@@ -66,10 +63,7 @@ fn serialize_u16() {
 
     Serializer::new(&mut buffer).serialize_u16(value).unwrap();
 
-    let expected_msb = (value >> 8) as u8;
-    let expected_lsb = (value & 0xff) as u8;
-
-    assert_eq!(buffer, vec![0, 0, expected_msb, expected_lsb]);
+    assert_eq!(buffer, bytes_of(value as u32));
 }
 
 #[test]
@@ -79,16 +73,5 @@ fn serialize_u32() {
 
     Serializer::new(&mut buffer).serialize_u32(value).unwrap();
 
-    let mut expected_value = value;
-    let mut expected_bytes = Vec::with_capacity(4);
-
-    for _ in 0..4 {
-        let byte = (expected_value >> 24) as u8;
-
-        expected_bytes.push(byte);
-
-        expected_value <<= 8;
-    }
-
-    assert_eq!(buffer, expected_bytes);
+    assert_eq!(buffer, bytes_of(value));
 }

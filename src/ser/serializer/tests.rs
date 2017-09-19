@@ -42,6 +42,16 @@ fn bytes_of_f32(value: f32) -> Vec<u8> {
     bytes_of(bits)
 }
 
+fn bytes_of_f64(value: f64) -> Vec<u8> {
+    let bits: u64;
+
+    unsafe {
+        bits = mem::transmute::<f64, u64>(value);
+    }
+
+    bytes_of_hyper(bits)
+}
+
 #[test]
 fn serialize_i8() {
     let mut buffer = Vec::new();
@@ -160,4 +170,14 @@ fn serialize_f32() {
     Serializer::new(&mut buffer).serialize_f32(value).unwrap();
 
     assert_eq!(buffer, bytes_of_f32(value));
+}
+
+#[test]
+fn serialize_f64() {
+    let mut buffer = Vec::new();
+    let value = 0.0000000013073298;
+
+    Serializer::new(&mut buffer).serialize_f64(value).unwrap();
+
+    assert_eq!(buffer, bytes_of_f64(value));
 }

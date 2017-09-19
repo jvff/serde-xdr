@@ -75,8 +75,11 @@ where
         Ok(())
     }
 
-    fn serialize_f64(self, _value: f64) -> Result<()> {
-        bail!(ErrorKind::InvalidDataType("f64".to_string()))
+    fn serialize_f64(self, value: f64) -> Result<()> {
+        self.writer.write_f64::<BigEndian>(value)
+            .chain_err(|| ErrorKind::SerializeDouble(value))?;
+
+        Ok(())
     }
 
     fn serialize_char(self, _value: char) -> Result<()> {

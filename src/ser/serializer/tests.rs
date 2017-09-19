@@ -52,6 +52,17 @@ fn bytes_of_f64(value: f64) -> Vec<u8> {
     bytes_of_hyper(bits)
 }
 
+fn bytes_of_str(string: &str, padding_length: usize) -> Vec<u8> {
+    let padded_length = 4 + string.len() + 1 + padding_length;
+
+    let mut bytes = bytes_of(string.len() as u32);
+
+    bytes.append(&mut string.as_bytes().iter().cloned().collect());
+    bytes.resize(padded_length, 0);
+
+    bytes
+}
+
 #[test]
 fn serialize_i8() {
     let mut buffer = Vec::new();
@@ -229,4 +240,44 @@ fn serialize_opaque_with_3_byte_padding() {
     value.resize(padded_length, 0);
 
     assert_eq!(buffer, value);
+}
+
+#[test]
+fn serialize_string_without_padding() {
+    let mut buffer = Vec::new();
+    let value = "a simple string";
+
+    Serializer::new(&mut buffer).serialize_str(&value).unwrap();
+
+    assert_eq!(buffer, bytes_of_str(value, 0));
+}
+
+#[test]
+fn serialize_string_with_1_byte_padding() {
+    let mut buffer = Vec::new();
+    let value = "a simple string...";
+
+    Serializer::new(&mut buffer).serialize_str(&value).unwrap();
+
+    assert_eq!(buffer, bytes_of_str(value, 1));
+}
+
+#[test]
+fn serialize_string_with_2_byte_padding() {
+    let mut buffer = Vec::new();
+    let value = "a string.";
+
+    Serializer::new(&mut buffer).serialize_str(&value).unwrap();
+
+    assert_eq!(buffer, bytes_of_str(value, 2));
+}
+
+#[test]
+fn serialize_string_with_3_byte_padding() {
+    let mut buffer = Vec::new();
+    let value = "a simple string!";
+
+    Serializer::new(&mut buffer).serialize_str(&value).unwrap();
+
+    assert_eq!(buffer, bytes_of_str(value, 3));
 }

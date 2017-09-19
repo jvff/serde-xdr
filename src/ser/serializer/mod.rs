@@ -1,3 +1,5 @@
+use std::ascii::AsciiExt;
+
 use byteorder::{BigEndian, WriteBytesExt};
 use serde::ser;
 use serde::ser::Serialize;
@@ -86,8 +88,28 @@ where
         bail!(ErrorKind::InvalidDataType("char".to_string()))
     }
 
-    fn serialize_str(self, _value: &str) -> Result<Self> {
-        bail!(ErrorKind::InvalidDataType("str".to_string()))
+    fn serialize_str(self, value: &str) -> Result<Self> {
+        if value.len() > u32::max_value() as usize {
+            bail!(ErrorKind::StringIsTooLong(value.to_string()));
+        }
+
+        if !value.is_ascii() {
+            bail!(ErrorKind::StringIsNotAscii(value.to_string()));
+        }
+
+        let length = value.len();
+
+        let serializer = self.serialize_u32(length as u32)
+            .chain_err(|| ErrorKind::SerializeString(value.to_string()))?
+            .serialize_bytes(value.as_bytes())
+            .chain_err(|| ErrorKind::SerializeString(value.to_string()))?;
+
+        if length % 4 == 0 {
+            serializer.serialize_u32(0)
+                .chain_err(|| ErrorKind::SerializeString(value.to_string()))
+        } else {
+            Ok(serializer)
+        }
     }
 
     fn serialize_bytes(self, value: &[u8]) -> Result<Self> {

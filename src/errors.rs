@@ -10,6 +10,10 @@ error_chain! {
             display("{}", message)
         }
 
+        DeserializeUnknownType {
+            description("can't deserialize unknown type")
+        }
+
         InvalidDataType(type_name: String) {
             description("data type not supported")
             display("data type not supported: {}", type_name)

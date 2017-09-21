@@ -35,6 +35,11 @@ error_chain! {
             description("failed to deserialize string")
         }
 
+        DeserializeStruct(name: String) {
+            description("failed to deserialize struct")
+            display("failed to deserialize struct: {}", name)
+        }
+
         DeserializeUnknownType {
             description("can't deserialize unknown type")
         }

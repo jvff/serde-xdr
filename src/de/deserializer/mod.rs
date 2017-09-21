@@ -187,11 +187,13 @@ where
             .read_i32::<BigEndian>()
             .chain_err(|| ErrorKind::DeserializeOption)?;
 
-        match option {
+        let result = match option {
             0 => visitor.visit_none(),
             1 => visitor.visit_some(self),
             _ => bail!(ErrorKind::InvalidOption),
-        }
+        };
+
+        result.chain_err(|| ErrorKind::DeserializeOption)
     }
 
     fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value>
@@ -214,13 +216,14 @@ where
 
     fn deserialize_newtype_struct<V>(
         self,
-        _name: &'static str,
+        name: &'static str,
         visitor: V,
     ) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
         visitor.visit_newtype_struct(self)
+            .chain_err(|| ErrorKind::DeserializeStruct(name.to_string()))
     }
 
     fn deserialize_seq<V>(self, _visitor: V) -> Result<V::Value>

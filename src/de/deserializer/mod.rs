@@ -130,18 +130,38 @@ where
         bail!(ErrorKind::InvalidDataType("char".to_string()));
     }
 
-    fn deserialize_str<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_str<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("str".to_string()));
+        let string_length = self.reader
+            .read_u32::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeString)?;
+
+        let padding_size = 4 - (string_length + 1 + 3) % 4;
+        let buffer_length = string_length + padding_size;
+
+        let mut buffer = Vec::with_capacity(buffer_length as usize);
+
+        buffer.resize(buffer_length as usize, 0);
+
+        self.reader
+            .read_exact(&mut buffer)
+            .chain_err(|| ErrorKind::DeserializeString)?;
+
+        buffer.truncate(string_length as usize);
+
+        let string = String::from_utf8(buffer)
+            .chain_err(|| ErrorKind::DeserializeString)?;
+
+        visitor.visit_string(string)
     }
 
-    fn deserialize_string<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_string<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("string".to_string()));
+        self.deserialize_str(visitor)
     }
 
     fn deserialize_bytes<V>(self, _visitor: V) -> Result<V::Value>

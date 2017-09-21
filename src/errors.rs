@@ -23,6 +23,10 @@ error_chain! {
             display("failed to deserialize {}-bit signed integer", bits)
         }
 
+        DeserializeString {
+            description("failed to deserialize string")
+        }
+
         DeserializeUnknownType {
             description("can't deserialize unknown type")
         }

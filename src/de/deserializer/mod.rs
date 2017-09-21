@@ -63,11 +63,17 @@ where
         visitor.visit_i64(value)
     }
 
-    fn deserialize_u8<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_u8<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("u8".to_string()));
+        let value = self.reader
+            .read_u32::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeUnsignedInteger(8))?;
+
+        ensure!(value <= 255, ErrorKind::InvalidUnsignedInteger(8, value));
+
+        visitor.visit_u8(value as u8)
     }
 
     fn deserialize_u16<V>(self, _visitor: V) -> Result<V::Value>

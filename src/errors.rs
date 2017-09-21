@@ -19,6 +19,11 @@ error_chain! {
             description("can't deserialize unknown type")
         }
 
+        DeserializeUnsignedInteger(bits: u8) {
+            description("failed to deserialize unsigned integer")
+            display("failed to deserialize {}-bit unsigned integer", bits)
+        }
+
         InvalidDataType(type_name: String) {
             description("data type not supported")
             display("data type not supported: {}", type_name)
@@ -28,6 +33,15 @@ error_chain! {
             description("deserialized invalid signed integer")
             display(
                 "deserialized invalid {}-bit signed integer: {}",
+                bits,
+                value,
+            )
+        }
+
+        InvalidUnsignedInteger(bits: u8, value: u32) {
+            description("deserialized invalid unsigned integer")
+            display(
+                "deserialized invalid {}-bit unsigned integer: {}",
                 bits,
                 value,
             )

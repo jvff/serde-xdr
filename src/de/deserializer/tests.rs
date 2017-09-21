@@ -12,6 +12,7 @@ enum Value {
     Integer8(i8),
     Integer16(i16),
     Integer32(i32),
+    Integer64(i64),
 }
 
 struct Visitor;
@@ -42,6 +43,13 @@ impl<'de> de::Visitor<'de> for Visitor {
         E: de::Error,
     {
         Ok(Value::Integer32(value))
+    }
+
+    fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        Ok(Value::Integer64(value))
     }
 }
 
@@ -76,4 +84,16 @@ fn deserialize_i32() {
         Deserializer::new(&mut cursor).deserialize_i32(Visitor).unwrap();
 
     assert_eq!(result, Value::Integer32(-2_147_483_648));
+}
+
+#[test]
+fn deserialize_i64() {
+    let mut cursor = Cursor::new(
+        vec![0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]
+    );
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_i64(Visitor).unwrap();
+
+    assert_eq!(result, Value::Integer64(-1));
 }

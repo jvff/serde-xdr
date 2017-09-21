@@ -1,9 +1,9 @@
-use byteorder::ReadBytesExt;
+use byteorder::{BigEndian, ReadBytesExt};
 use serde::de;
 use serde::de::Visitor;
 
 use super::Deserializer;
-use super::super::errors::{Error, ErrorKind, Result};
+use super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
 impl<'r, R> de::Deserializer<'r> for Deserializer<'r, R>
 where
@@ -52,11 +52,15 @@ where
         visitor.visit_i32(value)
     }
 
-    fn deserialize_i64<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_i64<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("i64".to_string()));
+        let value = self.reader
+            .read_i64::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeInteger(64))?;
+
+        visitor.visit_i64(value)
     }
 
     fn deserialize_u8<V>(self, _visitor: V) -> Result<V::Value>

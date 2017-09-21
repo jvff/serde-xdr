@@ -180,7 +180,7 @@ fn deserialize_f64() {
 }
 
 #[test]
-fn deserialize_str() {
+fn deserialize_str_without_padding() {
     let mut cursor = Cursor::new(
         vec![0x00, 0x00, 0x00, 0x03, 'H' as u8, 'i' as u8, '!' as u8, 0x00],
     );

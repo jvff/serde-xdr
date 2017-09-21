@@ -21,6 +21,19 @@ enum Value {
 
 struct Visitor;
 
+macro_rules! visit_methods {
+    ( $( $name:ident ( $base_type:ty ) -> $value_type:ident ),* $(,)* ) => {
+        $(
+            fn $name<E>(self, value: $base_type) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                Ok(Value::$value_type(value))
+            }
+        )*
+    }
+}
+
 impl<'de> de::Visitor<'de> for Visitor {
     type Value = Value;
 
@@ -28,60 +41,15 @@ impl<'de> de::Visitor<'de> for Visitor {
         write!(formatter, "unknown")
     }
 
-    fn visit_i8<E>(self, value: i8) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        Ok(Value::Integer8(value))
-    }
-
-    fn visit_i16<E>(self, value: i16) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        Ok(Value::Integer16(value))
-    }
-
-    fn visit_i32<E>(self, value: i32) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        Ok(Value::Integer32(value))
-    }
-
-    fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        Ok(Value::Integer64(value))
-    }
-
-    fn visit_u8<E>(self, value: u8) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        Ok(Value::UnsignedInteger8(value))
-    }
-
-    fn visit_u16<E>(self, value: u16) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        Ok(Value::UnsignedInteger16(value))
-    }
-
-    fn visit_u32<E>(self, value: u32) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        Ok(Value::UnsignedInteger32(value))
-    }
-
-    fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        Ok(Value::UnsignedInteger64(value))
+    visit_methods! {
+        visit_i8(i8) -> Integer8,
+        visit_i16(i16) -> Integer16,
+        visit_i32(i32) -> Integer32,
+        visit_i64(i64) -> Integer64,
+        visit_u8(u8) -> UnsignedInteger8,
+        visit_u16(u16) -> UnsignedInteger16,
+        visit_u32(u32) -> UnsignedInteger32,
+        visit_u64(u64) -> UnsignedInteger64,
     }
 }
 

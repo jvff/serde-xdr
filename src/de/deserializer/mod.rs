@@ -81,11 +81,13 @@ where
         visitor.visit_u16(value as u16)
     }
 
-    fn deserialize_u32<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_u32<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("u32".to_string()));
+        let value = self.deserialize_unsigned_integer(32)?;
+
+        visitor.visit_u32(value)
     }
 
     fn deserialize_u64<V>(self, _visitor: V) -> Result<V::Value>

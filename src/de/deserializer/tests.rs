@@ -191,3 +191,50 @@ fn deserialize_str_without_padding() {
     assert_eq!(cursor.position(), 8);
     assert_eq!(result, Value::String("Hi!".to_string()));
 }
+
+#[test]
+fn deserialize_str_with_1_byte_padding() {
+    let mut cursor = Cursor::new(
+        vec![0x00, 0x00, 0x00, 0x02, 'H' as u8, 'i' as u8, 0x00, 0x00],
+    );
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_str(Visitor).unwrap();
+
+    assert_eq!(cursor.position(), 8);
+    assert_eq!(result, Value::String("Hi".to_string()));
+}
+
+#[test]
+fn deserialize_str_with_2_byte_padding() {
+    let mut cursor = Cursor::new(
+        vec![
+            0x00, 0x00, 0x00, 0x05,
+            'H' as u8, 'e' as u8, 'l' as u8, 'l' as u8,
+            'o' as u8, 0x00, 0x00, 0x00,
+        ],
+    );
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_str(Visitor).unwrap();
+
+    assert_eq!(cursor.position(), 12);
+    assert_eq!(result, Value::String("Hello".to_string()));
+}
+
+#[test]
+fn deserialize_str_with_3_byte_padding() {
+    let mut cursor = Cursor::new(
+        vec![
+            0x00, 0x00, 0x00, 0x04,
+            'H' as u8, 'e' as u8, 'y' as u8, '!' as u8,
+            0x00, 0x00, 0x00, 0x00,
+        ],
+    );
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_str(Visitor).unwrap();
+
+    assert_eq!(cursor.position(), 12);
+    assert_eq!(result, Value::String("Hey!".to_string()));
+}

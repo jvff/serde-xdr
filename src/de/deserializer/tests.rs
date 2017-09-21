@@ -45,10 +45,18 @@ macro_rules! visit_method {
             Ok(Value::$value_type(value.into()))
         }
     };
+    ( $name:ident ( $self:ident, $deserializer:ident ) -> $forward:ident ) => {
+        fn $name<D>($self, $deserializer: D) -> Result<Self::Value, D::Error>
+        where
+            D: de::Deserializer<'de>,
+        {
+            $deserializer.$forward($self)
+        }
+    };
 }
 
 macro_rules! visit_methods {
-    ( $( $name:ident $params:tt -> $value_type:ident ),* $(,)*) => {
+    ( $( $name:ident $params:tt -> $value_type:ident ),* $(,)* ) => {
         $(
             visit_method!($name $params -> $value_type);
         )*
@@ -77,13 +85,8 @@ impl<'de> de::Visitor<'de> for Visitor {
         visit_bytes(&[u8]) -> Bytes,
         visit_none() -> None,
         visit_unit() -> Unit,
-    }
 
-    fn visit_some<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
-    where
-        D: de::Deserializer<'de>,
-    {
-        deserializer.deserialize_u32(self)
+        visit_some(self, deserializer) -> deserialize_u32,
     }
 }
 

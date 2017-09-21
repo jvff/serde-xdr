@@ -31,21 +31,30 @@ where
     {
         let value = self.reader
             .read_i32::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeInteger8)?;
+            .chain_err(|| ErrorKind::DeserializeInteger(8))?;
 
         ensure!(
             value >= -128 && value <= 127,
-            ErrorKind::InvalidInteger8(value)
+            ErrorKind::InvalidInteger(8, value)
         );
 
         visitor.visit_i8(value as i8)
     }
 
-    fn deserialize_i16<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_i16<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("i16".to_string()));
+        let value = self.reader
+            .read_i32::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeInteger(16))?;
+
+        ensure!(
+            value >= -32768 && value <= 32767,
+            ErrorKind::InvalidInteger(16, value)
+        );
+
+        visitor.visit_i16(value as i16)
     }
 
     fn deserialize_i32<V>(self, _visitor: V) -> Result<V::Value>

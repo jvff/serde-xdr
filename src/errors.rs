@@ -10,8 +10,9 @@ error_chain! {
             display("{}", message)
         }
 
-        DeserializeInteger8 {
-            description("failed to deserialize 8-bit signed integer")
+        DeserializeInteger(bits: u8) {
+            description("failed to deserialize signed integer")
+            display("failed to deserialize {}-bit signed integer", bits)
         }
 
         DeserializeUnknownType {
@@ -23,9 +24,13 @@ error_chain! {
             display("data type not supported: {}", type_name)
         }
 
-        InvalidInteger8(value: i32) {
-            description("deserialized invalid 8-bit signed integer")
-            display("deserialized invalid 8-bit signed integer: {}", value)
+        InvalidInteger(bits: u8, value: i32) {
+            description("deserialized invalid signed integer")
+            display(
+                "deserialized invalid {}-bit signed integer: {}",
+                bits,
+                value,
+            )
         }
 
         SerializeBool(value: bool) {

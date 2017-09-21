@@ -67,11 +67,7 @@ where
     where
         V: Visitor<'r>,
     {
-        let value = self.reader
-            .read_u32::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeUnsignedInteger(8))?;
-
-        ensure!(value <= 255, ErrorKind::InvalidUnsignedInteger(8, value));
+        let value = self.deserialize_unsigned_integer(8)?;
 
         visitor.visit_u8(value as u8)
     }

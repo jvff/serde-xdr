@@ -33,6 +33,22 @@ where
 
         Ok(value)
     }
+
+    fn deserialize_unsigned_integer(self, bits: u8) -> Result<u32> {
+        let value = self.reader
+            .read_u32::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeInteger(bits))?;
+
+        let most_significant_bit: u64 = 1 << bits;
+        let max_value = (most_significant_bit - 1) as u32;
+
+        ensure!(
+            value <= max_value,
+            ErrorKind::InvalidUnsignedInteger(bits, value)
+        );
+
+        Ok(value)
+    }
 }
 
 pub fn from_bytes(_bytes: &[u8]) {}

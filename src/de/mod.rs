@@ -17,7 +17,7 @@ where
         Deserializer { reader }
     }
 
-    fn deserialize_integer(self, bits: u8) -> Result<i32> {
+    fn deserialize_integer(&mut self, bits: u8) -> Result<i32> {
         let value = self.reader
             .read_i32::<BigEndian>()
             .chain_err(|| ErrorKind::DeserializeInteger(bits))?;
@@ -34,7 +34,7 @@ where
         Ok(value)
     }
 
-    fn deserialize_unsigned_integer(self, bits: u8) -> Result<u32> {
+    fn deserialize_unsigned_integer(&mut self, bits: u8) -> Result<u32> {
         let value = self.reader
             .read_u32::<BigEndian>()
             .chain_err(|| ErrorKind::DeserializeInteger(bits))?;

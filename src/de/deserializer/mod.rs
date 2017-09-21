@@ -5,7 +5,7 @@ use serde::de::Visitor;
 use super::Deserializer;
 use super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
-impl<'r, R> de::Deserializer<'r> for Deserializer<'r, R>
+impl<'a, 'r, R> de::Deserializer<'r> for &'a mut Deserializer<'r, R>
 where
     R: ReadBytesExt + 'r,
 {

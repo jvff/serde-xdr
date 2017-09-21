@@ -28,22 +28,29 @@ enum Value {
 
 struct Visitor;
 
+macro_rules! visit_method {
+    ( $name:ident () -> $value_type:ident ) => {
+        fn $name<E>(self) -> Result<Self::Value, E>
+        where
+            E: de::Error,
+        {
+            Ok(Value::$value_type)
+        }
+    };
+    ( $name:ident ( $base_type:ty ) -> $value_type:ident ) => {
+        fn $name<E>(self, value: $base_type) -> Result<Self::Value, E>
+        where
+            E: de::Error,
+        {
+            Ok(Value::$value_type(value.into()))
+        }
+    };
+}
+
 macro_rules! visit_methods {
-    (
-        $( $name:ident ( $( $base_type:ty )* ) -> $value_type:ident ),* $(,)*
-    ) => {
+    ( $( $name:ident $params:tt -> $value_type:ident ),* $(,)*) => {
         $(
-            fn $name<E>(
-                self,
-                $( value: $base_type, )*
-            ) -> Result<Self::Value, E>
-            where
-                E: de::Error,
-            {
-                Ok(Value::$value_type $(
-                    ({ let _: $base_type; value.into() })
-                )*)
-            }
+            visit_method!($name $params -> $value_type);
         )*
     };
 }

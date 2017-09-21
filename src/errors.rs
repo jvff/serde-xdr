@@ -10,6 +10,10 @@ error_chain! {
             display("{}", message)
         }
 
+        DeserializeInteger8 {
+            description("failed to deserialize 8-bit signed integer")
+        }
+
         DeserializeUnknownType {
             description("can't deserialize unknown type")
         }
@@ -17,6 +21,11 @@ error_chain! {
         InvalidDataType(type_name: String) {
             description("data type not supported")
             display("data type not supported: {}", type_name)
+        }
+
+        InvalidInteger8(value: i32) {
+            description("deserialized invalid 8-bit signed integer")
+            display("deserialized invalid 8-bit signed integer: {}", value)
         }
 
         SerializeBool(value: bool) {

@@ -1,8 +1,8 @@
-use byteorder::ReadBytesExt;
+use byteorder::{BigEndian, ReadBytesExt};
 use serde::de;
 use serde::de::Visitor;
 
-use super::errors::{Error, ErrorKind, Result};
+use super::errors::{Error, ErrorKind, Result, ResultExt};
 
 pub struct Deserializer<'r, R>
 where
@@ -40,11 +40,20 @@ where
         bail!(ErrorKind::InvalidDataType("bool".to_string()));
     }
 
-    fn deserialize_i8<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_i8<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("i8".to_string()));
+        let value = self.reader
+            .read_i32::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeInteger8)?;
+
+        ensure!(
+            value >= -128 && value <= 127,
+            ErrorKind::InvalidInteger8(value)
+        );
+
+        visitor.visit_i8(value as i8)
     }
 
     fn deserialize_i16<V>(self, _visitor: V) -> Result<V::Value>
@@ -258,3 +267,47 @@ where
 }
 
 pub fn from_bytes(_bytes: &[u8]) {}
+
+#[cfg(test)]
+mod tests {
+    use std::fmt;
+    use std::fmt::Formatter;
+    use std::io::Cursor;
+
+    use serde::de;
+    use serde::Deserializer as SerdeDeserializer;
+
+    use super::Deserializer;
+
+    #[derive(Debug, Eq, PartialEq)]
+    enum Value {
+        Integer8(i8),
+    }
+
+    struct Visitor;
+
+    impl<'de> de::Visitor<'de> for Visitor {
+        type Value = Value;
+
+        fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
+            write!(formatter, "unknown")
+        }
+
+        fn visit_i8<E>(self, value: i8) -> Result<Self::Value, E>
+        where
+            E: de::Error,
+        {
+            Ok(Value::Integer8(value))
+        }
+    }
+
+    #[test]
+    fn deserialize_i8() {
+        let mut cursor = Cursor::new(vec![0xff, 0xff, 0xff, 0xfe]);
+
+        let result =
+            Deserializer::new(&mut cursor).deserialize_i8(Visitor).unwrap();
+
+        assert_eq!(result, Value::Integer8(-2));
+    }
+}

@@ -87,6 +87,7 @@ impl<'de> de::Visitor<'de> for Visitor {
         visit_unit() -> Unit,
 
         visit_some(self, deserializer) -> deserialize_u32,
+        visit_newtype_struct(self, deserializer) -> deserialize_i32,
     }
 }
 
@@ -374,4 +375,16 @@ fn deserialize_unit() {
 
     assert_eq!(cursor.position(), 0);
     assert_eq!(result, Value::Unit);
+}
+
+#[test]
+fn deserialize_newtype_struct() {
+    let mut cursor = Cursor::new(vec![0xff, 0xff, 0xff, 0xf0]);
+
+    let result = Deserializer::new(&mut cursor)
+        .deserialize_newtype_struct("wrapper", Visitor)
+        .unwrap();
+
+    assert_eq!(cursor.position(), 4);
+    assert_eq!(result, Value::Integer32(-16));
 }

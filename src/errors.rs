@@ -10,6 +10,10 @@ error_chain! {
             display("{}", message)
         }
 
+        DeserializeFloat {
+            description("failed to deserialize float")
+        }
+
         DeserializeInteger(bits: u8) {
             description("failed to deserialize signed integer")
             display("failed to deserialize {}-bit signed integer", bits)

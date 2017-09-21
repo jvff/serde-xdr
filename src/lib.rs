@@ -5,6 +5,9 @@ extern crate byteorder;
 extern crate error_chain;
 extern crate serde;
 
+#[cfg(test)]
+extern crate ordered_float;
+
 mod errors;
 mod ser;
 mod de;

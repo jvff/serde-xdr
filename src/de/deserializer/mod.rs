@@ -101,11 +101,15 @@ where
         visitor.visit_u64(value)
     }
 
-    fn deserialize_f32<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_f32<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("f32".to_string()));
+        let value = self.reader
+            .read_f32::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeFloat)?;
+
+        visitor.visit_f32(value)
     }
 
     fn deserialize_f64<V>(self, _visitor: V) -> Result<V::Value>

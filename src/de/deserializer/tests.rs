@@ -2,6 +2,7 @@ use std::fmt;
 use std::fmt::Formatter;
 use std::io::Cursor;
 
+use ordered_float::OrderedFloat;
 use serde::de;
 use serde::Deserializer as SerdeDeserializer;
 
@@ -17,6 +18,7 @@ enum Value {
     UnsignedInteger16(u16),
     UnsignedInteger32(u32),
     UnsignedInteger64(u64),
+    Float(OrderedFloat<f32>),
 }
 
 struct Visitor;
@@ -28,7 +30,7 @@ macro_rules! visit_methods {
             where
                 E: de::Error,
             {
-                Ok(Value::$value_type(value))
+                Ok(Value::$value_type(value.into()))
             }
         )*
     }
@@ -50,6 +52,7 @@ impl<'de> de::Visitor<'de> for Visitor {
         visit_u16(u16) -> UnsignedInteger16,
         visit_u32(u32) -> UnsignedInteger32,
         visit_u64(u64) -> UnsignedInteger64,
+        visit_f32(f32) -> Float,
     }
 }
 
@@ -138,4 +141,14 @@ fn deserialize_u64() {
         Deserializer::new(&mut cursor).deserialize_u64(Visitor).unwrap();
 
     assert_eq!(result, Value::UnsignedInteger64(0x8000_0000_0000_0000));
+}
+
+#[test]
+fn deserialize_f32() {
+    let mut cursor = Cursor::new(vec![0xbf, 0x40, 0x00, 0x00]);
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_f32(Visitor).unwrap();
+
+    assert_eq!(result, Value::Float((-0.75).into()));
 }

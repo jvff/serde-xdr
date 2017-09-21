@@ -67,6 +67,7 @@ fn deserialize_i8() {
     let result =
         Deserializer::new(&mut cursor).deserialize_i8(Visitor).unwrap();
 
+    assert_eq!(cursor.position(), 4);
     assert_eq!(result, Value::Integer8(-2));
 }
 
@@ -80,6 +81,7 @@ fn deserialize_i16() {
     let value_bits: u16 = 0xeffe;
     let expected_value = -((!value_bits) as i16 + 1);
 
+    assert_eq!(cursor.position(), 4);
     assert_eq!(result, Value::Integer16(expected_value));
 }
 
@@ -90,6 +92,7 @@ fn deserialize_i32() {
     let result =
         Deserializer::new(&mut cursor).deserialize_i32(Visitor).unwrap();
 
+    assert_eq!(cursor.position(), 4);
     assert_eq!(result, Value::Integer32(-2_147_483_648));
 }
 
@@ -102,6 +105,7 @@ fn deserialize_i64() {
     let result =
         Deserializer::new(&mut cursor).deserialize_i64(Visitor).unwrap();
 
+    assert_eq!(cursor.position(), 8);
     assert_eq!(result, Value::Integer64(-1));
 }
 
@@ -112,6 +116,7 @@ fn deserialize_u8() {
     let result =
         Deserializer::new(&mut cursor).deserialize_u8(Visitor).unwrap();
 
+    assert_eq!(cursor.position(), 4);
     assert_eq!(result, Value::UnsignedInteger8(14));
 }
 
@@ -122,6 +127,7 @@ fn deserialize_u16() {
     let result =
         Deserializer::new(&mut cursor).deserialize_u16(Visitor).unwrap();
 
+    assert_eq!(cursor.position(), 4);
     assert_eq!(result, Value::UnsignedInteger16(4110));
 }
 
@@ -132,6 +138,7 @@ fn deserialize_u32() {
     let result =
         Deserializer::new(&mut cursor).deserialize_u32(Visitor).unwrap();
 
+    assert_eq!(cursor.position(), 4);
     assert_eq!(result, Value::UnsignedInteger32(0x8000_100e));
 }
 
@@ -144,6 +151,7 @@ fn deserialize_u64() {
     let result =
         Deserializer::new(&mut cursor).deserialize_u64(Visitor).unwrap();
 
+    assert_eq!(cursor.position(), 8);
     assert_eq!(result, Value::UnsignedInteger64(0x8000_0000_0000_0000));
 }
 
@@ -154,6 +162,7 @@ fn deserialize_f32() {
     let result =
         Deserializer::new(&mut cursor).deserialize_f32(Visitor).unwrap();
 
+    assert_eq!(cursor.position(), 4);
     assert_eq!(result, Value::Float((-0.75).into()));
 }
 
@@ -166,6 +175,7 @@ fn deserialize_f64() {
     let result =
         Deserializer::new(&mut cursor).deserialize_f64(Visitor).unwrap();
 
+    assert_eq!(cursor.position(), 8);
     assert_eq!(result, Value::Double((-0.75).into()));
 }
 
@@ -178,5 +188,6 @@ fn deserialize_str() {
     let result =
         Deserializer::new(&mut cursor).deserialize_str(Visitor).unwrap();
 
+    assert_eq!(cursor.position(), 8);
     assert_eq!(result, Value::String("Hi!".to_string()));
 }

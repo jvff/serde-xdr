@@ -1,9 +1,9 @@
-use byteorder::{BigEndian, ReadBytesExt};
+use byteorder::ReadBytesExt;
 use serde::de;
 use serde::de::Visitor;
 
 use super::Deserializer;
-use super::super::errors::{Error, ErrorKind, Result, ResultExt};
+use super::super::errors::{Error, ErrorKind, Result};
 
 impl<'r, R> de::Deserializer<'r> for Deserializer<'r, R>
 where
@@ -29,14 +29,7 @@ where
     where
         V: Visitor<'r>,
     {
-        let value = self.reader
-            .read_i32::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeInteger(8))?;
-
-        ensure!(
-            value >= -128 && value <= 127,
-            ErrorKind::InvalidInteger(8, value)
-        );
+        let value = self.deserialize_integer(8)?;
 
         visitor.visit_i8(value as i8)
     }
@@ -45,14 +38,7 @@ where
     where
         V: Visitor<'r>,
     {
-        let value = self.reader
-            .read_i32::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeInteger(16))?;
-
-        ensure!(
-            value >= -32768 && value <= 32767,
-            ErrorKind::InvalidInteger(16, value)
-        );
+        let value = self.deserialize_integer(16)?;
 
         visitor.visit_i16(value as i16)
     }

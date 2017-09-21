@@ -10,6 +10,10 @@ error_chain! {
             display("{}", message)
         }
 
+        DeserializeBool {
+            description("failed to deserialize bool")
+        }
+
         DeserializeDouble {
             description("failed to deserialize double")
         }
@@ -47,6 +51,10 @@ error_chain! {
         DeserializeUnsignedInteger(bits: u8) {
             description("failed to deserialize unsigned integer")
             display("failed to deserialize {}-bit unsigned integer", bits)
+        }
+
+        InvalidBool {
+            description("deserialized an invalid bool")
         }
 
         InvalidDataType(type_name: String) {

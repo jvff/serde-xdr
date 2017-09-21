@@ -18,11 +18,19 @@ where
         bail!(ErrorKind::DeserializeUnknownType);
     }
 
-    fn deserialize_bool<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("bool".to_string()));
+        let value = self.reader
+            .read_u32::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeBool)?;
+
+        match value {
+            0 => visitor.visit_bool(false),
+            1 => visitor.visit_bool(true),
+            _ => bail!(ErrorKind::InvalidBool),
+        }
     }
 
     fn deserialize_i8<V>(self, visitor: V) -> Result<V::Value>

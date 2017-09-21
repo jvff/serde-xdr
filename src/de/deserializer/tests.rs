@@ -10,6 +10,7 @@ use super::Deserializer;
 
 #[derive(Debug, Eq, PartialEq)]
 enum Value {
+    Bool(bool),
     Integer8(i8),
     Integer16(i16),
     Integer32(i32),
@@ -71,6 +72,7 @@ impl<'de> de::Visitor<'de> for Visitor {
     }
 
     visit_methods! {
+        visit_bool(bool) -> Bool,
         visit_i8(i8) -> Integer8,
         visit_i16(i16) -> Integer16,
         visit_i32(i32) -> Integer32,
@@ -89,6 +91,28 @@ impl<'de> de::Visitor<'de> for Visitor {
         visit_some(self, deserializer) -> deserialize_u32,
         visit_newtype_struct(self, deserializer) -> deserialize_i32,
     }
+}
+
+#[test]
+fn deserialize_false() {
+    let mut cursor = Cursor::new(vec![0x00, 0x00, 0x00, 0x00]);
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_bool(Visitor).unwrap();
+
+    assert_eq!(cursor.position(), 4);
+    assert_eq!(result, Value::Bool(false));
+}
+
+#[test]
+fn deserialize_true() {
+    let mut cursor = Cursor::new(vec![0x00, 0x00, 0x00, 0x01]);
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_bool(Visitor).unwrap();
+
+    assert_eq!(cursor.position(), 4);
+    assert_eq!(result, Value::Bool(true));
 }
 
 #[test]

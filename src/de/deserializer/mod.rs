@@ -43,11 +43,13 @@ where
         visitor.visit_i16(value as i16)
     }
 
-    fn deserialize_i32<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_i32<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("i32".to_string()));
+        let value = self.deserialize_integer(32)?;
+
+        visitor.visit_i32(value)
     }
 
     fn deserialize_i64<V>(self, _visitor: V) -> Result<V::Value>

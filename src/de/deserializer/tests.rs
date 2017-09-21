@@ -11,6 +11,7 @@ use super::Deserializer;
 enum Value {
     Integer8(i8),
     Integer16(i16),
+    Integer32(i32),
 }
 
 struct Visitor;
@@ -35,6 +36,13 @@ impl<'de> de::Visitor<'de> for Visitor {
     {
         Ok(Value::Integer16(value))
     }
+
+    fn visit_i32<E>(self, value: i32) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        Ok(Value::Integer32(value))
+    }
 }
 
 #[test]
@@ -58,4 +66,14 @@ fn deserialize_i16() {
     let expected_value = -((!value_bits) as i16 + 1);
 
     assert_eq!(result, Value::Integer16(expected_value));
+}
+
+#[test]
+fn deserialize_i32() {
+    let mut cursor = Cursor::new(vec![0x80, 0x00, 0x00, 0x00]);
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_i32(Visitor).unwrap();
+
+    assert_eq!(result, Value::Integer32(-2_147_483_648));
 }

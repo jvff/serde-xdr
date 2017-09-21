@@ -179,11 +179,19 @@ where
         self.deserialize_bytes(visitor)
     }
 
-    fn deserialize_option<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_option<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("option".to_string()));
+        let option = self.reader
+            .read_i32::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeOption)?;
+
+        match option {
+            0 => visitor.visit_none(),
+            1 => visitor.visit_some(self),
+            _ => bail!(ErrorKind::InvalidOption),
+        }
     }
 
     fn deserialize_unit<V>(self, _visitor: V) -> Result<V::Value>

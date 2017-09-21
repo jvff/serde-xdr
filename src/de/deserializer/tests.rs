@@ -22,21 +22,29 @@ enum Value {
     Double(OrderedFloat<f64>),
     String(String),
     Bytes(Vec<u8>),
+    None,
 }
 
 struct Visitor;
 
 macro_rules! visit_methods {
-    ( $( $name:ident ( $base_type:ty ) -> $value_type:ident ),* $(,)* ) => {
+    (
+        $( $name:ident ( $( $base_type:ty )* ) -> $value_type:ident ),* $(,)*
+    ) => {
         $(
-            fn $name<E>(self, value: $base_type) -> Result<Self::Value, E>
+            fn $name<E>(
+                self,
+                $( value: $base_type, )*
+            ) -> Result<Self::Value, E>
             where
                 E: de::Error,
             {
-                Ok(Value::$value_type(value.into()))
+                Ok(Value::$value_type $(
+                    ({ let _: $base_type; value.into() })
+                )*)
             }
         )*
-    }
+    };
 }
 
 impl<'de> de::Visitor<'de> for Visitor {
@@ -59,6 +67,14 @@ impl<'de> de::Visitor<'de> for Visitor {
         visit_f64(f64) -> Double,
         visit_str(&str) -> String,
         visit_bytes(&[u8]) -> Bytes,
+        visit_none() -> None,
+    }
+
+    fn visit_some<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
+    where
+        D: de::Deserializer<'de>,
+    {
+        deserializer.deserialize_u32(self)
     }
 }
 
@@ -311,4 +327,28 @@ fn deserialize_opaque_with_3_byte_padding() {
 
     assert_eq!(cursor.position(), 12);
     assert_eq!(result, Value::Bytes(expected_bytes));
+}
+
+#[test]
+fn deserialize_none() {
+    let mut cursor = Cursor::new(vec![0x00, 0x00, 0x00, 0x00]);
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_option(Visitor).unwrap();
+
+    assert_eq!(cursor.position(), 4);
+    assert_eq!(result, Value::None);
+}
+
+#[test]
+fn deserialize_some() {
+    let mut cursor = Cursor::new(
+        vec![0x00, 0x00, 0x00, 0x01, 0xab, 0xcd, 0xef, 0x98],
+    );
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_option(Visitor).unwrap();
+
+    assert_eq!(cursor.position(), 8);
+    assert_eq!(result, Value::UnsignedInteger32(0xabcdef98));
 }

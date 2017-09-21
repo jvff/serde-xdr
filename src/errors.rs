@@ -27,6 +27,10 @@ error_chain! {
             description("failed to deserialize opaque data")
         }
 
+        DeserializeOption {
+            description("failed to deserialize option")
+        }
+
         DeserializeString {
             description("failed to deserialize string")
         }
@@ -43,6 +47,10 @@ error_chain! {
         InvalidDataType(type_name: String) {
             description("data type not supported")
             display("data type not supported: {}", type_name)
+        }
+
+        InvalidOption {
+            description("deserialized an invalid option")
         }
 
         InvalidInteger(bits: u8, value: i32) {

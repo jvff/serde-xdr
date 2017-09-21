@@ -112,11 +112,15 @@ where
         visitor.visit_f32(value)
     }
 
-    fn deserialize_f64<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_f64<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("f64".to_string()));
+        let value = self.reader
+            .read_f64::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeDouble)?;
+
+        visitor.visit_f64(value)
     }
 
     fn deserialize_char<V>(self, _visitor: V) -> Result<V::Value>

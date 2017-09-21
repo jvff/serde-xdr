@@ -19,6 +19,7 @@ enum Value {
     UnsignedInteger32(u32),
     UnsignedInteger64(u64),
     Float(OrderedFloat<f32>),
+    Double(OrderedFloat<f64>),
 }
 
 struct Visitor;
@@ -53,6 +54,7 @@ impl<'de> de::Visitor<'de> for Visitor {
         visit_u32(u32) -> UnsignedInteger32,
         visit_u64(u64) -> UnsignedInteger64,
         visit_f32(f32) -> Float,
+        visit_f64(f64) -> Double,
     }
 }
 
@@ -134,7 +136,7 @@ fn deserialize_u32() {
 #[test]
 fn deserialize_u64() {
     let mut cursor = Cursor::new(
-        vec![0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+        vec![0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
     );
 
     let result =
@@ -151,4 +153,16 @@ fn deserialize_f32() {
         Deserializer::new(&mut cursor).deserialize_f32(Visitor).unwrap();
 
     assert_eq!(result, Value::Float((-0.75).into()));
+}
+
+#[test]
+fn deserialize_f64() {
+    let mut cursor = Cursor::new(
+        vec![0xbf, 0xe8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+    );
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_f64(Visitor).unwrap();
+
+    assert_eq!(result, Value::Double((-0.75).into()));
 }

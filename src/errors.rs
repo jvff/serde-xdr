@@ -10,6 +10,10 @@ error_chain! {
             display("{}", message)
         }
 
+        DeserializeDouble {
+            description("failed to deserialize double")
+        }
+
         DeserializeFloat {
             description("failed to deserialize float")
         }

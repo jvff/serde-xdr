@@ -130,26 +130,22 @@ where
         bail!(ErrorKind::InvalidDataType("char".to_string()));
     }
 
-    fn deserialize_str<V>(self, visitor: V) -> Result<V::Value>
+    fn deserialize_str<V>(mut self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        let string_length = self.reader
-            .read_u32::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeString)?;
+        let buffer = self.deserialize_opaque(
+            ErrorKind::DeserializeString,
+            ErrorKind::DeserializeString,
+        )?;
 
-        let padding_size = 4 - (string_length + 1 + 3) % 4;
-        let buffer_length = string_length + padding_size;
+        if buffer.len() % 4 == 0 {
+            let mut extra_padding = [0; 4];
 
-        let mut buffer = Vec::with_capacity(buffer_length as usize);
-
-        buffer.resize(buffer_length as usize, 0);
-
-        self.reader
-            .read_exact(&mut buffer)
-            .chain_err(|| ErrorKind::DeserializeString)?;
-
-        buffer.truncate(string_length as usize);
+            self.reader
+                .read_exact(&mut extra_padding)
+                .chain_err(|| ErrorKind::DeserializeString)?;
+        }
 
         let string = String::from_utf8(buffer)
             .chain_err(|| ErrorKind::DeserializeString)?;
@@ -164,26 +160,14 @@ where
         self.deserialize_str(visitor)
     }
 
-    fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value>
+    fn deserialize_bytes<V>(mut self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        let length = self.reader
-            .read_u32::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeOpaque)?;
-
-        let padding_size = 4 - (length + 3) % 4 - 1;
-        let buffer_length = length + padding_size;
-
-        let mut buffer = Vec::with_capacity(buffer_length as usize);
-
-        buffer.resize(buffer_length as usize, 0);
-
-        self.reader
-            .read_exact(&mut buffer)
-            .chain_err(|| ErrorKind::DeserializeOpaque)?;
-
-        buffer.truncate(length as usize);
+        let buffer = self.deserialize_opaque(
+            ErrorKind::DeserializeOpaque,
+            ErrorKind::DeserializeOpaque,
+        )?;
 
         visitor.visit_byte_buf(buffer)
     }

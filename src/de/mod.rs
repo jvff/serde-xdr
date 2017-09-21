@@ -49,6 +49,27 @@ where
 
         Ok(value)
     }
+
+    fn deserialize_opaque(
+        &mut self,
+        read_length_error_kind: ErrorKind,
+        read_data_error_kind: ErrorKind,
+    ) -> Result<Vec<u8>> {
+        let length = self.reader
+            .read_u32::<BigEndian>()
+            .chain_err(|| read_length_error_kind)?;
+
+        let padding_size = 4 - (length + 3) % 4 - 1;
+        let buffer_length = length + padding_size;
+
+        let mut buffer = Vec::with_capacity(buffer_length as usize);
+
+        buffer.resize(buffer_length as usize, 0);
+        self.reader.read_exact(&mut buffer).chain_err(|| read_data_error_kind)?;
+        buffer.truncate(length as usize);
+
+        Ok(buffer)
+    }
 }
 
 pub fn from_bytes(_bytes: &[u8]) {}

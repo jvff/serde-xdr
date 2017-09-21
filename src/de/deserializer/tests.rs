@@ -21,6 +21,7 @@ enum Value {
     Float(OrderedFloat<f32>),
     Double(OrderedFloat<f64>),
     String(String),
+    Bytes(Vec<u8>),
 }
 
 struct Visitor;
@@ -57,6 +58,7 @@ impl<'de> de::Visitor<'de> for Visitor {
         visit_f32(f32) -> Float,
         visit_f64(f64) -> Double,
         visit_str(&str) -> String,
+        visit_bytes(&[u8]) -> Bytes,
     }
 }
 
@@ -237,4 +239,76 @@ fn deserialize_str_with_3_byte_padding() {
 
     assert_eq!(cursor.position(), 12);
     assert_eq!(result, Value::String("Hey!".to_string()));
+}
+
+#[test]
+fn deserialize_opaque_without_padding() {
+    let mut cursor = Cursor::new(
+        vec![
+            0x00, 0x00, 0x00, 0x08,
+            0x01, 0x02, 0x03, 0x04, 0xff, 0xfe, 0xfd, 0xfc,
+        ],
+    );
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_bytes(Visitor).unwrap();
+
+    let expected_bytes = vec![0x01, 0x02, 0x03, 0x04, 0xff, 0xfe, 0xfd, 0xfc];
+
+    assert_eq!(cursor.position(), 12);
+    assert_eq!(result, Value::Bytes(expected_bytes));
+}
+
+#[test]
+fn deserialize_opaque_with_1_byte_padding() {
+    let mut cursor = Cursor::new(
+        vec![
+            0x00, 0x00, 0x00, 0x07,
+            0x01, 0x02, 0x03, 0x04, 0xff, 0xfe, 0xfd, 0x00,
+        ],
+    );
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_bytes(Visitor).unwrap();
+
+    let expected_bytes = vec![0x01, 0x02, 0x03, 0x04, 0xff, 0xfe, 0xfd];
+
+    assert_eq!(cursor.position(), 12);
+    assert_eq!(result, Value::Bytes(expected_bytes));
+}
+
+#[test]
+fn deserialize_opaque_with_2_byte_padding() {
+    let mut cursor = Cursor::new(
+        vec![
+            0x00, 0x00, 0x00, 0x06,
+            0x01, 0x02, 0x03, 0x04, 0xff, 0xfe, 0x00, 0x00,
+        ],
+    );
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_bytes(Visitor).unwrap();
+
+    let expected_bytes = vec![0x01, 0x02, 0x03, 0x04, 0xff, 0xfe];
+
+    assert_eq!(cursor.position(), 12);
+    assert_eq!(result, Value::Bytes(expected_bytes));
+}
+
+#[test]
+fn deserialize_opaque_with_3_byte_padding() {
+    let mut cursor = Cursor::new(
+        vec![
+            0x00, 0x00, 0x00, 0x05,
+            0x01, 0x02, 0x03, 0x04, 0xff, 0x00, 0x00, 0x00,
+        ],
+    );
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_bytes(Visitor).unwrap();
+
+    let expected_bytes = vec![0x01, 0x02, 0x03, 0x04, 0xff];
+
+    assert_eq!(cursor.position(), 12);
+    assert_eq!(result, Value::Bytes(expected_bytes));
 }

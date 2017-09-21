@@ -164,18 +164,35 @@ where
         self.deserialize_str(visitor)
     }
 
-    fn deserialize_bytes<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("bytes".to_string()));
+        let length = self.reader
+            .read_u32::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeOpaque)?;
+
+        let padding_size = 4 - (length + 3) % 4 - 1;
+        let buffer_length = length + padding_size;
+
+        let mut buffer = Vec::with_capacity(buffer_length as usize);
+
+        buffer.resize(buffer_length as usize, 0);
+
+        self.reader
+            .read_exact(&mut buffer)
+            .chain_err(|| ErrorKind::DeserializeOpaque)?;
+
+        buffer.truncate(length as usize);
+
+        visitor.visit_byte_buf(buffer)
     }
 
-    fn deserialize_byte_buf<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("byte_buf".to_string()));
+        self.deserialize_bytes(visitor)
     }
 
     fn deserialize_option<V>(self, _visitor: V) -> Result<V::Value>

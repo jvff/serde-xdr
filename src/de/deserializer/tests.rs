@@ -23,6 +23,7 @@ enum Value {
     String(String),
     Bytes(Vec<u8>),
     None,
+    Unit,
 }
 
 struct Visitor;
@@ -68,6 +69,7 @@ impl<'de> de::Visitor<'de> for Visitor {
         visit_str(&str) -> String,
         visit_bytes(&[u8]) -> Bytes,
         visit_none() -> None,
+        visit_unit() -> Unit,
     }
 
     fn visit_some<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
@@ -351,4 +353,15 @@ fn deserialize_some() {
 
     assert_eq!(cursor.position(), 8);
     assert_eq!(result, Value::UnsignedInteger32(0xabcdef98));
+}
+
+#[test]
+fn deserialize_unit() {
+    let mut cursor = Cursor::new(vec![]);
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_unit(Visitor).unwrap();
+
+    assert_eq!(cursor.position(), 0);
+    assert_eq!(result, Value::Unit);
 }

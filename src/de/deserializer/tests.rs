@@ -16,6 +16,7 @@ enum Value {
     UnsignedInteger8(u8),
     UnsignedInteger16(u16),
     UnsignedInteger32(u32),
+    UnsignedInteger64(u64),
 }
 
 struct Visitor;
@@ -74,6 +75,13 @@ impl<'de> de::Visitor<'de> for Visitor {
         E: de::Error,
     {
         Ok(Value::UnsignedInteger32(value))
+    }
+
+    fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        Ok(Value::UnsignedInteger64(value))
     }
 }
 
@@ -150,4 +158,16 @@ fn deserialize_u32() {
         Deserializer::new(&mut cursor).deserialize_u32(Visitor).unwrap();
 
     assert_eq!(result, Value::UnsignedInteger32(0x8000_100e));
+}
+
+#[test]
+fn deserialize_u64() {
+    let mut cursor = Cursor::new(
+        vec![0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+    );
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_u64(Visitor).unwrap();
+
+    assert_eq!(result, Value::UnsignedInteger64(0x8000_0000_0000_0000));
 }

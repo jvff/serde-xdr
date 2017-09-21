@@ -90,11 +90,15 @@ where
         visitor.visit_u32(value)
     }
 
-    fn deserialize_u64<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_u64<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("u64".to_string()));
+        let value = self.reader
+            .read_u64::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeUnsignedInteger(64))?;
+
+        visitor.visit_u64(value)
     }
 
     fn deserialize_f32<V>(self, _visitor: V) -> Result<V::Value>

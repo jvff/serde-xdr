@@ -22,7 +22,8 @@ where
             .read_i32::<BigEndian>()
             .chain_err(|| ErrorKind::DeserializeInteger(bits))?;
 
-        let max_value = (1 << (bits - 1)) - 1;
+        let most_significant_bit: u32 = 1 << (bits - 1);
+        let max_value = (most_significant_bit - 1) as i32;
         let min_value = -max_value - 1;
 
         ensure!(

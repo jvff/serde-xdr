@@ -2,11 +2,13 @@ use byteorder::{BigEndian, ReadBytesExt};
 use serde::de;
 use serde::de::Visitor;
 
+use self::struct_deserializer::StructDeserializer;
 use super::Deserializer;
 use super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
 impl<'a, 'r, R> de::Deserializer<'r> for &'a mut Deserializer<'r, R>
 where
+    'r: 'a,
     R: ReadBytesExt + 'r,
 {
     type Error = Error;
@@ -273,14 +275,14 @@ where
 
     fn deserialize_struct<V>(
         self,
-        _name: &'static str,
-        _fields: &'static [&'static str],
-        _visitor: V,
+        name: &'static str,
+        fields: &'static [&'static str],
+        visitor: V,
     ) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("struct".to_string()));
+        visitor.visit_seq(StructDeserializer::new(name, fields, self))
     }
 
     fn deserialize_enum<V>(
@@ -309,6 +311,8 @@ where
         bail!(ErrorKind::DeserializeUnknownType);
     }
 }
+
+mod struct_deserializer;
 
 #[cfg(test)]
 mod tests;

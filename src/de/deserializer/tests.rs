@@ -4,12 +4,13 @@ use std::io::Cursor;
 
 use ordered_float::OrderedFloat;
 use serde::de;
+use serde::de::SeqAccess;
 use serde::Deserializer as SerdeDeserializer;
 
 use super::Deserializer;
 
 #[derive(Debug, Eq, PartialEq)]
-enum Value {
+pub enum Value {
     Bool(bool),
     Integer8(i8),
     Integer16(i16),
@@ -25,9 +26,10 @@ enum Value {
     Bytes(Vec<u8>),
     None,
     Unit,
+    Sequence(Vec<Value>),
 }
 
-struct Visitor;
+pub struct Visitor;
 
 macro_rules! visit_method {
     ( $name:ident () -> $value_type:ident ) => {
@@ -54,12 +56,34 @@ macro_rules! visit_method {
             $deserializer.$forward($self)
         }
     };
+    ( $name:ident [ $( $base_type:ty => $value_type:ident ),* $(,)* ] ) => {
+        fn $name<A>(self, mut sequence: A) -> Result<Self::Value, A::Error>
+        where
+            A: SeqAccess<'de>,
+        {
+            let mut values = Vec::new();
+
+            $(
+                let value = Value::$value_type(
+                    sequence
+                        .next_element::<$base_type>()
+                        .unwrap()
+                        .unwrap()
+                        .into()
+                );
+
+                values.push(value);
+            )*
+
+            Ok(Value::Sequence(values))
+        }
+    };
 }
 
 macro_rules! visit_methods {
-    ( $( $name:ident $params:tt -> $value_type:ident ),* $(,)* ) => {
+    ( $( $name:ident $params:tt $( -> $value_type:tt )* ),* $(,)* ) => {
         $(
-            visit_method!($name $params -> $value_type);
+            visit_method!($name $params $( ->  $value_type )*);
         )*
     };
 }
@@ -90,6 +114,12 @@ impl<'de> de::Visitor<'de> for Visitor {
 
         visit_some(self, deserializer) -> deserialize_u32,
         visit_newtype_struct(self, deserializer) -> deserialize_i32,
+
+        visit_seq [
+            bool => Bool,
+            String => String,
+            i32 => Integer32,
+        ],
     }
 }
 

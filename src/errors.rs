@@ -44,6 +44,15 @@ error_chain! {
             display("failed to deserialize struct: {}", name)
         }
 
+        DeserializeStructField(struct_name: String, field_name: String) {
+            description("failed to deserialize struct field")
+            display(
+                "failed to deserialize struct field: {}::{}",
+                struct_name,
+                field_name,
+            )
+        }
+
         DeserializeUnknownType {
             description("can't deserialize unknown type")
         }

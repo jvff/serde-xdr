@@ -14,4 +14,4 @@ mod de;
 
 pub use errors::{Error, ErrorKind, Result};
 pub use ser::{to_bytes, Serializer};
-pub use de::{from_bytes, Deserializer};
+pub use de::{from_reader, Deserializer};

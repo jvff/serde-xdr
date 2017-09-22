@@ -1,4 +1,7 @@
+use std::io::Read;
+
 use byteorder::{BigEndian, ReadBytesExt};
+use serde::Deserialize;
 
 use super::errors::{ErrorKind, Result, ResultExt};
 
@@ -72,6 +75,14 @@ where
     }
 }
 
-pub fn from_bytes(_bytes: &[u8]) {}
+pub fn from_reader<'de, R, T>(reader: &'de mut R) -> Result<T>
+where
+    R: Read,
+    T: Deserialize<'de>,
+{
+    let mut deserializer = Deserializer::new(reader);
+
+    Ok(T::deserialize(&mut deserializer)?)
+}
 
 mod deserializer;

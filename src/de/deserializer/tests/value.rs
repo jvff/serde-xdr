@@ -2,6 +2,7 @@ use ordered_float::OrderedFloat;
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Value {
+    Nothing,
     Bool(bool),
     Integer8(i8),
     Integer16(i16),
@@ -18,4 +19,5 @@ pub enum Value {
     None,
     Unit,
     Sequence(Vec<Value>),
+    Enum(usize, Box<Value>)
 }

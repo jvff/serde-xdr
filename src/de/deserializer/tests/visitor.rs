@@ -2,7 +2,7 @@ use std::fmt;
 use std::fmt::Formatter;
 
 use serde::de;
-use serde::de::SeqAccess;
+use serde::de::{EnumAccess, SeqAccess, VariantAccess};
 
 use super::value::Value;
 
@@ -55,6 +55,32 @@ macro_rules! visit_method {
             Ok(Value::Sequence(values))
         }
     };
+    (
+        $name:ident {
+            $( $index:expr => $base_type:ty : $value_type:ident ),* $(,)*
+        }
+    ) => {
+        fn $name<A>(self, enum_access: A) -> Result<Self::Value, A::Error>
+        where
+            A: EnumAccess<'de>,
+        {
+            let (variant_index, variant_access) =
+                enum_access.variant().unwrap();
+
+            let variant_data = match variant_index {
+                $(
+                    $index => {
+                        Value::$value_type(
+                            variant_access.newtype_variant().unwrap(),
+                        )
+                    }
+                )*
+                _ => Value::Nothing,
+            };
+
+            Ok(Value::Enum(variant_index, Box::new(variant_data)))
+        }
+    };
 }
 
 macro_rules! visit_methods {
@@ -97,5 +123,11 @@ impl<'de> de::Visitor<'de> for Visitor {
             String => String,
             i32 => Integer32,
         ],
+
+        visit_enum {
+            0 => bool: Bool,
+            1 => String: String,
+            2 => i32: Integer32,
+        },
     }
 }

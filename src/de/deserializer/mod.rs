@@ -2,6 +2,7 @@ use byteorder::{BigEndian, ReadBytesExt};
 use serde::de;
 use serde::de::Visitor;
 
+use self::enum_deserializer::EnumDeserializer;
 use self::struct_deserializer::StructDeserializer;
 use super::Deserializer;
 use super::super::errors::{Error, ErrorKind, Result, ResultExt};
@@ -287,14 +288,22 @@ where
 
     fn deserialize_enum<V>(
         self,
-        _name: &'static str,
-        _variants: &'static [&'static str],
-        _visitor: V,
+        name: &'static str,
+        variants: &'static [&'static str],
+        visitor: V,
     ) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("enum".to_string()));
+        let variant = self.reader
+            .read_u32::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeEnum(name.to_string()))?;
+        let variant_name = variants[variant as usize];
+
+        let enum_deserializer =
+            EnumDeserializer::new(name, variant, variant_name, self);
+
+        visitor.visit_enum(enum_deserializer)
     }
 
     fn deserialize_identifier<V>(self, _visitor: V) -> Result<V::Value>
@@ -312,6 +321,7 @@ where
     }
 }
 
+mod enum_deserializer;
 mod struct_deserializer;
 
 #[cfg(test)]

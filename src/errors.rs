@@ -18,6 +18,16 @@ error_chain! {
             description("failed to deserialize double")
         }
 
+        DeserializeEnum(name: String) {
+            description("failed to deserialize enum")
+            display("failed to deserialize enum: {}", name)
+        }
+
+        DeserializeEnumVariant(name: String, variant: String) {
+            description("failed to deserialize enum variant")
+            display("failed to deserialize enum variant: {}::{}", name, variant)
+        }
+
         DeserializeFloat {
             description("failed to deserialize float")
         }

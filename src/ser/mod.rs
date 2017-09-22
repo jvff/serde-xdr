@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use byteorder::WriteBytesExt;
 use serde::ser;
 use serde::ser::Serialize;
@@ -156,4 +158,14 @@ where
     value.serialize(Serializer::new(&mut bytes))?;
 
     Ok(bytes)
+}
+
+pub fn to_writer<W, T>(writer: &mut W, value: &T) -> Result<()>
+where
+    W: Write,
+    T: Serialize,
+{
+    value.serialize(Serializer::new(writer))?;
+
+    Ok(())
 }

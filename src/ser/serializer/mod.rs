@@ -4,6 +4,7 @@ use byteorder::{BigEndian, WriteBytesExt};
 use serde::ser;
 use serde::ser::Serialize;
 
+use self::sequence_serializer::SequenceSerializer;
 use self::struct_serializer::StructSerializer;
 use super::Serializer;
 use super::super::errors::{Error, ErrorKind, Result, ResultExt};
@@ -15,7 +16,7 @@ where
     type Ok = Self;
     type Error = Error;
 
-    type SerializeSeq = Self;
+    type SerializeSeq = SequenceSerializer<'w, W>;
     type SerializeTuple = Self;
     type SerializeTupleStruct = Self;
     type SerializeTupleVariant = Self;
@@ -208,9 +209,9 @@ where
 
     fn serialize_seq(
         self,
-        _length: Option<usize>,
+        length: Option<usize>,
     ) -> Result<Self::SerializeSeq> {
-        bail!(ErrorKind::InvalidDataType("seq".to_string()))
+        Ok(SequenceSerializer::start(length, self)?)
     }
 
     fn serialize_tuple(
@@ -264,6 +265,7 @@ where
     }
 }
 
+mod sequence_serializer;
 mod struct_serializer;
 
 #[cfg(test)]

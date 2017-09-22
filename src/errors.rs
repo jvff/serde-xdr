@@ -93,6 +93,11 @@ error_chain! {
             )
         }
 
+        SequenceTooLong(length: usize) {
+            description("sequence is too long to be serialized")
+            display("sequence is too long to be serialized: {}", length)
+        }
+
         SerializeBool(value: bool) {
             description("failed to serialize bool")
             display("failed to serialize bool: {}", value)
@@ -139,6 +144,24 @@ error_chain! {
         SerializeString(string: String) {
             description("failed to serialize string")
             display("failed to serialize string: {}", string)
+        }
+
+        SerializeSequenceElement(index: usize) {
+            description("failed to serialize sequence element")
+            display("failed to serialize sequence element {}", index)
+        }
+
+        SerializeSequenceFatalError {
+            description("fatal failure while serializing sequence")
+        }
+
+        SerializeSequenceLength(length: usize) {
+            description("failed to serialize sequence length")
+            display("failed to serialize sequence length: {}", length)
+        }
+
+        SerializeSequenceWithUnknownLength {
+            description("can't serialize sequence with unknown length")
         }
 
         SerializeStruct(name: String) {

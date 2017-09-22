@@ -45,6 +45,18 @@ error_chain! {
             description("failed to deserialize option")
         }
 
+        DeserializeSequence {
+            description("failed to deserialize sequence")
+        }
+
+        DeserializeSequenceElement(index: u32) {
+            description("failed to deserialize sequence element")
+            display(
+                "failed to deserialize sequence element at position {}",
+                index,
+            )
+        }
+
         DeserializeString {
             description("failed to deserialize string")
         }

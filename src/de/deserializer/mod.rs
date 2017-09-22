@@ -3,6 +3,7 @@ use serde::de;
 use serde::de::Visitor;
 
 use self::enum_deserializer::EnumDeserializer;
+use self::sequence_deserializer::SequenceDeserializer;
 use self::struct_deserializer::StructDeserializer;
 use super::Deserializer;
 use super::super::errors::{Error, ErrorKind, Result, ResultExt};
@@ -237,11 +238,15 @@ where
             .chain_err(|| ErrorKind::DeserializeStruct(name.to_string()))
     }
 
-    fn deserialize_seq<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("seq".to_string()));
+        let length = self.reader
+            .read_u32::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeSequence)?;
+
+        visitor.visit_seq(SequenceDeserializer::new(length, self))
     }
 
     fn deserialize_tuple<V>(
@@ -322,6 +327,7 @@ where
 }
 
 mod enum_deserializer;
+mod sequence_deserializer;
 mod struct_deserializer;
 
 #[cfg(test)]

@@ -21,7 +21,7 @@ fn serialize_struct() {
 
     let mut expected_bytes = bytes_of(number as u32);
 
-    expected_bytes.append(&mut bytes_of_str(string, 2));
+    expected_bytes.append(&mut bytes_of_str(string, 3));
 
     assert_eq!(buffer, expected_bytes);
 }

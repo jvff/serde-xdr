@@ -25,7 +25,7 @@ fn serialize_sequence() {
     let mut expected_bytes = bytes_of(length as u32);
 
     expected_bytes.append(&mut bytes_of(first_element as u32));
-    expected_bytes.append(&mut bytes_of_str(second_element, 2));
+    expected_bytes.append(&mut bytes_of_str(second_element, 3));
     expected_bytes.append(&mut bytes_of(third_element as u32));
 
     assert_eq!(buffer, expected_bytes);

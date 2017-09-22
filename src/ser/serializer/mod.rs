@@ -107,12 +107,7 @@ where
             .serialize_bytes(value.as_bytes())
             .chain_err(|| ErrorKind::SerializeString(value.to_string()))?;
 
-        if length % 4 == 0 {
-            serializer.serialize_u32(0)
-                .chain_err(|| ErrorKind::SerializeString(value.to_string()))
-        } else {
-            Ok(serializer)
-        }
+        Ok(serializer)
     }
 
     fn serialize_bytes(self, value: &[u8]) -> Result<Self> {

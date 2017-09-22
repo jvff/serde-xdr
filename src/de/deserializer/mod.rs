@@ -151,14 +151,6 @@ where
             ErrorKind::DeserializeString,
         )?;
 
-        if buffer.len() % 4 == 0 {
-            let mut extra_padding = [0; 4];
-
-            self.reader
-                .read_exact(&mut extra_padding)
-                .chain_err(|| ErrorKind::DeserializeString)?;
-        }
-
         let string = String::from_utf8(buffer)
             .chain_err(|| ErrorKind::DeserializeString)?;
 

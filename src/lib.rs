@@ -13,6 +13,7 @@ extern crate serde_derive;
 mod errors;
 mod ser;
 mod de;
+mod opaque_data;
 
 #[cfg(test)]
 mod tests;
@@ -20,3 +21,4 @@ mod tests;
 pub use errors::{Error, ErrorKind, Result};
 pub use ser::{to_bytes, to_writer, Serializer};
 pub use de::{from_reader, Deserializer};
+pub use opaque_data::OpaqueData;

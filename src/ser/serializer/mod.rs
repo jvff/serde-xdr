@@ -18,7 +18,7 @@ where
 
     type SerializeSeq = SequenceSerializer<'w, W>;
     type SerializeTuple = SequenceSerializer<'w, W>;
-    type SerializeTupleStruct = Self;
+    type SerializeTupleStruct = SequenceSerializer<'w, W>;
     type SerializeTupleVariant = Self;
     type SerializeMap = Self;
     type SerializeStruct = StructSerializer<'w, W>;
@@ -221,10 +221,10 @@ where
 
     fn serialize_tuple_struct(
         self,
-        _name: &'static str,
+        name: &'static str,
         _length: usize,
     ) -> Result<Self::SerializeTupleStruct> {
-        bail!(ErrorKind::InvalidDataType("tuple_struct".to_string()))
+        Ok(SequenceSerializer::start_tuple_struct(name, self))
     }
 
     fn serialize_tuple_variant(
@@ -265,6 +265,7 @@ where
 
 mod sequence_serializer;
 mod struct_serializer;
+mod type_name;
 
 #[cfg(test)]
 mod tests;

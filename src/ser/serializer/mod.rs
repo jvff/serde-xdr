@@ -265,7 +265,6 @@ where
 
 mod sequence_serializer;
 mod struct_serializer;
-mod type_name;
 
 #[cfg(test)]
 mod tests;

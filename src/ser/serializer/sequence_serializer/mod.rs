@@ -3,9 +3,9 @@ use serde::{Serialize, Serializer as SerdeSerializer};
 use serde::ser::{SerializeSeq, SerializeTuple, SerializeTupleStruct,
                  SerializeTupleVariant};
 
+use self::type_name::TypeName;
 use super::super::Serializer;
 use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
-use super::type_name::TypeName;
 
 pub struct SequenceSerializer<'w, W>
 where
@@ -193,6 +193,8 @@ fn fatal_error(type_name: &TypeName) -> ErrorKind {
 fn serialize_element_error(type_name: &TypeName, index: usize) -> ErrorKind {
     ErrorKind::SerializeSequenceOrTupleElement(type_name.to_string(), index)
 }
+
+mod type_name;
 
 #[cfg(test)]
 mod tests;

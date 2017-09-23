@@ -125,6 +125,11 @@ error_chain! {
             display("failed to serialize bool: {}", value)
         }
 
+        SerializeChar(value: char) {
+            description("failed to serialize char")
+            display("failed to serialize char: '{}'", value.escape_default())
+        }
+
         SerializeDouble(value: f64) {
             description("failed to serialize double")
             display("failed to serialize double: {}", value)

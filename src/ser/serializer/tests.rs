@@ -124,6 +124,16 @@ fn serialize_u32() {
 }
 
 #[test]
+fn serialize_char() {
+    let mut buffer = Vec::new();
+    let value = '\u{2764}';
+
+    Serializer::new(&mut buffer).serialize_char(value).unwrap();
+
+    assert_eq!(buffer, bytes_of(value as u32));
+}
+
+#[test]
 fn serialize_enum() {
     let mut buffer = Vec::new();
     let variant_index = 300;

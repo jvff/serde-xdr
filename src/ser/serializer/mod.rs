@@ -87,8 +87,11 @@ where
         Ok(self)
     }
 
-    fn serialize_char(self, _value: char) -> Result<Self> {
-        bail!(ErrorKind::InvalidDataType("char".to_string()))
+    fn serialize_char(self, value: char) -> Result<Self> {
+        self.writer.write_u32::<BigEndian>(value as u32)
+            .chain_err(|| ErrorKind::SerializeChar(value))?;
+
+        Ok(self)
     }
 
     fn serialize_str(self, value: &str) -> Result<Self> {

@@ -53,10 +53,11 @@ error_chain! {
             description("failed to deserialize sequence")
         }
 
-        DeserializeSequenceElement(index: u32) {
-            description("failed to deserialize sequence element")
+        DeserializeSequenceOrTupleElement(type_name: String, index: u32) {
+            description("failed to deserialize sequence or tuple element")
             display(
-                "failed to deserialize sequence element at position {}",
+                "failed to deserialize {} element at position {}",
+                type_name,
                 index,
             )
         }
@@ -246,6 +247,15 @@ error_chain! {
                 "string is too long (maximum length is {} bytes): {}",
                 u32::max_value(),
                 string,
+            )
+        }
+
+        TupleHasTooManyElements(count: usize) {
+            description("tuple has too many elements")
+            display(
+                "tuple has too many elements (maximum is {}): {}",
+                u32::max_value(),
+                count,
             )
         }
     }

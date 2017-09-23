@@ -10,6 +10,7 @@ where
     R: ReadBytesExt + 'de,
 {
     length: u32,
+    type_name: &'static str,
     current_index: u32,
     deserializer: &'a mut Deserializer<'de, R>,
 }
@@ -21,10 +22,12 @@ where
 {
     pub fn new(
         length: u32,
+        type_name: &'static str,
         deserializer: &'a mut Deserializer<'de, R>,
     ) -> Self {
         SequenceDeserializer {
             length,
+            type_name,
             deserializer,
             current_index: 0,
         }
@@ -46,7 +49,7 @@ where
             let value = seed
                 .deserialize(&mut *self.deserializer)
                 .chain_err(|| {
-                    ErrorKind::DeserializeSequenceElement(self.current_index)
+                    deserialize_error(self.type_name, self.current_index)
                 })?;
 
             self.current_index += 1;
@@ -60,6 +63,10 @@ where
     fn size_hint(&self) -> Option<usize> {
         Some(self.length as usize)
     }
+}
+
+fn deserialize_error(type_name: &str, index: u32) -> ErrorKind {
+    ErrorKind::DeserializeSequenceOrTupleElement(type_name.to_string(), index)
 }
 
 #[cfg(test)]

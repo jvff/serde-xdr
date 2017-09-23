@@ -88,8 +88,9 @@ error_chain! {
             display("failed to deserialize {}-bit unsigned integer", bits)
         }
 
-        InvalidBool {
+        InvalidBool(raw_value: u32) {
             description("deserialized an invalid bool")
+            display("deserialized an invalid bool: {}", raw_value)
         }
 
         InvalidChar(raw_value: u32) {

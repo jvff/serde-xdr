@@ -1,3 +1,5 @@
+use std::char;
+
 use byteorder::{BigEndian, ReadBytesExt};
 use serde::de;
 use serde::de::Visitor;
@@ -135,11 +137,18 @@ where
         visitor.visit_f64(value)
     }
 
-    fn deserialize_char<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_char<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("char".to_string()));
+        let raw_value = self.reader
+            .read_u32::<BigEndian>()
+            .chain_err(|| ErrorKind::DeserializeChar)?;
+
+        let value = char::from_u32(raw_value)
+            .ok_or_else(|| ErrorKind::InvalidChar(raw_value))?;
+
+        visitor.visit_char(value as char)
     }
 
     fn deserialize_str<V>(mut self, visitor: V) -> Result<V::Value>

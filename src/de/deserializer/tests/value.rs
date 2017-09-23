@@ -4,6 +4,7 @@ use ordered_float::OrderedFloat;
 pub enum Value {
     Bool(bool),
     Bytes(Vec<u8>),
+    Char(char),
     Double(OrderedFloat<f64>),
     Enum(usize, Box<Value>),
     Float(OrderedFloat<f32>),

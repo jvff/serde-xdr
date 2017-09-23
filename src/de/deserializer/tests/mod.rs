@@ -152,6 +152,18 @@ fn deserialize_f64() {
 }
 
 #[test]
+fn deserialize_char() {
+    let mut cursor = Cursor::new(vec![0x00, 0x01, 0xf3, 0x55]);
+
+    let result =
+        Deserializer::new(&mut cursor).deserialize_char(Visitor).unwrap();
+
+
+    assert_eq!(cursor.position(), 4);
+    assert_eq!(result, Value::Char('\u{1f355}'));
+}
+
+#[test]
 fn deserialize_str_with_1_byte_padding() {
     let mut cursor = Cursor::new(
         vec![0x00, 0x00, 0x00, 0x03, 'H' as u8, 'i' as u8, '!' as u8, 0x00],

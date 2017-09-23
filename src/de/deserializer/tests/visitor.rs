@@ -110,6 +110,7 @@ impl<'de> de::Visitor<'de> for Visitor {
         visit_u64(u64) -> UnsignedInteger64,
         visit_f32(f32) -> Float,
         visit_f64(f64) -> Double,
+        visit_char(char) -> Char,
         visit_str(&str) -> String,
         visit_bytes(&[u8]) -> Bytes,
         visit_none() -> None,

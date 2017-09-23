@@ -14,6 +14,10 @@ error_chain! {
             description("failed to deserialize bool")
         }
 
+        DeserializeChar {
+            description("failed to deserialize char")
+        }
+
         DeserializeDouble {
             description("failed to deserialize double")
         }
@@ -86,6 +90,11 @@ error_chain! {
 
         InvalidBool {
             description("deserialized an invalid bool")
+        }
+
+        InvalidChar(raw_value: u32) {
+            description("deserialized an invalid char")
+            display("deserialized an invalid char: 0x{:X}", raw_value)
         }
 
         InvalidDataType(type_name: String) {

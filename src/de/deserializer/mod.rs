@@ -247,7 +247,7 @@ where
             .read_u32::<BigEndian>()
             .chain_err(|| ErrorKind::DeserializeSequence)?;
 
-        visitor.visit_seq(SequenceDeserializer::new(length, "sequence", self))
+        visitor.visit_seq(SequenceDeserializer::new(length, &"sequence", self))
     }
 
     fn deserialize_tuple<V>(
@@ -264,19 +264,26 @@ where
 
         let length = length as u32;
 
-        visitor.visit_seq(SequenceDeserializer::new(length, "tuple", self))
+        visitor.visit_seq(SequenceDeserializer::new(length, &"tuple", self))
     }
 
     fn deserialize_tuple_struct<V>(
         self,
-        _name: &'static str,
-        _length: usize,
-        _visitor: V,
+        name: &'static str,
+        length: usize,
+        visitor: V,
     ) -> Result<V::Value>
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("tuple_struct".to_string()));
+        if length > u32::max_value() as usize {
+            bail!(ErrorKind::TupleHasTooManyElements(length));
+        }
+
+        let length = length as u32;
+        let type_name = format!("tuple struct {}", name);
+
+        visitor.visit_seq(SequenceDeserializer::new(length, &type_name, self))
     }
 
     fn deserialize_map<V>(self, _visitor: V) -> Result<V::Value>

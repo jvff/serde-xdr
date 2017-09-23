@@ -4,25 +4,27 @@ use serde::de::{DeserializeSeed, SeqAccess};
 use super::super::Deserializer;
 use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
-pub struct SequenceDeserializer<'a, 'de, R>
+pub struct SequenceDeserializer<'a, 'de, 's, R, S>
 where
     'de: 'a,
     R: ReadBytesExt + 'de,
+    S: ToString + 's,
 {
     length: u32,
-    type_name: &'static str,
+    type_name: &'s S,
     current_index: u32,
     deserializer: &'a mut Deserializer<'de, R>,
 }
 
-impl<'a, 'de, R> SequenceDeserializer<'a, 'de, R>
+impl<'a, 'de, 's, R, S> SequenceDeserializer<'a, 'de, 's, R, S>
 where
     'de: 'a,
     R: ReadBytesExt + 'de,
+    S: ToString,
 {
     pub fn new(
         length: u32,
-        type_name: &'static str,
+        type_name: &'s S,
         deserializer: &'a mut Deserializer<'de, R>,
     ) -> Self {
         SequenceDeserializer {
@@ -34,10 +36,12 @@ where
     }
 }
 
-impl<'a, 'de, R> SeqAccess<'de> for SequenceDeserializer<'a, 'de, R>
+impl<'a, 'de, 's, R, S> SeqAccess<'de>
+    for SequenceDeserializer<'a, 'de, 's, R, S>
 where
     'de: 'a,
     R: ReadBytesExt + 'de,
+    S: ToString,
 {
     type Error = Error;
 
@@ -65,7 +69,10 @@ where
     }
 }
 
-fn deserialize_error(type_name: &str, index: u32) -> ErrorKind {
+fn deserialize_error<S>(type_name: &S, index: u32) -> ErrorKind
+where
+    S: ToString,
+{
     ErrorKind::DeserializeSequenceOrTupleElement(type_name.to_string(), index)
 }
 

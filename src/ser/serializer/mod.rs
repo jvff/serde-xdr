@@ -19,7 +19,7 @@ where
     type SerializeSeq = SequenceSerializer<'w, W>;
     type SerializeTuple = SequenceSerializer<'w, W>;
     type SerializeTupleStruct = SequenceSerializer<'w, W>;
-    type SerializeTupleVariant = Self;
+    type SerializeTupleVariant = SequenceSerializer<'w, W>;
     type SerializeMap = Self;
     type SerializeStruct = StructSerializer<'w, W>;
     type SerializeStructVariant = Self;
@@ -229,12 +229,12 @@ where
 
     fn serialize_tuple_variant(
         self,
-        _name: &'static str,
+        name: &'static str,
         _variant_index: u32,
-        _variant: &'static str,
+        variant: &'static str,
         _length: usize,
     ) -> Result<Self::SerializeTupleVariant> {
-        bail!(ErrorKind::InvalidDataType("tuple_variant".to_string()))
+        Ok(SequenceSerializer::start_tuple_variant(name, variant, self))
     }
 
     fn serialize_map(

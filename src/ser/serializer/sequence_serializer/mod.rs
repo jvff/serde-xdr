@@ -1,6 +1,7 @@
 use byteorder::WriteBytesExt;
 use serde::{Serialize, Serializer as SerdeSerializer};
-use serde::ser::{SerializeSeq, SerializeTuple, SerializeTupleStruct};
+use serde::ser::{SerializeSeq, SerializeTuple, SerializeTupleStruct,
+                 SerializeTupleVariant};
 
 use super::super::Serializer;
 use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
@@ -49,6 +50,17 @@ where
         serializer: Serializer<'w, W>,
     ) -> Self {
         SequenceSerializer::new(TypeName::TupleStruct(name), serializer)
+    }
+
+    pub fn start_tuple_variant(
+        type_name: &'static str,
+        variant_name: &'static str,
+        serializer: Serializer<'w, W>,
+    ) -> Self {
+        SequenceSerializer::new(
+            TypeName::TupleVariant(type_name, variant_name),
+            serializer,
+        )
     }
 
     fn serialize_length(
@@ -137,6 +149,25 @@ where
 }
 
 impl<'w, W> SerializeTupleStruct for SequenceSerializer<'w, W>
+where
+    W: WriteBytesExt + 'w,
+{
+    type Ok = Serializer<'w, W>;
+    type Error = Error;
+
+    fn serialize_field<T>(&mut self, value: &T) -> Result<()>
+    where
+        T: ?Sized + Serialize,
+    {
+        self.common_serialize_element(value)
+    }
+
+    fn end(self) -> Result<Serializer<'w, W>> {
+        self.common_end()
+    }
+}
+
+impl<'w, W> SerializeTupleVariant for SequenceSerializer<'w, W>
 where
     W: WriteBytesExt + 'w,
 {

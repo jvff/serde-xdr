@@ -241,7 +241,7 @@ where
         self,
         _length: Option<usize>,
     ) -> Result<Self::SerializeMap> {
-        bail!(ErrorKind::InvalidDataType("map".to_string()))
+        bail!(ErrorKind::MapIsNotSupported)
     }
 
     fn serialize_struct(

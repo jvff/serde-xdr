@@ -290,7 +290,7 @@ where
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("map".to_string()));
+        bail!(ErrorKind::MapIsNotSupported);
     }
 
     fn deserialize_struct<V>(
@@ -329,7 +329,7 @@ where
     where
         V: Visitor<'r>,
     {
-        bail!(ErrorKind::InvalidDataType("identifier".to_string()));
+        bail!(ErrorKind::IdentifierNotSupported);
     }
 
     fn deserialize_ignored_any<V>(self, _visitor: V) -> Result<V::Value>

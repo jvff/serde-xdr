@@ -89,6 +89,10 @@ error_chain! {
             display("failed to deserialize {}-bit unsigned integer", bits)
         }
 
+        IdentifierNotSupported {
+            description("deserialization of an identifier is not supported")
+        }
+
         InvalidBool(raw_value: u32) {
             description("deserialized an invalid bool")
             display("deserialized an invalid bool: {}", raw_value)
@@ -97,11 +101,6 @@ error_chain! {
         InvalidChar(raw_value: u32) {
             description("deserialized an invalid char")
             display("deserialized an invalid char: 0x{:X}", raw_value)
-        }
-
-        InvalidDataType(type_name: String) {
-            description("data type not supported")
-            display("data type not supported: {}", type_name)
         }
 
         InvalidOption {
@@ -124,6 +123,10 @@ error_chain! {
                 bits,
                 value,
             )
+        }
+
+        MapIsNotSupported {
+            description("XDR does not support a map type")
         }
 
         SequenceTooLong(length: usize) {

@@ -4,26 +4,26 @@ use serde::de::{DeserializeSeed, SeqAccess};
 use super::super::Deserializer;
 use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
-pub struct StructDeserializer<'a, 'de, R>
+pub struct StructDeserializer<'a, 'r, R>
 where
-    'de: 'a,
-    R: ReadBytesExt + 'de,
+    'r: 'a,
+    R: ReadBytesExt + 'r,
 {
     name: &'static str,
     fields: &'static [&'static str],
-    deserializer: &'a mut Deserializer<'de, R>,
+    deserializer: &'a mut Deserializer<'r, R>,
     current_field: usize,
 }
 
-impl<'a, 'de, R> StructDeserializer<'a, 'de, R>
+impl<'a, 'r, R> StructDeserializer<'a, 'r, R>
 where
-    'de: 'a,
-    R: ReadBytesExt + 'de,
+    'r: 'a,
+    R: ReadBytesExt + 'r,
 {
     pub fn new(
         name: &'static str,
         fields: &'static [&'static str],
-        deserializer: &'a mut Deserializer<'de, R>,
+        deserializer: &'a mut Deserializer<'r, R>,
     ) -> Self {
         StructDeserializer {
             name,
@@ -34,10 +34,10 @@ where
     }
 }
 
-impl<'a, 'de, R> SeqAccess<'de> for StructDeserializer<'a, 'de, R>
+impl<'a, 'de, 'r, R> SeqAccess<'de> for StructDeserializer<'a, 'r, R>
 where
-    'de: 'a,
-    R: ReadBytesExt + 'de,
+    'r: 'a,
+    R: ReadBytesExt + 'r,
 {
     type Error = Error;
 

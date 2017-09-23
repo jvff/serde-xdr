@@ -10,7 +10,7 @@ use self::struct_deserializer::StructDeserializer;
 use super::Deserializer;
 use super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
-impl<'a, 'r, R> de::Deserializer<'r> for &'a mut Deserializer<'r, R>
+impl<'a, 'de, 'r, R> de::Deserializer<'de> for &'a mut Deserializer<'r, R>
 where
     'r: 'a,
     R: ReadBytesExt + 'r,
@@ -19,14 +19,14 @@ where
 
     fn deserialize_any<V>(self, _visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         bail!(ErrorKind::DeserializeUnknownType);
     }
 
     fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let value = self.reader
             .read_u32::<BigEndian>()
@@ -41,7 +41,7 @@ where
 
     fn deserialize_i8<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let value = self.deserialize_integer(8)?;
 
@@ -50,7 +50,7 @@ where
 
     fn deserialize_i16<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let value = self.deserialize_integer(16)?;
 
@@ -59,7 +59,7 @@ where
 
     fn deserialize_i32<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let value = self.deserialize_integer(32)?;
 
@@ -68,7 +68,7 @@ where
 
     fn deserialize_i64<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let value = self.reader
             .read_i64::<BigEndian>()
@@ -79,7 +79,7 @@ where
 
     fn deserialize_u8<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let value = self.deserialize_unsigned_integer(8)?;
 
@@ -88,7 +88,7 @@ where
 
     fn deserialize_u16<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let value = self.deserialize_unsigned_integer(16)?;
 
@@ -97,7 +97,7 @@ where
 
     fn deserialize_u32<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let value = self.deserialize_unsigned_integer(32)?;
 
@@ -106,7 +106,7 @@ where
 
     fn deserialize_u64<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let value = self.reader
             .read_u64::<BigEndian>()
@@ -117,7 +117,7 @@ where
 
     fn deserialize_f32<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let value = self.reader
             .read_f32::<BigEndian>()
@@ -128,7 +128,7 @@ where
 
     fn deserialize_f64<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let value = self.reader
             .read_f64::<BigEndian>()
@@ -139,7 +139,7 @@ where
 
     fn deserialize_char<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let raw_value = self.reader
             .read_u32::<BigEndian>()
@@ -153,7 +153,7 @@ where
 
     fn deserialize_str<V>(mut self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let buffer = self.deserialize_opaque(
             ErrorKind::DeserializeString,
@@ -168,14 +168,14 @@ where
 
     fn deserialize_string<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         self.deserialize_str(visitor)
     }
 
     fn deserialize_bytes<V>(mut self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let buffer = self.deserialize_opaque(
             ErrorKind::DeserializeOpaque,
@@ -187,14 +187,14 @@ where
 
     fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         self.deserialize_bytes(visitor)
     }
 
     fn deserialize_option<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let option = self.reader
             .read_i32::<BigEndian>()
@@ -211,7 +211,7 @@ where
 
     fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         visitor.visit_unit()
     }
@@ -222,7 +222,7 @@ where
         visitor: V,
     ) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         visitor.visit_unit()
     }
@@ -233,7 +233,7 @@ where
         visitor: V,
     ) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         visitor.visit_newtype_struct(self)
             .chain_err(|| ErrorKind::DeserializeStruct(name.to_string()))
@@ -241,7 +241,7 @@ where
 
     fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let length = self.reader
             .read_u32::<BigEndian>()
@@ -256,7 +256,7 @@ where
         visitor: V,
     ) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         if length > u32::max_value() as usize {
             bail!(ErrorKind::TupleHasTooManyElements(length));
@@ -274,7 +274,7 @@ where
         visitor: V,
     ) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         if length > u32::max_value() as usize {
             bail!(ErrorKind::TupleHasTooManyElements(length));
@@ -288,7 +288,7 @@ where
 
     fn deserialize_map<V>(self, _visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         bail!(ErrorKind::MapIsNotSupported);
     }
@@ -300,7 +300,7 @@ where
         visitor: V,
     ) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         visitor.visit_seq(StructDeserializer::new(name, fields, self))
     }
@@ -312,7 +312,7 @@ where
         visitor: V,
     ) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         let variant = self.reader
             .read_u32::<BigEndian>()
@@ -327,14 +327,14 @@ where
 
     fn deserialize_identifier<V>(self, _visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         bail!(ErrorKind::IdentifierNotSupported);
     }
 
     fn deserialize_ignored_any<V>(self, _visitor: V) -> Result<V::Value>
     where
-        V: Visitor<'r>,
+        V: Visitor<'de>,
     {
         bail!(ErrorKind::DeserializeUnknownType);
     }

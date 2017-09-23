@@ -6,27 +6,27 @@ use self::variant_deserializer::VariantDeserializer;
 use super::Deserializer;
 use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
-pub struct EnumDeserializer<'a, 'de, R>
+pub struct EnumDeserializer<'a, 'r, R>
 where
-    'de: 'a,
-    R: ReadBytesExt + 'de,
+    'r: 'a,
+    R: ReadBytesExt + 'r,
 {
     enum_name: &'static str,
     variant: u32,
     variant_name: &'static str,
-    deserializer: &'a mut Deserializer<'de, R>,
+    deserializer: &'a mut Deserializer<'r, R>,
 }
 
-impl<'a, 'de, R> EnumDeserializer<'a, 'de, R>
+impl<'a, 'r, R> EnumDeserializer<'a, 'r, R>
 where
-    'de: 'a,
-    R: ReadBytesExt + 'de,
+    'r: 'a,
+    R: ReadBytesExt + 'r,
 {
     pub fn new(
         enum_name: &'static str,
         variant: u32,
         variant_name: &'static str,
-        deserializer: &'a mut Deserializer<'de, R>,
+        deserializer: &'a mut Deserializer<'r, R>,
     ) -> Self {
         EnumDeserializer {
             enum_name,
@@ -37,13 +37,13 @@ where
     }
 }
 
-impl<'a, 'de, R> EnumAccess<'de> for EnumDeserializer<'a, 'de, R>
+impl<'a, 'de, 'r, R> EnumAccess<'de> for EnumDeserializer<'a, 'r, R>
 where
-    'de: 'a,
-    R: ReadBytesExt + 'de,
+    'r: 'a,
+    R: ReadBytesExt + 'r,
 {
     type Error = Error;
-    type Variant = VariantDeserializer<'a, 'de, R>;
+    type Variant = VariantDeserializer<'a, 'r, R>;
 
     fn variant_seed<V>(self, seed: V) -> Result<(V::Value, Self::Variant)>
     where

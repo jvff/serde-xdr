@@ -6,25 +6,25 @@ use super::deserialize_enum_error;
 use super::Deserializer;
 use super::super::super::super::errors::{Error, Result, ResultExt};
 
-pub struct VariantDeserializer<'a, 'de, R>
+pub struct VariantDeserializer<'a, 'r, R>
 where
-    'de: 'a,
-    R: ReadBytesExt + 'de,
+    'r: 'a,
+    R: ReadBytesExt + 'r,
 {
     enum_name: &'static str,
     variant_name: &'static str,
-    deserializer: &'a mut Deserializer<'de, R>,
+    deserializer: &'a mut Deserializer<'r, R>,
 }
 
-impl<'a, 'de, R> VariantDeserializer<'a, 'de, R>
+impl<'a, 'r, R> VariantDeserializer<'a, 'r, R>
 where
-    'de: 'a,
-    R: ReadBytesExt + 'de,
+    'r: 'a,
+    R: ReadBytesExt + 'r,
 {
     pub fn new(
         enum_name: &'static str,
         variant_name: &'static str,
-        deserializer: &'a mut Deserializer<'de, R>,
+        deserializer: &'a mut Deserializer<'r, R>,
     ) -> Self {
         VariantDeserializer {
             enum_name,
@@ -34,10 +34,10 @@ where
     }
 }
 
-impl<'a, 'de, R> VariantAccess<'de> for VariantDeserializer<'a, 'de, R>
+impl<'a, 'de, 'r, R> VariantAccess<'de> for VariantDeserializer<'a, 'r, R>
 where
-    'de: 'a,
-    R: ReadBytesExt + 'de,
+    'r: 'a,
+    R: ReadBytesExt + 'r,
 {
     type Error = Error;
 

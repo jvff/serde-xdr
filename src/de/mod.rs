@@ -75,7 +75,7 @@ where
     }
 }
 
-pub fn from_reader<'de, R, T>(reader: &'de mut R) -> Result<T>
+pub fn from_reader<'de, 'r, R, T>(reader: &'r mut R) -> Result<T>
 where
     R: Read,
     T: Deserialize<'de>,

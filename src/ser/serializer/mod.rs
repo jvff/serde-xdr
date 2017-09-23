@@ -22,7 +22,7 @@ where
     type SerializeTupleVariant = SequenceSerializer<'w, W>;
     type SerializeMap = Self;
     type SerializeStruct = StructSerializer<'w, W>;
-    type SerializeStructVariant = Self;
+    type SerializeStructVariant = StructSerializer<'w, W>;
 
     fn serialize_bool(self, value: bool) -> Result<Self> {
         self.serialize_u32(if value { 1 } else { 0 })
@@ -249,17 +249,17 @@ where
         name: &'static str,
         _length: usize,
     ) -> Result<Self::SerializeStruct> {
-        Ok(StructSerializer::new(name, self))
+        Ok(StructSerializer::start_struct(name, self))
     }
 
     fn serialize_struct_variant(
         self,
-        _name: &'static str,
+        name: &'static str,
         _variant_index: u32,
-        _variant: &'static str,
+        variant: &'static str,
         _length: usize,
     ) -> Result<Self::SerializeStructVariant> {
-        bail!(ErrorKind::InvalidDataType("struct_variant".to_string()))
+        Ok(StructSerializer::start_struct_variant(name, variant, self))
     }
 }
 

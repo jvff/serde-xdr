@@ -184,13 +184,14 @@ error_chain! {
             display("failed to serialize string: {}", string)
         }
 
-        SerializeSequenceElement(index: usize) {
-            description("failed to serialize sequence element")
-            display("failed to serialize sequence element {}", index)
+        SerializeSequenceOrTupleElement(type_name: String, index: usize) {
+            description("failed to serialize sequence or tuple element")
+            display("failed to serialize {} element {}", type_name, index)
         }
 
-        SerializeSequenceFatalError {
-            description("fatal failure while serializing sequence")
+        SerializeSequenceOrTupleFatalError(type_name: String) {
+            description("fatal failure while serializing tuple or sequence")
+            display("fatal failure while serializing {}", type_name)
         }
 
         SerializeSequenceLength(length: usize) {

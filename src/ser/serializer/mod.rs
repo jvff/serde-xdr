@@ -17,7 +17,7 @@ where
     type Error = Error;
 
     type SerializeSeq = SequenceSerializer<'w, W>;
-    type SerializeTuple = Self;
+    type SerializeTuple = SequenceSerializer<'w, W>;
     type SerializeTupleStruct = Self;
     type SerializeTupleVariant = Self;
     type SerializeMap = Self;
@@ -209,14 +209,14 @@ where
         self,
         length: Option<usize>,
     ) -> Result<Self::SerializeSeq> {
-        Ok(SequenceSerializer::start(length, self)?)
+        Ok(SequenceSerializer::start_sequence(length, self)?)
     }
 
     fn serialize_tuple(
         self,
         _length: usize,
     ) -> Result<Self::SerializeTuple> {
-        bail!(ErrorKind::InvalidDataType("tuple".to_string()))
+        Ok(SequenceSerializer::start_tuple(self))
     }
 
     fn serialize_tuple_struct(

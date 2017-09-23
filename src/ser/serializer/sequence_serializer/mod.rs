@@ -1,6 +1,6 @@
 use byteorder::WriteBytesExt;
 use serde::{Serialize, Serializer as SerdeSerializer};
-use serde::ser::SerializeSeq;
+use serde::ser::{SerializeSeq, SerializeTuple};
 
 use super::super::Serializer;
 use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
@@ -9,6 +9,7 @@ pub struct SequenceSerializer<'w, W>
 where
     W: WriteBytesExt + 'w,
 {
+    type_name: &'static str,
     serializer: Option<Serializer<'w, W>>,
     current_index: usize,
 }
@@ -17,7 +18,7 @@ impl<'w, W> SequenceSerializer<'w, W>
 where
     W: WriteBytesExt + 'w,
 {
-    pub fn start(
+    pub fn start_sequence(
         length: Option<usize>,
         mut serializer: Serializer<'w, W>,
     ) -> Result<Self> {
@@ -28,9 +29,18 @@ where
         }
 
         Ok(SequenceSerializer {
+            type_name: "sequence",
             serializer: Some(serializer),
             current_index: 0,
         })
+    }
+
+    pub fn start_tuple(serializer: Serializer<'w, W>) -> Self {
+        SequenceSerializer {
+            type_name: "tuple",
+            serializer: Some(serializer),
+            current_index: 0,
+        }
     }
 
     fn serialize_length(
@@ -50,6 +60,34 @@ where
 
         Ok(())
     }
+
+    fn common_serialize_element<T>(&mut self, value: &T) -> Result<()>
+    where
+        T: ?Sized + Serialize,
+    {
+        if let Some(serializer) = self.serializer.take() {
+            let serializer = value
+                .serialize(serializer)
+                .chain_err(|| {
+                    serialize_element_error(self.type_name, self.current_index)
+                })?;
+
+            self.current_index += 1;
+            self.serializer = Some(serializer);
+
+            Ok(())
+        } else {
+            bail!(fatal_error(self.type_name));
+        }
+    }
+
+    fn common_end(self) -> Result<Serializer<'w, W>> {
+        if let Some(serializer) = self.serializer {
+            Ok(serializer)
+        } else {
+            bail!(fatal_error(self.type_name))
+        }
+    }
 }
 
 impl<'w, W> SerializeSeq for SequenceSerializer<'w, W>
@@ -63,27 +101,39 @@ where
     where
         T: ?Sized + Serialize,
     {
-        if let Some(serializer) = self.serializer.take() {
-            let serializer = value.serialize(serializer).chain_err(|| {
-                    ErrorKind::SerializeSequenceElement(self.current_index)
-                })?;
-
-            self.current_index += 1;
-            self.serializer = Some(serializer);
-
-            Ok(())
-        } else {
-            bail!(ErrorKind::SerializeSequenceFatalError);
-        }
+        self.common_serialize_element(value)
     }
 
     fn end(self) -> Result<Serializer<'w, W>> {
-        if let Some(serializer) = self.serializer {
-            Ok(serializer)
-        } else {
-            bail!(ErrorKind::SerializeSequenceFatalError)
-        }
+        self.common_end()
     }
+}
+
+impl<'w, W> SerializeTuple for SequenceSerializer<'w, W>
+where
+    W: WriteBytesExt + 'w,
+{
+    type Ok = Serializer<'w, W>;
+    type Error = Error;
+
+    fn serialize_element<T>(&mut self, value: &T) -> Result<()>
+    where
+        T: ?Sized + Serialize,
+    {
+        self.common_serialize_element(value)
+    }
+
+    fn end(self) -> Result<Serializer<'w, W>> {
+        self.common_end()
+    }
+}
+
+fn fatal_error(type_name: &str) -> ErrorKind {
+    ErrorKind::SerializeSequenceOrTupleFatalError(type_name.to_string())
+}
+
+fn serialize_element_error(type_name: &str, index: usize) -> ErrorKind {
+    ErrorKind::SerializeSequenceOrTupleElement(type_name.to_string(), index)
 }
 
 #[cfg(test)]

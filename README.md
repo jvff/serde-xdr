@@ -27,3 +27,5 @@ GitHub issues.
 
 One thing that is currently lacking tests is serialization and deserialization
 failure conditions.
+
+Documentation is also not yet written.

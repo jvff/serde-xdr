@@ -58,6 +58,7 @@ pub struct OpaqueData {
 }
 
 impl OpaqueData {
+    /// Create an empty `OpaqueData` representation.
     pub fn new() -> Self {
         OpaqueData {
             data: Vec::new(),

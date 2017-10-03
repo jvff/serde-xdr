@@ -149,6 +149,9 @@ where
     }
 }
 
+/// Serialize data into a vector of bytes.
+///
+/// Serializes a generic data type into a new instance of `Vec<u8>`.
 pub fn to_bytes<T>(value: &T) -> Result<Vec<u8>>
 where
     T: Serialize,

@@ -65,6 +65,7 @@
 //! ```
 
 #![recursion_limit="256"]
+#![deny(missing_docs)]
 
 extern crate byteorder;
 #[macro_use]
@@ -76,6 +77,7 @@ extern crate ordered_float;
 #[cfg(test)] #[macro_use]
 extern crate serde_derive;
 
+#[allow(missing_docs)]
 mod errors;
 mod ser;
 mod de;

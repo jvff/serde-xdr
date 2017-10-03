@@ -9,8 +9,10 @@ use super::errors::{ErrorKind, Result, ResultExt};
 ///
 /// Structure that holds a mutable borrow of the reader it deserializes data
 /// from. It has an implementation of
-/// [`serde::Deserializer`](../serde/de/trait.Deserializer.html) so that it can
-/// deserialize data from its XDR representation.
+/// [`serde::Deserializer`][serde::Deserializer] so that it can deserialize data
+/// from its XDR representation.
+///
+/// [serde::Deserializer]: ../serde/de/trait.Deserializer.html
 pub struct Deserializer<'r, R>
 where
     R: ReadBytesExt + 'r,

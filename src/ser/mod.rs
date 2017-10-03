@@ -9,9 +9,10 @@ use super::errors::{Error, Result};
 /// Serializer for the XDR format.
 ///
 /// Structure that holds a mutable borrow of the writer it serializes data to.
-/// It has an implementation of
-/// [`serde::Serializer`](../serde/ser/trait.Serializer.html) so that it can
-/// serialize data into its XDR representation.
+/// It has an implementation of [`serde::Serializer`][serde::Serializer] so that
+/// it can serialize data into its XDR representation.
+///
+/// [serde::Serializer]: ../serde/ser/trait.Serializer.html
 pub struct Serializer<'w, W>
 where
     W: WriteBytesExt + 'w,

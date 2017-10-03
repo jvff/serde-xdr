@@ -1,15 +1,17 @@
 //! XDR serialization and deserialization for Serde.
 //!
-//! This crate implements serialization to and deserialization from the
-//! External Data Representation Standard
-//! ([XDR](https://tools.ietf.org/html/rfc1014)) using the
-//! [Serde](https://serde.rs) serialization and deserialization framework.
+//! This crate implements serialization to and deserialization from the External
+//! Data Representation Standard ([XDR][1]) using the [Serde][2] serialization
+//! and deserialization framework.
 //!
 //! Usage is mainly through the helper functions:
 //!
 //! - [`serde_xdr::ser::to_bytes`](fn.to_bytes.html)
 //! - [`serde_xdr::ser::to_writer`](fn.to_writer.html)
 //! - [`serde_xdr::de::from_reader`](fn.from_reader.html)
+//!
+//! [1]: https://tools.ietf.org/html/rfc1014
+//! [2]: https://serde.rs
 //!
 //! # Examples
 //!

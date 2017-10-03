@@ -14,14 +14,15 @@ use serde::ser::SerializeSeq;
 /// With a plain `Vec<u8>`, each byte is serialized as 4 bytes, so it can be
 /// quite costly in terms of serialized bytes.
 ///
-/// The [XDR representation](https://tools.ietf.org/html/rfc1014#section-3.9) is
-/// a big endian unsigned 32-bit integer with the length of the data followed by
-/// the data bytes and ending with a zero byte padding to ensure that the bytes
-/// end on a four byte boundary.
+/// The [XDR representation][1] is a big endian unsigned 32-bit integer with the
+/// length of the data followed by the data bytes and ending with a zero byte
+/// padding to ensure that the bytes end on a four byte boundary.
 ///
 /// An `OpaqueData` instance can be dereferenced into its internal `Vec<u8>`
 /// data, so it can be used just like a normal vector of bytes. It can also be
 /// created from an existing `Vec<u8>` and converted into a `Vec<u8>` instance.
+///
+/// [1]: https://tools.ietf.org/html/rfc1014#section-3.9
 ///
 /// # Examples
 ///

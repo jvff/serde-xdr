@@ -5,6 +5,12 @@ use serde::Deserialize;
 
 use super::errors::{ErrorKind, Result, ResultExt};
 
+/// Deserializer for the XDR format.
+///
+/// Structure that holds a mutable borrow of the reader it deserializes data
+/// from. It has an implementation of
+/// [`serde::Deserializer`](../serde/de/trait.Deserializer.html) so that it can
+/// deserialize data from its XDR representation.
 pub struct Deserializer<'r, R>
 where
     R: ReadBytesExt + 'r,

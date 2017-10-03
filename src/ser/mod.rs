@@ -163,6 +163,10 @@ where
     Ok(bytes)
 }
 
+/// Serialize data through a generic writer.
+///
+/// Serializes a generic data type through a borrowed instance that implements
+/// `Write`.
 pub fn to_writer<W, T>(writer: &mut W, value: &T) -> Result<()>
 where
     W: Write,

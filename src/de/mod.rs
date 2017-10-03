@@ -22,6 +22,8 @@ impl<'r, R> Deserializer<'r, R>
 where
     R: ReadBytesExt + 'r,
 {
+    /// Create a new instance that deserializes data from the given generic
+    /// reader.
     pub fn new(reader: &'r mut R) -> Self {
         Deserializer { reader }
     }

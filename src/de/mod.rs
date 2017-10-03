@@ -75,6 +75,14 @@ where
     }
 }
 
+/// Deserializes data from a generic reader.
+///
+/// Deserializes data of a given type `T` from a generic instance that
+/// implements `Read`.
+///
+/// The lifetimes of the deserialized data `'de` and of the reader `'r` are
+/// different because the deserializer currently is not zero-copy, which means
+/// the returned data owns everything it deserialized.
 pub fn from_reader<'de, 'r, R, T>(reader: &'r mut R) -> Result<T>
 where
     R: Read,

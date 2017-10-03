@@ -22,7 +22,7 @@
 //!
 //! use std::io::Cursor;
 //!
-//! use serde_xdr::OpaqueData;
+//! use serde_xdr::VariableLengthOpaqueData;
 //! use serde_xdr::{from_reader, to_writer};
 //!
 //! #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -37,7 +37,7 @@
 //!     filename: String,
 //!     filetype: FileType,
 //!     owner: String,
-//!     data: OpaqueData,
+//!     data: VariableLengthOpaqueData,
 //! }
 //!
 //! fn main() {
@@ -87,4 +87,4 @@ mod tests;
 pub use errors::{Error, ErrorKind, Result};
 pub use ser::{to_bytes, to_writer, Serializer};
 pub use de::{from_reader, Deserializer};
-pub use opaque_data::OpaqueData;
+pub use opaque_data::VariableLengthOpaqueData;

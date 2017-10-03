@@ -1,7 +1,7 @@
 use std::io::Cursor;
 
 use super::{from_reader, to_bytes};
-use super::OpaqueData;
+use super::VariableLengthOpaqueData;
 
 #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
 enum FileType {
@@ -15,7 +15,7 @@ struct File {
     filename: String,
     filetype: FileType,
     owner: String,
-    data: OpaqueData,
+    data: VariableLengthOpaqueData,
 }
 
 #[test]

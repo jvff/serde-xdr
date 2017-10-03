@@ -1,24 +1,24 @@
 use std::io::Cursor;
 
-use super::OpaqueData;
+use super::VariableLengthOpaqueData;
 use super::super::{from_reader, to_bytes};
 
 #[test]
 fn from_vec() {
     let vec = vec![0, 1, 2, 3, 4];
 
-    let opaque_data = OpaqueData {
+    let opaque_data = VariableLengthOpaqueData {
         data: vec.clone(),
     };
 
-    assert_eq!(OpaqueData::from(vec), opaque_data);
+    assert_eq!(VariableLengthOpaqueData::from(vec), opaque_data);
 }
 
 #[test]
 fn to_vec() {
     let vec = vec![0, 1, 2, 3, 4];
 
-    let opaque_data = OpaqueData {
+    let opaque_data = VariableLengthOpaqueData {
         data: vec.clone(),
     };
 
@@ -29,7 +29,7 @@ fn to_vec() {
 fn deref_to_vec() {
     let vec = vec![0, 1, 2, 3, 4];
 
-    let opaque_data = OpaqueData {
+    let opaque_data = VariableLengthOpaqueData {
         data: vec.clone(),
     };
 
@@ -40,7 +40,7 @@ fn deref_to_vec() {
 fn deref_mut_to_vec() {
     let mut vec = vec![0, 1, 2, 3, 4];
 
-    let mut opaque_data = OpaqueData {
+    let mut opaque_data = VariableLengthOpaqueData {
         data: vec.clone(),
     };
 
@@ -52,7 +52,7 @@ fn deref_mut_to_vec() {
 
 #[test]
 fn serialize() {
-    let opaque_data = OpaqueData {
+    let opaque_data = VariableLengthOpaqueData {
         data: vec![0, 1, 2, 3, 4],
     };
 
@@ -76,9 +76,10 @@ fn deserialize() {
     ];
     let mut cursor = Cursor::new(bytes);
 
-    let opaque_data: OpaqueData = from_reader(&mut cursor).unwrap();
+    let opaque_data: VariableLengthOpaqueData =
+        from_reader(&mut cursor).unwrap();
 
-    let expected_opaque_data = OpaqueData {
+    let expected_opaque_data = VariableLengthOpaqueData {
         data: vec![0, 1, 2, 3, 4],
     };
 

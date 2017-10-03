@@ -59,12 +59,19 @@ pub struct OpaqueData {
 
 impl OpaqueData {
     /// Create an empty `OpaqueData` representation.
+    ///
+    /// Even though it is empty, bytes can be added to it later by using it as a
+    /// `Vec<u8>`.
     pub fn new() -> Self {
         OpaqueData {
             data: Vec::new(),
         }
     }
 
+    /// Create an `OpaqueData` representation with a given capacity.
+    ///
+    /// The memory to store the given capacity is allocated but the instance is
+    /// initially empty.
     pub fn with_capacity(length: usize) -> Self {
         OpaqueData {
             data: Vec::with_capacity(length),

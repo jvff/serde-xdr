@@ -3,6 +3,11 @@ name = "serde-xdr"
 description = "XDR serialization and deserialization for Serde"
 version = "0.1.0"
 authors = ["Janito Vaqueiro Ferreira Filho <janito.vff@gmail.com>"]
+homepage = "https://github.com/jvff/serde-xdr"
+readme = "README.md"
+license = "GPL-3.0"
+keywords = ["xdr", "serde", "serialization", "deserialization"]
+categories = ["encoding"]
 
 [dependencies]
 byteorder = "1.1"

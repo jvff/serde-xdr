@@ -23,6 +23,8 @@ impl<'w, W> Serializer<'w, W>
 where
     W: WriteBytesExt + 'w,
 {
+    /// Create a new instance that serializes data into the given generic
+    /// writer.
     pub fn new(writer: &'w mut W) -> Self {
         Serializer { writer }
     }

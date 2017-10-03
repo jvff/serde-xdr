@@ -7,6 +7,51 @@ use serde::de;
 use serde::de::{SeqAccess, Visitor};
 use serde::ser::SerializeSeq;
 
+/// Representation of variable-length opaque data.
+///
+/// Wraps a `Vec<u8>` so that it is serialized and deserialized as a block of
+/// contiguous bytes (padded with zeros so that it ends on a 4-byte alignment).
+/// With a plain `Vec<u8>`, each byte is serialized as 4 bytes, so it can be
+/// quite costly in terms of serialized bytes.
+///
+/// The [XDR representation](https://tools.ietf.org/html/rfc1014#section-3.9) is
+/// a big endian unsigned 32-bit integer with the length of the data followed by
+/// the data bytes and ending with a zero byte padding to ensure that the bytes
+/// end on a four byte boundary.
+///
+/// An `OpaqueData` instance can be dereferenced into its internal `Vec<u8>`
+/// data, so it can be used just like a normal vector of bytes. It can also be
+/// created from an existing `Vec<u8>` and converted into a `Vec<u8>` instance.
+///
+/// # Examples
+///
+/// Converting between `OpaqueData` and `Vec<u8>`:
+///
+/// ```
+/// use serde_xdr::OpaqueData;
+///
+/// let bytes = vec![1, 3, 5, 7, 9];
+/// let expected_bytes = bytes.clone();
+///
+/// let data: OpaqueData = bytes.into();
+/// let recovered_bytes: Vec<u8> = data.into();
+///
+/// assert_eq!(expected_bytes, recovered_bytes);
+/// ```
+///
+/// Using as a `Vec<u8>`:
+///
+/// ```
+/// use serde_xdr::OpaqueData;
+///
+/// let mut data = OpaqueData::new();
+///
+/// for i in 0..5 {
+///     data.push(2 * i + 1);
+/// }
+///
+/// assert_eq!(data, OpaqueData::from(vec![1, 3, 5, 7, 9]));
+/// ```
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct OpaqueData {
     data: Vec<u8>,

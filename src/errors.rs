@@ -75,75 +75,10 @@ error_chain! {
             display("sequence is too long to be serialized: {}", length)
         }
 
-        /// Failure to serialize a boolean value.
-        SerializeBool(value: bool) {
-            description("failed to serialize bool")
-            display("failed to serialize bool: {}", value)
-        }
-
-        /// Failure to serialize a character value.
-        SerializeChar(value: char) {
-            description("failed to serialize char")
-            display("failed to serialize char: '{}'", value.escape_default())
-        }
-
-        /// Failure to serialize a double precision floating point value.
-        SerializeDouble(value: f64) {
-            description("failed to serialize double")
-            display("failed to serialize double: {}", value)
-        }
-
-        /// Failure to serialize an enumeration variant.
-        SerializeEnum(name: String, variant: String) {
-            description("failed to serialize enum variant")
-            display("failed to serialize enum variant: {}::{}", name, variant)
-        }
-
-        /// Failure to serialize a single precision floating point value.
-        SerializeFloat(value: f32) {
-            description("failed to serialize float")
-            display("failed to serialize float: {}", value)
-        }
-
-        /// Failure to serialize a 64-bit signed integer.
-        SerializeHyperInteger(value: i64) {
-            description("failed to serialize hyper integer")
-            display("failed to serialize hyper integer: {}", value)
-        }
-
-        /// Failure to serialize a signed integer.
-        SerializeInteger(value: i32) {
-            description("failed to serialize integer")
-            display("failed to serialize integer: {}", value)
-        }
-
-        /// Failure to serialize a marker that specifies that an optional value
-        /// is not present.
-        SerializeNone {
-            description("failed to serialize 'none' optional variant")
-        }
-
-        /// Failure to serialize variable length opaque data.
-        SerializeOpaque(size: usize) {
-            description("failed to serialize opaque")
-            display("failed to serialize opaque data of {} bytes", size)
-        }
-
-        /// Failure to serialize some optional data that is present.
-        SerializeSome {
-            description("failed to serialize some optional data")
-        }
-
-        /// Failure to serialize a string.
-        SerializeString(string: String) {
-            description("failed to serialize string")
-            display("failed to serialize string: {}", string)
-        }
-
-        /// Failure to serialize an element of a sequence or a tuple.
-        SerializeSequenceOrTupleElement(type_name: String, index: usize) {
-            description("failed to serialize sequence or tuple element")
-            display("failed to serialize {} element {}", type_name, index)
+        /// Failure to serialize a value.
+        SerializeFailure(what: String) {
+            description("failed to serialize a value")
+            display("failed to serialize {}", what)
         }
 
         /// Fatal error while serializing a sequence or a tuple.
@@ -154,21 +89,9 @@ error_chain! {
             display("fatal failure while serializing {}", type_name)
         }
 
-        /// Failure to serialize sequence length value.
-        SerializeSequenceLength(length: usize) {
-            description("failed to serialize sequence length")
-            display("failed to serialize sequence length: {}", length)
-        }
-
         /// Sequences with unknown lengths are not supported.
         SerializeSequenceWithUnknownLength {
             description("can't serialize sequence with unknown length")
-        }
-
-        /// Sequences with unknown lengths are not supported.
-        SerializeStruct(name: String) {
-            description("failed to serialize struct")
-            display("failed to serialize struct: {}", name)
         }
 
         /// Fatal error while serializing an object.
@@ -177,34 +100,6 @@ error_chain! {
         SerializeStructFatalError(name: String) {
             description("fatal failure while serializing struct")
             display("fatal failure while serializing struct: {}", name)
-        }
-
-        /// Failure to serialize an object field value.
-        SerializeStructField(struct_name: String, field_name: String) {
-            description("failed to serialize struct field")
-            display(
-                "failed to serialize struct field: {}::{}",
-                struct_name,
-                field_name,
-            )
-        }
-
-        /// Failure to serialize a variant of a union.
-        SerializeUnionVariant(name: String, variant: String) {
-            description("failed to serialize union variant")
-            display("failed to serialize union variant: {}::{}", name, variant)
-        }
-
-        /// Failure to serialize a 64-bit unsigned integer.
-        SerializeUnsignedHyperInteger(value: u64) {
-            description("failed to serialize unsigned hyper integer")
-            display("failed to serialize unsigned hyper integer: {}", value)
-        }
-
-        /// Failure to serialize an unsigned integer.
-        SerializeUnsignedInteger(value: u32) {
-            description("failed to serialize unsigned integer")
-            display("failed to serialize unsigned integer: {}", value)
         }
 
         /// Only ASCII strings can be serialized

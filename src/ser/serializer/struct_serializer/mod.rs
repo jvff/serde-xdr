@@ -120,9 +120,8 @@ fn fatal_error(struct_name: &TypeName) -> Error {
 }
 
 fn serialization_error(struct_name: &TypeName, field_name: &str) -> ErrorKind {
-    ErrorKind::SerializeStructField(
-        struct_name.to_string(),
-        field_name.to_string(),
+    ErrorKind::SerializeFailure(
+        format!("struct field {}::{}", struct_name, field_name),
     )
 }
 

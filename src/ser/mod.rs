@@ -1,10 +1,11 @@
+use std::fmt::Display;
 use std::io::Write;
 
 use byteorder::WriteBytesExt;
 use serde::ser;
 use serde::ser::Serialize;
 
-use super::errors::{Error, Result};
+use super::errors::{Error, ErrorKind, Result};
 
 /// Serializer for the XDR format.
 ///
@@ -26,6 +27,19 @@ where
     /// writer.
     pub fn new(writer: &'w mut W) -> Self {
         Serializer { writer }
+    }
+
+    fn serialize_failure<T>(type_name: &str, value: T) -> ErrorKind
+    where
+        T: Display,
+    {
+        ErrorKind::SerializeFailure(
+            format!("a value {} of type {}", value, type_name),
+        )
+    }
+
+    fn serialize_opaque_failure(length: usize) -> ErrorKind {
+        ErrorKind::SerializeFailure(format!("opaque data of length {}", length))
     }
 }
 

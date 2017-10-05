@@ -1,15 +1,17 @@
+use std::fmt::{Display, Formatter, Result};
+
 pub enum TypeName {
     Struct(&'static str),
     StructVariant(&'static str, &'static str)
 }
 
-impl ToString for TypeName {
-    fn to_string(&self) -> String {
+impl Display for TypeName {
+    fn fmt(&self, formatter: &mut Formatter) -> Result {
         match *self {
-            TypeName::Struct(name) => name.to_string(),
+            TypeName::Struct(name) => formatter.write_str(name),
             TypeName::StructVariant(type_name, variant_name) => {
-                format!("{}::{}", type_name, variant_name)
-            },
+                write!(formatter, "{}::{}", type_name, variant_name)
+            }
         }
     }
 }

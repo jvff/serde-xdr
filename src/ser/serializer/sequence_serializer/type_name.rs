@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter, Result};
+
 pub enum TypeName {
     Sequence,
     Tuple,
@@ -5,14 +7,16 @@ pub enum TypeName {
     TupleVariant(&'static str, &'static str)
 }
 
-impl ToString for TypeName {
-    fn to_string(&self) -> String {
+impl Display for TypeName {
+    fn fmt(&self, formatter: &mut Formatter) -> Result {
         match *self {
-            TypeName::Sequence => "sequence".to_string(),
-            TypeName::Tuple => "tuple".to_string(),
-            TypeName::TupleStruct(name) => format!("tuple struct {}", name),
-            TypeName::TupleVariant(tuple_name, variant_name) => {
-                format!("tuple variant {}::{}", tuple_name, variant_name)
+            TypeName::Sequence => formatter.write_str("sequence"),
+            TypeName::Tuple => formatter.write_str("tuple"),
+            TypeName::TupleStruct(name) => {
+                write!(formatter, "tuple struct {}", name)
+            }
+            TypeName::TupleVariant(tuple_name, variant) => {
+                write!(formatter, "tuple variant {}::{}", tuple_name, variant)
             },
         }
     }

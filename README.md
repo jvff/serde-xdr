@@ -10,7 +10,7 @@ To use the official version published on [crates.io][3], add the following to
 your `Cargo.toml` file:
 
     [dependencies]
-    serde-xdr = "0.1"
+    serde-xdr = "0.2"
 
 To serialize and deserialize data, you can use the provided helper functions:
 
@@ -23,7 +23,7 @@ A more complete example is available in the [documentation][4].
 [1]: https://tools.ietf.org/html/rfc1014
 [2]: https://serde.rs/
 [3]: https://crates.io/crates/serde-xdr
-[4]: https://docs.rs/serde-xdr/0.1.0/serde_xdr/
+[4]: https://docs.rs/serde-xdr/0.2.0/serde_xdr/
 
 ## Status
 

@@ -14,9 +14,9 @@ following to your `Cargo.toml` file:
 
 To serialize and deserialize data, you can use the provided helper functions:
 
- - `xdr_serde::from_reader<'de, R: Read, T: Deserialize<'de>>(reader: &'de mut R) -> Result<T>`
- - `xdr_serde::to_bytes<T: Serialize>(value: &T) -> Result<Vec<u8>>`
- - `xdr_serde::to_writer<W: Write, T: Serialize>(writer: &mut W, value: &T) -> Result<()>`
+ - `xdr_serde::from_reader(&mut reader) -> Result<T>`
+ - `xdr_serde::to_bytes(&object_to_serialize) -> Result<Vec<u8>>`
+ - `xdr_serde::to_writer(&mut writer, &object_to_serialize) -> Result<()>`
 
 ## Status
 

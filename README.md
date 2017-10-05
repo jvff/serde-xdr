@@ -18,9 +18,12 @@ To serialize and deserialize data, you can use the provided helper functions:
  - `xdr_serde::to_bytes(&object_to_serialize) -> Result<Vec<u8>>`
  - `xdr_serde::to_writer(&mut writer, &object_to_serialize) -> Result<()>`
 
+A more complete example is available in the [documentation][4].
+
 [1]: https://tools.ietf.org/html/rfc1014
 [2]: https://serde.rs/
 [3]: https://crates.io/crates/serde-xdr
+[4]: https://docs.rs/serde-xdr/0.1.0/serde_xdr/
 
 ## Status
 

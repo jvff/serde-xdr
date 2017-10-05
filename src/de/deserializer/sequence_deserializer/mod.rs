@@ -73,7 +73,9 @@ fn deserialize_error<S>(type_name: &S, index: u32) -> ErrorKind
 where
     S: ToString,
 {
-    ErrorKind::DeserializeSequenceOrTupleElement(type_name.to_string(), index)
+    ErrorKind::DeserializeFailure(
+        format!("element {} of type {}", index, type_name.to_string()),
+    )
 }
 
 #[cfg(test)]

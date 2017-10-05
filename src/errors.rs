@@ -11,100 +11,15 @@ error_chain! {
             display("{}", message)
         }
 
-        /// Failure while deserializing a boolean value.
-        DeserializeBool {
-            description("failed to deserialize bool")
-        }
-
-        /// Failure while deserializing a character value.
-        DeserializeChar {
-            description("failed to deserialize char")
-        }
-
-        /// Failure while deserializing a double precision floating point value.
-        DeserializeDouble {
-            description("failed to deserialize double")
-        }
-
-        /// Failure while deserializing an enumeration.
-        DeserializeEnum(name: String) {
-            description("failed to deserialize enum")
-            display("failed to deserialize enum: {}", name)
-        }
-
-        /// Failure while deserializing an enumeration variant.
-        DeserializeEnumVariant(name: String, variant: String) {
-            description("failed to deserialize enum variant")
-            display("failed to deserialize enum variant: {}::{}", name, variant)
-        }
-
-        /// Failure while deserializing a single precision floating point value.
-        DeserializeFloat {
-            description("failed to deserialize float")
-        }
-
-        /// Failure while deserializing a signed integer.
-        DeserializeInteger(bits: u8) {
-            description("failed to deserialize signed integer")
-            display("failed to deserialize {}-bit signed integer", bits)
-        }
-
-        /// Failure while deserializing variable-length opaque data.
-        DeserializeOpaque {
-            description("failed to deserialize opaque data")
-        }
-
-        /// Failure while deserializing an optional type.
-        DeserializeOption {
-            description("failed to deserialize option")
-        }
-
-        /// Failure while deserializing a sequence of data.
-        DeserializeSequence {
-            description("failed to deserialize sequence")
-        }
-
-        /// Failure while deserializing an element of a sequence of data or a
-        /// tuple of data.
-        DeserializeSequenceOrTupleElement(type_name: String, index: u32) {
-            description("failed to deserialize sequence or tuple element")
-            display(
-                "failed to deserialize {} element at position {}",
-                type_name,
-                index,
-            )
-        }
-
-        /// Failure to deserialize a string.
-        DeserializeString {
-            description("failed to deserialize string")
-        }
-
-        /// Failure to deserialize an object of a given type.
-        DeserializeStruct(name: String) {
-            description("failed to deserialize struct")
-            display("failed to deserialize struct: {}", name)
-        }
-
-        /// Failure to deserialize a field of an object of a given type.
-        DeserializeStructField(struct_name: String, field_name: String) {
-            description("failed to deserialize struct field")
-            display(
-                "failed to deserialize struct field: {}::{}",
-                struct_name,
-                field_name,
-            )
+        /// Failure while deserializing a value.
+        DeserializeFailure(type_name: String) {
+            description("failed to deserialize a value")
+            display("failed to deserialize a value of type {}", type_name)
         }
 
         /// Attempt to deserialize an unknown type.
         DeserializeUnknownType {
             description("can't deserialize unknown type")
-        }
-
-        /// Failure while deserializing an unsigned integer.
-        DeserializeUnsignedInteger(bits: u8) {
-            description("failed to deserialize unsigned integer")
-            display("failed to deserialize {}-bit unsigned integer", bits)
         }
 
         /// Deserialization of an identifier (for meta-data) is not supported.

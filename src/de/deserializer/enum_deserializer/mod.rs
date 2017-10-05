@@ -68,9 +68,8 @@ where
 }
 
 fn deserialize_enum_error(enum_name: &str, variant_name: &str) -> ErrorKind {
-    ErrorKind::DeserializeEnumVariant(
-        enum_name.to_string(),
-        variant_name.to_string(),
+    ErrorKind::DeserializeFailure(
+        format!("enum variant {}::{}", enum_name, variant_name),
     )
 }
 

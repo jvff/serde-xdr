@@ -30,7 +30,7 @@ where
     {
         let value = self.reader
             .read_u32::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeBool)?;
+            .chain_err(|| ErrorKind::DeserializeFailure("bool".to_string()))?;
 
         match value {
             0 => visitor.visit_bool(false),
@@ -72,7 +72,11 @@ where
     {
         let value = self.reader
             .read_i64::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeInteger(64))?;
+            .chain_err(|| {
+                ErrorKind::DeserializeFailure(
+                    "signed 64-bit integer".to_string(),
+                )
+            })?;
 
         visitor.visit_i64(value)
     }
@@ -110,7 +114,11 @@ where
     {
         let value = self.reader
             .read_u64::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeUnsignedInteger(64))?;
+            .chain_err(|| {
+                ErrorKind::DeserializeFailure(
+                    "unsigned 64-bit integer".to_string(),
+                )
+            })?;
 
         visitor.visit_u64(value)
     }
@@ -121,7 +129,7 @@ where
     {
         let value = self.reader
             .read_f32::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeFloat)?;
+            .chain_err(|| ErrorKind::DeserializeFailure("float".to_string()))?;
 
         visitor.visit_f32(value)
     }
@@ -132,7 +140,7 @@ where
     {
         let value = self.reader
             .read_f64::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeDouble)?;
+            .chain_err(|| ErrorKind::DeserializeFailure("double".to_string()))?;
 
         visitor.visit_f64(value)
     }
@@ -143,7 +151,7 @@ where
     {
         let raw_value = self.reader
             .read_u32::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeChar)?;
+            .chain_err(|| ErrorKind::DeserializeFailure("char".to_string()))?;
 
         let value = char::from_u32(raw_value)
             .ok_or_else(|| ErrorKind::InvalidChar(raw_value))?;
@@ -156,12 +164,12 @@ where
         V: Visitor<'de>,
     {
         let buffer = self.deserialize_opaque(
-            ErrorKind::DeserializeString,
-            ErrorKind::DeserializeString,
+            ErrorKind::DeserializeFailure("string".to_string()),
+            ErrorKind::DeserializeFailure("string".to_string()),
         )?;
 
         let string = String::from_utf8(buffer)
-            .chain_err(|| ErrorKind::DeserializeString)?;
+            .chain_err(|| ErrorKind::DeserializeFailure("string".to_string()))?;
 
         visitor.visit_string(string)
     }
@@ -178,8 +186,8 @@ where
         V: Visitor<'de>,
     {
         let buffer = self.deserialize_opaque(
-            ErrorKind::DeserializeOpaque,
-            ErrorKind::DeserializeOpaque,
+            ErrorKind::DeserializeFailure("opaque".to_string()),
+            ErrorKind::DeserializeFailure("opaque".to_string()),
         )?;
 
         visitor.visit_byte_buf(buffer)
@@ -198,7 +206,7 @@ where
     {
         let option = self.reader
             .read_i32::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeOption)?;
+            .chain_err(|| ErrorKind::DeserializeFailure("option".to_string()))?;
 
         let result = match option {
             0 => visitor.visit_none(),
@@ -206,7 +214,7 @@ where
             _ => bail!(ErrorKind::InvalidOption),
         };
 
-        result.chain_err(|| ErrorKind::DeserializeOption)
+        result.chain_err(|| ErrorKind::DeserializeFailure("option".to_string()))
     }
 
     fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value>
@@ -236,7 +244,9 @@ where
         V: Visitor<'de>,
     {
         visitor.visit_newtype_struct(self)
-            .chain_err(|| ErrorKind::DeserializeStruct(name.to_string()))
+            .chain_err(|| {
+                ErrorKind::DeserializeFailure(format!("struct {}", name))
+            })
     }
 
     fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value>
@@ -245,7 +255,9 @@ where
     {
         let length = self.reader
             .read_u32::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeSequence)?;
+            .chain_err(|| {
+                ErrorKind::DeserializeFailure("sequence".to_string())
+            })?;
 
         visitor.visit_seq(SequenceDeserializer::new(length, &"sequence", self))
     }
@@ -316,7 +328,9 @@ where
     {
         let variant = self.reader
             .read_u32::<BigEndian>()
-            .chain_err(|| ErrorKind::DeserializeEnum(name.to_string()))?;
+            .chain_err(|| {
+                ErrorKind::DeserializeFailure(format!("enum {}", name))
+            })?;
         let variant_name = variants[variant as usize];
 
         let enum_deserializer =

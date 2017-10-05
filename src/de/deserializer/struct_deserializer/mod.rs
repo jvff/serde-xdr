@@ -48,9 +48,11 @@ where
         let value = seed
             .deserialize(&mut *self.deserializer)
             .chain_err(|| {
-                ErrorKind::DeserializeStructField(
-                    self.name.to_string(),
-                    self.fields[self.current_field].to_string(),
+                let struct_name = self.name;
+                let field_name = self.fields[self.current_field];
+
+                ErrorKind::DeserializeFailure(
+                    format!("struct field {}::{}", struct_name, field_name),
                 )
             })?;
 

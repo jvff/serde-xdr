@@ -6,12 +6,11 @@ Representation Standard (XDR)](https://tools.ietf.org/html/rfc1014) for the
 
 ## Usage
 
-Before an official first version is published to
-[crates.io](https://crates.io/), a snapshot version should be used from this
-repository. You can add the following to you `Cargo.toml` file:
+To use the official version publish in [crates.io](https://crates.io/), add the
+following to your `Cargo.toml` file:
 
     [dependencies]
-    serde-xdr = { git = "https://github.com/jvff/serde-xdr.git" }
+    serde-xdr = "0.1"
 
 To serialize and deserialize data, you can use the provided helper functions:
 

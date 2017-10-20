@@ -52,15 +52,19 @@ pub fn bytes_of_f64(value: f64) -> Vec<u8> {
     bytes_of_hyper(bits)
 }
 
-pub fn bytes_of_str(string: &str, padding_length: usize) -> Vec<u8> {
-    let padded_length = 4 + string.len() + padding_length;
+pub fn bytes_of_opaque(opaque: &[u8], padding_length: usize) -> Vec<u8> {
+    let padded_length = 4 + opaque.len() + padding_length;
 
-    let mut bytes = bytes_of(string.len() as u32);
+    let mut bytes = bytes_of(opaque.len() as u32);
 
-    bytes.append(&mut string.as_bytes().iter().cloned().collect());
+    bytes.append(&mut opaque.iter().cloned().collect());
     bytes.resize(padded_length, 0);
 
     bytes
+}
+
+pub fn bytes_of_str(string: &str, padding_length: usize) -> Vec<u8> {
+    bytes_of_opaque(string.as_bytes(), padding_length)
 }
 
 #[test]
@@ -210,46 +214,37 @@ fn serialize_opaque_without_padding() {
 
     Serializer::new(&mut buffer).serialize_bytes(&value).unwrap();
 
-    assert_eq!(buffer, value);
+    assert_eq!(buffer, bytes_of_opaque(&value, 0));
 }
 
 #[test]
 fn serialize_opaque_with_1_byte_padding() {
     let mut buffer = Vec::new();
-    let mut value = vec![1, 2, 3, 4, 8, 7, 6, 5, 9, 10, 11];
-    let padded_length = value.len() + 1;
+    let value = vec![1, 2, 3, 4, 8, 7, 6, 5, 9, 10, 11];
 
     Serializer::new(&mut buffer).serialize_bytes(&value).unwrap();
 
-    value.resize(padded_length, 0);
-
-    assert_eq!(buffer, value);
+    assert_eq!(buffer, bytes_of_opaque(&value, 1));
 }
 
 #[test]
 fn serialize_opaque_with_2_byte_padding() {
     let mut buffer = Vec::new();
-    let mut value = vec![1, 2, 3, 4, 8, 7, 6, 5, 9, 10];
-    let padded_length = value.len() + 2;
+    let value = vec![1, 2, 3, 4, 8, 7, 6, 5, 9, 10];
 
     Serializer::new(&mut buffer).serialize_bytes(&value).unwrap();
 
-    value.resize(padded_length, 0);
-
-    assert_eq!(buffer, value);
+    assert_eq!(buffer, bytes_of_opaque(&value, 2));
 }
 
 #[test]
 fn serialize_opaque_with_3_byte_padding() {
     let mut buffer = Vec::new();
-    let mut value = vec![1, 2, 3, 4, 8, 7, 6, 5, 9];
-    let padded_length = value.len() + 3;
+    let value = vec![1, 2, 3, 4, 8, 7, 6, 5, 9];
 
     Serializer::new(&mut buffer).serialize_bytes(&value).unwrap();
 
-    value.resize(padded_length, 0);
-
-    assert_eq!(buffer, value);
+    assert_eq!(buffer, bytes_of_opaque(&value, 3));
 }
 
 #[test]

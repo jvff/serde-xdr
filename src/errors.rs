@@ -69,6 +69,19 @@ error_chain! {
             description("XDR does not support a map type")
         }
 
+        /// Attempt to serialize opaque data with too many bytes
+        OpaqueDataIsTooLong(length: usize) {
+            description("opaque data is too long")
+            display(
+                concat!(
+                    "opaque data is too long (maximum length is {} bytes): {}",
+                    " bytes",
+                ),
+                u32::max_value(),
+                length,
+            )
+        }
+
         /// Attempt to serialize a sequence that's too long.
         SequenceTooLong(length: usize) {
             description("sequence is too long to be serialized")

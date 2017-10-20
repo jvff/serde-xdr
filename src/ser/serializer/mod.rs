@@ -103,31 +103,34 @@ where
             bail!(ErrorKind::StringIsNotAscii(value.to_string()));
         }
 
-        let length = value.len();
-
-        let serializer = self.serialize_u32(length as u32)
-            .chain_err(|| Self::serialize_failure("string", value))?
-            .serialize_bytes(value.as_bytes())
-            .chain_err(|| Self::serialize_failure("string", value))?;
-
-        Ok(serializer)
+        self.serialize_bytes(value.as_bytes())
+            .chain_err(|| Self::serialize_failure("string", value))
     }
 
     fn serialize_bytes(self, value: &[u8]) -> Result<Self> {
         let length = value.len();
+
+        ensure!(
+            length <= u32::max_value() as usize,
+            ErrorKind::OpaqueDataIsTooLong(length)
+        );
+
         let full_padding = [0u8; 3];
         let padding_size = 4 - (length + 3) % 4 - 1;
         let (padding, _) = full_padding.split_at(padding_size);
 
-        self.writer
+        let serializer = self.serialize_u32(length as u32)
+            .chain_err(|| Self::serialize_opaque_failure(length))?;
+
+        serializer.writer
             .write_all(value)
             .chain_err(|| Self::serialize_opaque_failure(length))?;
 
-        self.writer
+        serializer.writer
             .write_all(padding)
             .chain_err(|| Self::serialize_opaque_failure(length))?;
 
-        Ok(self)
+        Ok(serializer)
     }
 
     fn serialize_none(self) -> Result<Self> {

@@ -17,12 +17,13 @@
 //!
 //! ```
 //! extern crate serde_xdr;
+//! extern crate serde_bytes;
 //! #[macro_use]
 //! extern crate serde_derive;
 //!
 //! use std::io::Cursor;
 //!
-//! use serde_xdr::VariableLengthOpaqueData;
+//! use serde_bytes::ByteBuf;
 //! use serde_xdr::{from_reader, to_writer};
 //!
 //! #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -37,7 +38,7 @@
 //!     filename: String,
 //!     filetype: FileType,
 //!     owner: String,
-//!     data: VariableLengthOpaqueData,
+//!     data: ByteBuf,
 //! }
 //!
 //! fn main() {
@@ -74,6 +75,8 @@ extern crate serde;
 
 #[cfg(test)]
 extern crate ordered_float;
+#[cfg(test)]
+extern crate serde_bytes;
 #[cfg(test)] #[macro_use]
 extern crate serde_derive;
 
@@ -81,7 +84,6 @@ extern crate serde_derive;
 mod errors;
 mod ser;
 mod de;
-mod opaque_data;
 
 #[cfg(test)]
 mod tests;
@@ -89,4 +91,3 @@ mod tests;
 pub use errors::{Error, ErrorKind, Result};
 pub use ser::{to_bytes, to_writer, Serializer};
 pub use de::{from_reader, Deserializer};
-pub use opaque_data::VariableLengthOpaqueData;

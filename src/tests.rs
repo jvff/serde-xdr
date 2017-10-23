@@ -1,7 +1,8 @@
 use std::io::Cursor;
 
+use serde_bytes;
+
 use super::{from_reader, to_bytes};
-use super::VariableLengthOpaqueData;
 
 #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
 enum FileType {
@@ -15,7 +16,8 @@ struct File {
     filename: String,
     filetype: FileType,
     owner: String,
-    data: VariableLengthOpaqueData,
+    #[serde(with = "serde_bytes")]
+    data: Vec<u8>,
 }
 
 #[test]
@@ -26,7 +28,7 @@ fn serialized_bytes() {
         filename: "sillyprog".to_string(),
         filetype: FileType::Exec("lisp".to_string()),
         owner: "john".to_string(),
-        data: file_contents.into(),
+        data: file_contents,
     };
 
     let bytes = to_bytes(&file).unwrap();
@@ -57,7 +59,7 @@ fn serialize_deserialize() {
         filename: "sillyprog".to_string(),
         filetype: FileType::Exec("lisp".to_string()),
         owner: "john".to_string(),
-        data: file_contents.into(),
+        data: file_contents,
     };
 
     let bytes = to_bytes(&initial_file).unwrap();

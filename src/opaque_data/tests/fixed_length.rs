@@ -1,27 +1,29 @@
-use super::super::fixed_length;
-use super::super::super::to_bytes;
+use std::io::Cursor;
 
-#[derive(Serialize)]
+use super::super::fixed_length;
+use super::super::super::{from_reader, to_bytes};
+
+#[derive(Deserialize, Serialize)]
 struct FourBytes {
-    #[serde(serialize_with = "fixed_length::serialize")]
+    #[serde(with = "fixed_length")]
     data: [u8; 4],
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 struct FiveBytes {
-    #[serde(serialize_with = "fixed_length::serialize")]
+    #[serde(with = "fixed_length")]
     data: [u8; 5],
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 struct SixBytes {
-    #[serde(serialize_with = "fixed_length::serialize")]
+    #[serde(with = "fixed_length")]
     data: [u8; 6],
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 struct SevenBytes {
-    #[serde(serialize_with = "fixed_length::serialize")]
+    #[serde(with = "fixed_length")]
     data: [u8; 7],
 }
 
@@ -63,4 +65,44 @@ fn serialize_bytes_with_1_byte_padding() {
     let serialized_bytes = to_bytes(&bytes).unwrap();
 
     assert_eq!(serialized_bytes, vec![0, 1, 2, 4, 8, 16, 32, 0]);
+}
+
+#[test]
+fn deserialize_bytes_without_padding() {
+    let serialized_bytes = [0, 1, 2, 4];
+    let mut cursor = Cursor::new(serialized_bytes);
+
+    let bytes: FourBytes = from_reader(&mut cursor).unwrap();
+
+    assert_eq!(bytes.data, [0, 1, 2, 4]);
+}
+
+#[test]
+fn deserialize_bytes_with_3_byte_padding() {
+    let serialized_bytes = [0, 1, 2, 4, 8, 0, 0, 0];
+    let mut cursor = Cursor::new(serialized_bytes);
+
+    let bytes: FiveBytes = from_reader(&mut cursor).unwrap();
+
+    assert_eq!(bytes.data, [0, 1, 2, 4, 8]);
+}
+
+#[test]
+fn deserialize_bytes_with_2_byte_padding() {
+    let serialized_bytes = [0, 1, 2, 4, 8, 16, 0, 0];
+    let mut cursor = Cursor::new(serialized_bytes);
+
+    let bytes: SixBytes = from_reader(&mut cursor).unwrap();
+
+    assert_eq!(bytes.data, [0, 1, 2, 4, 8, 16]);
+}
+
+#[test]
+fn deserialize_bytes_with_1_byte_padding() {
+    let serialized_bytes = [0, 1, 2, 4, 8, 16, 32, 0];
+    let mut cursor = Cursor::new(serialized_bytes);
+
+    let bytes: SevenBytes = from_reader(&mut cursor).unwrap();
+
+    assert_eq!(bytes.data, [0, 1, 2, 4, 8, 16, 32]);
 }

@@ -2,7 +2,7 @@ use std::io::Cursor;
 
 use serde_bytes;
 
-use super::{from_reader, to_bytes};
+use super::{from_reader, to_bytes, to_writer};
 
 #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
 enum FileType {
@@ -18,6 +18,25 @@ struct File {
     owner: String,
     #[serde(with = "serde_bytes")]
     data: Vec<u8>,
+}
+
+#[test]
+fn serialization_functions_are_equivalent() {
+    let file_contents: Vec<u8> = "(quit)".as_bytes().into();
+
+    let file = File {
+        filename: "sillyprog".to_string(),
+        filetype: FileType::Exec("lisp".to_string()),
+        owner: "john".to_string(),
+        data: file_contents,
+    };
+
+    let serialized_to_bytes = to_bytes(&file).unwrap();
+    let mut serialized_to_writer = Vec::new();
+
+    to_writer(&mut serialized_to_writer, &file).unwrap();
+
+    assert_eq!(serialized_to_bytes, serialized_to_writer);
 }
 
 #[test]

@@ -1,4 +1,4 @@
-use std::io::Read;
+use std::io::{Cursor, Read};
 
 use byteorder::{BigEndian, ReadBytesExt};
 use serde::Deserialize;
@@ -106,6 +106,23 @@ where
     let mut deserializer = Deserializer::new(reader);
 
     Ok(T::deserialize(&mut deserializer)?)
+}
+
+/// Deserializes data from a slice of bytes.
+///
+/// Deserializes data of a given type `T` from a generic instance that can be
+/// accessed as a reference to a slice of bytes.
+///
+/// The deserializer is currently zero-copy, which means that the returned data
+/// owns everything it deserialized.
+pub fn from_bytes<'de, B, T>(bytes: B) -> Result<T>
+where
+    B: AsRef<[u8]>,
+    T: Deserialize<'de>,
+{
+    let mut reader = Cursor::new(bytes);
+
+    from_reader(&mut reader)
 }
 
 mod deserializer;

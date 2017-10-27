@@ -93,4 +93,4 @@ pub mod opaque_data;
 
 pub use errors::{Error, ErrorKind, Result};
 pub use ser::{to_bytes, to_writer, Serializer};
-pub use de::{from_reader, Deserializer};
+pub use de::{from_bytes, from_reader, Deserializer};

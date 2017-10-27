@@ -2,7 +2,7 @@ use std::io::Cursor;
 
 use serde_bytes;
 
-use super::{from_reader, to_bytes, to_writer};
+use super::{from_bytes, from_reader, to_bytes, to_writer};
 
 #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
 enum FileType {
@@ -89,4 +89,29 @@ fn serialize_deserialize() {
 
     assert_eq!(initial_file, recovered_file);
     assert_eq!(cursor.position(), length);
+}
+
+#[test]
+fn deserialization_functions_are_equivalent() {
+    let source_bytes = vec![
+        0x00, 0x00, 0x00, 0x09,
+        's' as u8, 'i' as u8, 'l' as u8, 'l' as u8,
+        'y' as u8, 'p' as u8, 'r' as u8, 'o' as u8,
+        'g' as u8, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x02,
+        0x00, 0x00, 0x00, 0x04,
+        'l' as u8, 'i' as u8, 's' as u8, 'p' as u8,
+        0x00, 0x00, 0x00, 0x04,
+        'j' as u8, 'o' as u8, 'h' as u8, 'n' as u8,
+        0x00, 0x00, 0x00, 0x06,
+        '(' as u8, 'q' as u8, 'u' as u8, 'i' as u8,
+        't' as u8, ')' as u8, 0x00, 0x00,
+    ];
+
+    let deserialized_from_bytes: File = from_bytes(&source_bytes).unwrap();
+
+    let mut reader = Cursor::new(source_bytes);
+    let deserialized_from_reader: File = from_reader(&mut reader).unwrap();
+
+    assert_eq!(deserialized_from_bytes, deserialized_from_reader);
 }

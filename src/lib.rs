@@ -68,17 +68,20 @@
 #![recursion_limit="256"]
 #![deny(missing_docs)]
 
-extern crate byteorder;
 #[macro_use]
 extern crate error_chain;
+
+extern crate byteorder;
 extern crate serde;
+
+#[cfg(test)]
+#[macro_use]
+extern crate serde_derive;
 
 #[cfg(test)]
 extern crate ordered_float;
 #[cfg(test)]
 extern crate serde_bytes;
-#[cfg(test)] #[macro_use]
-extern crate serde_derive;
 
 #[allow(missing_docs)]
 mod errors;

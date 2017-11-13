@@ -53,9 +53,9 @@ where
             self.variant.into_deserializer();
 
         let value = seed.deserialize(variant_code_deserializer)
-            .chain_err(|| {
-                deserialize_enum_error(self.enum_name, self.variant_name)
-            })?;
+            .chain_err(
+                || deserialize_enum_error(self.enum_name, self.variant_name),
+            )?;
 
         let variant_deserializer = VariantDeserializer::new(
             self.enum_name,

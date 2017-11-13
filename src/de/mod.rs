@@ -28,13 +28,11 @@ where
     }
 
     fn deserialize_integer(&mut self, bits: u8) -> Result<i32> {
-        let value = self.reader
-            .read_i32::<BigEndian>()
-            .chain_err(|| {
-                ErrorKind::DeserializeFailure(
-                    format!("signed {}-bit integer", bits),
-                )
-            })?;
+        let value = self.reader.read_i32::<BigEndian>().chain_err(|| {
+            ErrorKind::DeserializeFailure(
+                format!("signed {}-bit integer", bits),
+            )
+        })?;
 
         let most_significant_bit: u32 = 1 << (bits - 1);
         let max_value = (most_significant_bit - 1) as i32;
@@ -49,13 +47,11 @@ where
     }
 
     fn deserialize_unsigned_integer(&mut self, bits: u8) -> Result<u32> {
-        let value = self.reader
-            .read_u32::<BigEndian>()
-            .chain_err(|| {
-                ErrorKind::DeserializeFailure(
-                    format!("unsigned {}-bit integer", bits),
-                )
-            })?;
+        let value = self.reader.read_u32::<BigEndian>().chain_err(|| {
+            ErrorKind::DeserializeFailure(
+                format!("unsigned {}-bit integer", bits),
+            )
+        })?;
 
         let most_significant_bit: u64 = 1 << bits;
         let max_value = (most_significant_bit - 1) as u32;
@@ -83,7 +79,9 @@ where
         let mut buffer = Vec::with_capacity(buffer_length as usize);
 
         buffer.resize(buffer_length as usize, 0);
-        self.reader.read_exact(&mut buffer).chain_err(|| read_data_error_kind)?;
+        self.reader
+            .read_exact(&mut buffer)
+            .chain_err(|| read_data_error_kind)?;
         buffer.truncate(length as usize);
 
         Ok(buffer)

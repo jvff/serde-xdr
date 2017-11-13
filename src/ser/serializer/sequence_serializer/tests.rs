@@ -1,7 +1,7 @@
 use serde::ser::Serializer as SerdeSerializer;
 
-use super::super::tests::*;
 use super::super::super::Serializer;
+use super::super::tests::*;
 
 #[test]
 fn serialize_sequence() {
@@ -15,12 +15,19 @@ fn serialize_sequence() {
     {
         use serde::ser::SerializeSeq;
 
-        let mut sequence_serializer =
-            Serializer::new(&mut buffer).serialize_seq(Some(length)).unwrap();
+        let mut sequence_serializer = Serializer::new(&mut buffer)
+            .serialize_seq(Some(length))
+            .unwrap();
 
-        sequence_serializer.serialize_element(&first_element).unwrap();
-        sequence_serializer.serialize_element(second_element).unwrap();
-        sequence_serializer.serialize_element(&third_element).unwrap();
+        sequence_serializer
+            .serialize_element(&first_element)
+            .unwrap();
+        sequence_serializer
+            .serialize_element(second_element)
+            .unwrap();
+        sequence_serializer
+            .serialize_element(&third_element)
+            .unwrap();
         sequence_serializer.end().unwrap();
     }
 
@@ -45,12 +52,19 @@ fn serialize_tuple() {
     {
         use serde::ser::SerializeTuple;
 
-        let mut sequence_serializer =
-            Serializer::new(&mut buffer).serialize_tuple(length).unwrap();
+        let mut sequence_serializer = Serializer::new(&mut buffer)
+            .serialize_tuple(length)
+            .unwrap();
 
-        sequence_serializer.serialize_element(&first_element).unwrap();
-        sequence_serializer.serialize_element(second_element).unwrap();
-        sequence_serializer.serialize_element(&third_element).unwrap();
+        sequence_serializer
+            .serialize_element(&first_element)
+            .unwrap();
+        sequence_serializer
+            .serialize_element(second_element)
+            .unwrap();
+        sequence_serializer
+            .serialize_element(&third_element)
+            .unwrap();
         sequence_serializer.end().unwrap();
     }
 
@@ -62,4 +76,3 @@ fn serialize_tuple() {
 
     assert_eq!(buffer, expected_bytes);
 }
-

@@ -1,5 +1,6 @@
-use serde::ser::Serializer as SerdeSerializer;
+
 use serde::ser::SerializeStruct;
+use serde::ser::Serializer as SerdeSerializer;
 
 use super::*;
 use super::super::tests::*;
@@ -11,10 +12,13 @@ fn serialize_struct() {
     let string = "hello";
 
     {
-        let mut struct_serializer =
-            Serializer::new(&mut buffer).serialize_struct("struct", 2).unwrap();
+        let mut struct_serializer = Serializer::new(&mut buffer)
+            .serialize_struct("struct", 2)
+            .unwrap();
 
-        struct_serializer.serialize_field("number", &number).unwrap();
+        struct_serializer
+            .serialize_field("number", &number)
+            .unwrap();
         struct_serializer.serialize_field("string", string).unwrap();
         struct_serializer.end().unwrap();
     }

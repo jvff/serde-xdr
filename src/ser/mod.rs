@@ -16,7 +16,7 @@ pub struct Serializer<'w, W>
 where
     W: WriteBytesExt + 'w,
 {
-    writer: &'w mut W
+    writer: &'w mut W,
 }
 
 impl<'w, W> Serializer<'w, W>

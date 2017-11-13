@@ -212,7 +212,9 @@ fn serialize_opaque_without_padding() {
     let mut buffer = Vec::new();
     let value = vec![1, 2, 3, 4, 8, 7, 6, 5];
 
-    Serializer::new(&mut buffer).serialize_bytes(&value).unwrap();
+    Serializer::new(&mut buffer)
+        .serialize_bytes(&value)
+        .unwrap();
 
     assert_eq!(buffer, bytes_of_opaque(&value, 0));
 }
@@ -222,7 +224,9 @@ fn serialize_opaque_with_1_byte_padding() {
     let mut buffer = Vec::new();
     let value = vec![1, 2, 3, 4, 8, 7, 6, 5, 9, 10, 11];
 
-    Serializer::new(&mut buffer).serialize_bytes(&value).unwrap();
+    Serializer::new(&mut buffer)
+        .serialize_bytes(&value)
+        .unwrap();
 
     assert_eq!(buffer, bytes_of_opaque(&value, 1));
 }
@@ -232,7 +236,9 @@ fn serialize_opaque_with_2_byte_padding() {
     let mut buffer = Vec::new();
     let value = vec![1, 2, 3, 4, 8, 7, 6, 5, 9, 10];
 
-    Serializer::new(&mut buffer).serialize_bytes(&value).unwrap();
+    Serializer::new(&mut buffer)
+        .serialize_bytes(&value)
+        .unwrap();
 
     assert_eq!(buffer, bytes_of_opaque(&value, 2));
 }
@@ -242,7 +248,9 @@ fn serialize_opaque_with_3_byte_padding() {
     let mut buffer = Vec::new();
     let value = vec![1, 2, 3, 4, 8, 7, 6, 5, 9];
 
-    Serializer::new(&mut buffer).serialize_bytes(&value).unwrap();
+    Serializer::new(&mut buffer)
+        .serialize_bytes(&value)
+        .unwrap();
 
     assert_eq!(buffer, bytes_of_opaque(&value, 3));
 }
@@ -300,7 +308,9 @@ fn serialize_void() {
 fn serialize_unit_struct() {
     let mut buffer = Vec::new();
 
-    Serializer::new(&mut buffer).serialize_unit_struct("name").unwrap();
+    Serializer::new(&mut buffer)
+        .serialize_unit_struct("name")
+        .unwrap();
 
     assert_eq!(buffer.len(), 0);
 }

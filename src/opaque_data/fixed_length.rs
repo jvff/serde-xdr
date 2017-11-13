@@ -76,7 +76,7 @@ where
         sequence: &mut A,
     ) -> Result<(), A::Error>
     where
-        A: SeqAccess<'de>
+        A: SeqAccess<'de>,
     {
         if let Some(block) = sequence.next_element::<u32>()? {
             let start = block_index * 4;
@@ -101,7 +101,7 @@ where
         sequence: &mut A,
     ) -> Result<(), A::Error>
     where
-        A: SeqAccess<'de>
+        A: SeqAccess<'de>,
     {
         if let Some(block) = sequence.next_element::<u32>()? {
             let start = (total_blocks - 1) * 4;
@@ -125,12 +125,16 @@ where
     type Value = T;
 
     fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
-        write!(formatter, "opaque data with fixed length of {} bytes", T::len())
+        write!(
+            formatter,
+            "opaque data with fixed length of {} bytes",
+            T::len()
+        )
     }
 
     fn visit_seq<A>(self, mut sequence: A) -> Result<Self::Value, A::Error>
     where
-        A: SeqAccess<'de>
+        A: SeqAccess<'de>,
     {
         let mut byte_array = T::default();
         let length = T::len();
@@ -166,7 +170,7 @@ fn decode_full_block(block: u32, bytes: &mut [u8]) {
     bytes[3] = (block & 0xff) as u8;
 }
 
-fn decode_partial_block(mut  block: u32, bytes: &mut [u8], num_bytes: usize) {
+fn decode_partial_block(mut block: u32, bytes: &mut [u8], num_bytes: usize) {
     let max_index = num_bytes - 1;
     let padding_bytes = 4 - num_bytes;
     let padding_bits = 8 * padding_bytes;

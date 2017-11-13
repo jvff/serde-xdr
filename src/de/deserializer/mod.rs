@@ -70,9 +70,8 @@ where
     where
         V: Visitor<'de>,
     {
-        let value = self.reader
-            .read_i64::<BigEndian>()
-            .chain_err(|| {
+        let value =
+            self.reader.read_i64::<BigEndian>().chain_err(|| {
                 ErrorKind::DeserializeFailure(
                     "signed 64-bit integer".to_string(),
                 )
@@ -112,9 +111,8 @@ where
     where
         V: Visitor<'de>,
     {
-        let value = self.reader
-            .read_u64::<BigEndian>()
-            .chain_err(|| {
+        let value =
+            self.reader.read_u64::<BigEndian>().chain_err(|| {
                 ErrorKind::DeserializeFailure(
                     "unsigned 64-bit integer".to_string(),
                 )
@@ -243,30 +241,26 @@ where
     where
         V: Visitor<'de>,
     {
-        visitor.visit_newtype_struct(self)
-            .chain_err(|| {
-                ErrorKind::DeserializeFailure(format!("struct {}", name))
-            })
+        visitor.visit_newtype_struct(self).chain_err(
+            || ErrorKind::DeserializeFailure(format!("struct {}", name)),
+        )
     }
 
     fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        let length = self.reader
-            .read_u32::<BigEndian>()
-            .chain_err(|| {
-                ErrorKind::DeserializeFailure("sequence".to_string())
-            })?;
+        let length =
+            self.reader
+                .read_u32::<BigEndian>()
+                .chain_err(
+                    || ErrorKind::DeserializeFailure("sequence".to_string()),
+                )?;
 
         visitor.visit_seq(SequenceDeserializer::new(length, &"sequence", self))
     }
 
-    fn deserialize_tuple<V>(
-        self,
-        length: usize,
-        visitor: V,
-    ) -> Result<V::Value>
+    fn deserialize_tuple<V>(self, length: usize, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
@@ -328,9 +322,9 @@ where
     {
         let variant = self.reader
             .read_u32::<BigEndian>()
-            .chain_err(|| {
-                ErrorKind::DeserializeFailure(format!("enum {}", name))
-            })?;
+            .chain_err(
+                || ErrorKind::DeserializeFailure(format!("enum {}", name)),
+            )?;
         let variant_name = variants[variant as usize];
 
         let enum_deserializer =

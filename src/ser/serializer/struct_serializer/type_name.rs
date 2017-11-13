@@ -2,7 +2,7 @@ use std::fmt::{Display, Formatter, Result};
 
 pub enum TypeName {
     Struct(&'static str),
-    StructVariant(&'static str, &'static str)
+    StructVariant(&'static str, &'static str),
 }
 
 impl Display for TypeName {

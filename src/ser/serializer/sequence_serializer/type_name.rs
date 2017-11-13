@@ -4,7 +4,7 @@ pub enum TypeName {
     Sequence,
     Tuple,
     TupleStruct(&'static str),
-    TupleVariant(&'static str, &'static str)
+    TupleVariant(&'static str, &'static str),
 }
 
 impl Display for TypeName {
@@ -17,7 +17,7 @@ impl Display for TypeName {
             }
             TypeName::TupleVariant(tuple_name, variant) => {
                 write!(formatter, "tuple variant {}::{}", tuple_name, variant)
-            },
+            }
         }
     }
 }

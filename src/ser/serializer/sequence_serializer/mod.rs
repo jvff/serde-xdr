@@ -69,12 +69,9 @@ where
     ) -> Result<Serializer<'w, W>> {
         Self::ensure_length_is_valid(length)?;
 
-        serializer.serialize_u32(length as u32)
-            .chain_err(|| {
-                ErrorKind::SerializeFailure(
-                    format!("sequence length: {}", length),
-                )
-            })
+        serializer.serialize_u32(length as u32).chain_err(|| {
+            ErrorKind::SerializeFailure(format!("sequence length: {}", length))
+        })
     }
 
     fn ensure_length_is_valid(length: usize) -> Result<()> {

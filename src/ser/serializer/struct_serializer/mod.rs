@@ -48,7 +48,8 @@ where
         T: ?Sized + Serialize,
     {
         if let Some(serializer) = self.serializer.take() {
-            let serializer = value.serialize(serializer)
+            let serializer = value
+                .serialize(serializer)
                 .chain_err(|| serialization_error(&self.struct_name, key))?;
 
             self.serializer = Some(serializer);
@@ -76,11 +77,7 @@ where
     type Ok = Serializer<'w, W>;
     type Error = Error;
 
-    fn serialize_field<T>(
-        &mut self,
-        key: &'static str,
-        value: &T,
-    ) -> Result<()>
+    fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<()>
     where
         T: ?Sized + Serialize,
     {
@@ -99,11 +96,7 @@ where
     type Ok = Serializer<'w, W>;
     type Error = Error;
 
-    fn serialize_field<T>(
-        &mut self,
-        key: &'static str,
-        value: &T,
-    ) -> Result<()>
+    fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<()>
     where
         T: ?Sized + Serialize,
     {

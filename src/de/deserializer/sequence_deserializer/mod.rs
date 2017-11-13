@@ -50,11 +50,10 @@ where
         T: DeserializeSeed<'de>,
     {
         if self.current_index < self.length {
-            let value = seed
-                .deserialize(&mut *self.deserializer)
-                .chain_err(|| {
-                    deserialize_error(self.type_name, self.current_index)
-                })?;
+            let value = seed.deserialize(&mut *self.deserializer)
+                .chain_err(
+                    || deserialize_error(self.type_name, self.current_index),
+                )?;
 
             self.current_index += 1;
 
@@ -73,9 +72,11 @@ fn deserialize_error<S>(type_name: &S, index: u32) -> ErrorKind
 where
     S: ToString,
 {
-    ErrorKind::DeserializeFailure(
-        format!("element {} of type {}", index, type_name.to_string()),
-    )
+    ErrorKind::DeserializeFailure(format!(
+        "element {} of type {}",
+        index,
+        type_name.to_string()
+    ))
 }
 
 #[cfg(test)]

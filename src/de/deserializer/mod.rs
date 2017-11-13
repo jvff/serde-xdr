@@ -157,7 +157,7 @@ where
         visitor.visit_char(value as char)
     }
 
-    fn deserialize_str<V>(mut self, visitor: V) -> Result<V::Value>
+    fn deserialize_str<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
@@ -179,7 +179,7 @@ where
         self.deserialize_str(visitor)
     }
 
-    fn deserialize_bytes<V>(mut self, visitor: V) -> Result<V::Value>
+    fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {

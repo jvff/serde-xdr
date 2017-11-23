@@ -19,11 +19,6 @@ error_chain! {
             display("deserialization error: {}", error)
         }
 
-        /// Deserialization of an identifier (for meta-data) is not supported.
-        IdentifierNotSupported {
-            description("deserialization of an identifier is not supported")
-        }
-
         /// Deserialized boolean value is invalid.
         InvalidBool(raw_value: u32) {
             description("deserialized an invalid bool")

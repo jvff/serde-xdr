@@ -4,6 +4,10 @@ pub enum DeserializationError {
     #[fail(display = "failed to deserialize a value of type: {}", type_name)]
     Failure { type_name: String },
 
+    /// Deserialization of an identifier (for meta-data) is not supported.
+    #[fail(display = "deserialization of an identifier is not supported")]
+    IdentifierNotSupported,
+
     /// Attempt to deserialize an unknown type.
     #[fail(display = "can't deserialize unknown type")]
     UnknownType,

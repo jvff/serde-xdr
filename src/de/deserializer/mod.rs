@@ -333,7 +333,7 @@ where
     where
         V: Visitor<'de>,
     {
-        bail!(ErrorKind::IdentifierNotSupported);
+        bail!(DeserializationError::IdentifierNotSupported);
     }
 
     fn deserialize_ignored_any<V>(self, _visitor: V) -> Result<V::Value>

@@ -151,7 +151,7 @@ where
             .chain_err(|| DeserializationError::failure("char"))?;
 
         let value = char::from_u32(raw_value)
-            .ok_or_else(|| ErrorKind::InvalidChar(raw_value))?;
+            .ok_or_else(|| DeserializationError::InvalidChar { raw_value })?;
 
         visitor.visit_char(value as char)
     }

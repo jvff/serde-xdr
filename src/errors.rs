@@ -19,12 +19,6 @@ error_chain! {
             display("deserialization error: {}", error)
         }
 
-        /// Deserialized character value is invalid.
-        InvalidChar(raw_value: u32) {
-            description("deserialized an invalid char")
-            display("deserialized an invalid char: 0x{:X}", raw_value)
-        }
-
         /// Deserialized optional value is invalid.
         InvalidOption {
             description("deserialized an invalid option")

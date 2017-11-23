@@ -19,16 +19,6 @@ error_chain! {
             display("deserialization error: {}", error)
         }
 
-        /// Deserialized unsigned integer is invalid.
-        InvalidUnsignedInteger(bits: u8, value: u32) {
-            description("deserialized invalid unsigned integer")
-            display(
-                "deserialized invalid {}-bit unsigned integer: {}",
-                bits,
-                value,
-            )
-        }
-
         /// Map types are not supported by XDR.
         MapIsNotSupported {
             description("XDR does not support a map type")

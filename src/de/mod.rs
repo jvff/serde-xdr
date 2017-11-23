@@ -60,7 +60,7 @@ where
 
         ensure!(
             value <= max_value,
-            ErrorKind::InvalidUnsignedInteger(bits, value)
+            DeserializationError::InvalidUnsignedInteger { bits, value }
         );
 
         Ok(value)

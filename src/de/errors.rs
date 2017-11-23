@@ -25,6 +25,11 @@ pub enum DeserializationError {
     #[fail(display = "deserialized an invalid option")]
     InvalidOption,
 
+    /// Deserialized unsigned integer is invalid.
+    #[fail(display = "deserialized invalid {}-bit unsigned integer: {}", bits,
+           value)]
+    InvalidUnsignedInteger { bits: u8, value: u32 },
+
     /// Attempt to deserialize an unknown type.
     #[fail(display = "can't deserialize unknown type")]
     UnknownType,

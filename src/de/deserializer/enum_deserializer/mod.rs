@@ -4,6 +4,7 @@ use serde::de::value::U32Deserializer;
 
 use self::variant_deserializer::VariantDeserializer;
 use super::Deserializer;
+use super::super::errors::DeserializationError;
 use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
 pub struct EnumDeserializer<'a, 'r, R>
@@ -68,9 +69,9 @@ where
 }
 
 fn deserialize_enum_error(enum_name: &str, variant_name: &str) -> ErrorKind {
-    ErrorKind::DeserializeFailure(
-        format!("enum variant {}::{}", enum_name, variant_name),
-    )
+    DeserializationError::Failure {
+        type_name: format!("enum variant {}::{}", enum_name, variant_name),
+    }.into()
 }
 
 mod variant_deserializer;

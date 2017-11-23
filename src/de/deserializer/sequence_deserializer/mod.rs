@@ -2,6 +2,7 @@ use byteorder::ReadBytesExt;
 use serde::de::{DeserializeSeed, SeqAccess};
 
 use super::super::Deserializer;
+use super::super::errors::DeserializationError;
 use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
 pub struct SequenceDeserializer<'a, 'r, 's, R, S>
@@ -72,11 +73,13 @@ fn deserialize_error<S>(type_name: &S, index: u32) -> ErrorKind
 where
     S: ToString,
 {
-    ErrorKind::DeserializeFailure(format!(
-        "element {} of type {}",
-        index,
-        type_name.to_string()
-    ))
+    DeserializationError::Failure {
+        type_name: format!(
+            "element {} of type {}",
+            index,
+            type_name.to_string()
+        ),
+    }.into()
 }
 
 #[cfg(test)]

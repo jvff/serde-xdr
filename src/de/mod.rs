@@ -31,9 +31,9 @@ where
 
     fn deserialize_integer(&mut self, bits: u8) -> Result<i32> {
         let value = self.reader.read_i32::<BigEndian>().chain_err(|| {
-            ErrorKind::DeserializeFailure(
-                format!("signed {}-bit integer", bits),
-            )
+            DeserializationError::Failure {
+                type_name: format!("signed {}-bit integer", bits),
+            }
         })?;
 
         let most_significant_bit: u32 = 1 << (bits - 1);
@@ -50,9 +50,9 @@ where
 
     fn deserialize_unsigned_integer(&mut self, bits: u8) -> Result<u32> {
         let value = self.reader.read_u32::<BigEndian>().chain_err(|| {
-            ErrorKind::DeserializeFailure(
-                format!("unsigned {}-bit integer", bits),
-            )
+            DeserializationError::Failure {
+                type_name: format!("unsigned {}-bit integer", bits),
+            }
         })?;
 
         let most_significant_bit: u64 = 1 << bits;

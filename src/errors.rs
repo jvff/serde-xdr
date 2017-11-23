@@ -19,12 +19,6 @@ error_chain! {
             display("deserialization error: {}", error)
         }
 
-        /// Failure while deserializing a value.
-        DeserializeFailure(type_name: String) {
-            description("failed to deserialize a value")
-            display("failed to deserialize a value of type {}", type_name)
-        }
-
         /// Attempt to deserialize an unknown type.
         DeserializeUnknownType {
             description("can't deserialize unknown type")

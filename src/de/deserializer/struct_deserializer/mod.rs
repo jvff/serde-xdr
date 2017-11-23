@@ -2,7 +2,8 @@ use byteorder::ReadBytesExt;
 use serde::de::{DeserializeSeed, SeqAccess};
 
 use super::super::Deserializer;
-use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
+use super::super::errors::DeserializationError;
+use super::super::super::errors::{Error, Result, ResultExt};
 
 pub struct StructDeserializer<'a, 'r, R>
 where
@@ -49,9 +50,13 @@ where
             let struct_name = self.name;
             let field_name = self.fields[self.current_field];
 
-            ErrorKind::DeserializeFailure(
-                format!("struct field {}::{}", struct_name, field_name),
-            )
+            DeserializationError::Failure {
+                type_name: format!(
+                    "struct field {}::{}",
+                    struct_name,
+                    field_name,
+                ),
+            }
         })?;
 
         self.current_field += 1;

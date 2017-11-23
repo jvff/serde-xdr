@@ -73,13 +73,11 @@ fn deserialize_error<S>(type_name: &S, index: u32) -> ErrorKind
 where
     S: ToString,
 {
-    DeserializationError::Failure {
-        type_name: format!(
-            "element {} of type {}",
-            index,
-            type_name.to_string()
-        ),
-    }.into()
+    DeserializationError::failure(format!(
+        "element {} of type {}",
+        index,
+        type_name.to_string()
+    )).into()
 }
 
 #[cfg(test)]

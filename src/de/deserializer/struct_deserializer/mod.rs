@@ -50,13 +50,9 @@ where
             let struct_name = self.name;
             let field_name = self.fields[self.current_field];
 
-            DeserializationError::Failure {
-                type_name: format!(
-                    "struct field {}::{}",
-                    struct_name,
-                    field_name,
-                ),
-            }
+            DeserializationError::failure(
+                format!("struct field {}::{}", struct_name, field_name),
+            )
         })?;
 
         self.current_field += 1;

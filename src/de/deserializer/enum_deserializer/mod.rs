@@ -69,9 +69,9 @@ where
 }
 
 fn deserialize_enum_error(enum_name: &str, variant_name: &str) -> ErrorKind {
-    DeserializationError::Failure {
-        type_name: format!("enum variant {}::{}", enum_name, variant_name),
-    }.into()
+    DeserializationError::failure(
+        format!("enum variant {}::{}", enum_name, variant_name),
+    ).into()
 }
 
 mod variant_deserializer;

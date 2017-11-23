@@ -5,6 +5,8 @@ use serde::Deserialize;
 
 use super::errors::{ErrorKind, Result, ResultExt};
 
+pub use self::errors::DeserializationError;
+
 /// Deserializer for the XDR format.
 ///
 /// Structure that holds a mutable borrow of the reader it deserializes data
@@ -124,3 +126,4 @@ where
 }
 
 mod deserializer;
+mod errors;

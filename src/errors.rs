@@ -3,12 +3,20 @@ use std::io;
 
 use serde::{ser, de};
 
+use super::de::DeserializationError;
+
 error_chain! {
     errors {
         /// Custom error type.
         Custom(message: String) {
             description("custom error")
             display("{}", message)
+        }
+
+        /// Wrapped deserialization error in the new format.
+        DeserializationError(error: DeserializationError) {
+            description("deserialization error")
+            display("deserialization error: {}", error)
         }
 
         /// Failure while deserializing a value.
@@ -144,6 +152,20 @@ error_chain! {
 
     foreign_links {
         Io(io::Error);
+    }
+}
+
+impl From<DeserializationError> for ErrorKind {
+    fn from(error: DeserializationError) -> ErrorKind {
+        ErrorKind::DeserializationError(error)
+    }
+}
+
+impl From<DeserializationError> for Error {
+    fn from(error: DeserializationError) -> Error {
+        let error_kind: ErrorKind = error.into();
+
+        error_kind.into()
     }
 }
 

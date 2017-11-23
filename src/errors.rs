@@ -19,16 +19,6 @@ error_chain! {
             display("deserialization error: {}", error)
         }
 
-        /// Deserialized signed integer is invalid.
-        InvalidInteger(bits: u8, value: i32) {
-            description("deserialized invalid signed integer")
-            display(
-                "deserialized invalid {}-bit signed integer: {}",
-                bits,
-                value,
-            )
-        }
-
         /// Deserialized unsigned integer is invalid.
         InvalidUnsignedInteger(bits: u8, value: u32) {
             description("deserialized invalid unsigned integer")

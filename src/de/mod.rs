@@ -42,7 +42,7 @@ where
 
         ensure!(
             value >= min_value && value <= max_value,
-            ErrorKind::InvalidInteger(bits, value)
+            DeserializationError::InvalidInteger { bits, value }
         );
 
         Ok(value)

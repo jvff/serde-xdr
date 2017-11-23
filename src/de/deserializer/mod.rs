@@ -36,7 +36,7 @@ where
         match value {
             0 => visitor.visit_bool(false),
             1 => visitor.visit_bool(true),
-            raw_value => bail!(ErrorKind::InvalidBool(raw_value)),
+            raw_value => bail!(DeserializationError::InvalidBool { raw_value }),
         }
     }
 

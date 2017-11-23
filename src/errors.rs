@@ -19,12 +19,6 @@ error_chain! {
             display("deserialization error: {}", error)
         }
 
-        /// Deserialized boolean value is invalid.
-        InvalidBool(raw_value: u32) {
-            description("deserialized an invalid bool")
-            display("deserialized an invalid bool: {}", raw_value)
-        }
-
         /// Deserialized character value is invalid.
         InvalidChar(raw_value: u32) {
             description("deserialized an invalid char")

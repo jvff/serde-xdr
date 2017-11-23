@@ -8,6 +8,10 @@ pub enum DeserializationError {
     #[fail(display = "deserialization of an identifier is not supported")]
     IdentifierNotSupported,
 
+    /// Deserialized boolean value is invalid.
+    #[fail(display = "deserialized an invalid bool: {}", raw_value)]
+    InvalidBool { raw_value: u32 },
+
     /// Attempt to deserialize an unknown type.
     #[fail(display = "can't deserialize unknown type")]
     UnknownType,

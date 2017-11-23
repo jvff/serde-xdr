@@ -19,11 +19,6 @@ error_chain! {
             display("deserialization error: {}", error)
         }
 
-        /// Attempt to deserialize an unknown type.
-        DeserializeUnknownType {
-            description("can't deserialize unknown type")
-        }
-
         /// Deserialization of an identifier (for meta-data) is not supported.
         IdentifierNotSupported {
             description("deserialization of an identifier is not supported")

@@ -22,7 +22,7 @@ where
     where
         V: Visitor<'de>,
     {
-        bail!(ErrorKind::DeserializeUnknownType);
+        bail!(DeserializationError::UnknownType);
     }
 
     fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value>
@@ -340,7 +340,7 @@ where
     where
         V: Visitor<'de>,
     {
-        bail!(ErrorKind::DeserializeUnknownType);
+        bail!(DeserializationError::UnknownType);
     }
 }
 

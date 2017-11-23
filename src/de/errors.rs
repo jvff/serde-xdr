@@ -3,6 +3,10 @@ pub enum DeserializationError {
     /// Failure while deserializing a value.
     #[fail(display = "failed to deserialize a value of type: {}", type_name)]
     Failure { type_name: String },
+
+    /// Attempt to deserialize an unknown type.
+    #[fail(display = "can't deserialize unknown type")]
+    UnknownType,
 }
 
 impl DeserializationError {

@@ -19,11 +19,6 @@ error_chain! {
             display("deserialization error: {}", error)
         }
 
-        /// Deserialized optional value is invalid.
-        InvalidOption {
-            description("deserialized an invalid option")
-        }
-
         /// Deserialized signed integer is invalid.
         InvalidInteger(bits: u8, value: i32) {
             description("deserialized invalid signed integer")

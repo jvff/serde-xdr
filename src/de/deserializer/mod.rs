@@ -208,7 +208,7 @@ where
         let result = match option {
             0 => visitor.visit_none(),
             1 => visitor.visit_some(self),
-            _ => bail!(ErrorKind::InvalidOption),
+            _ => bail!(DeserializationError::InvalidOption),
         };
 
         result.chain_err(|| DeserializationError::failure("option"))

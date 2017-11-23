@@ -16,6 +16,10 @@ pub enum DeserializationError {
     #[fail(display = "deserialized an invalid char: 0x{:X}", raw_value)]
     InvalidChar { raw_value: u32 },
 
+    /// Deserialized optional value is invalid.
+    #[fail(display = "deserialized an invalid option")]
+    InvalidOption,
+
     /// Attempt to deserialize an unknown type.
     #[fail(display = "can't deserialize unknown type")]
     UnknownType,

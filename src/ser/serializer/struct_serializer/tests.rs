@@ -1,4 +1,3 @@
-
 use serde::ser::SerializeStruct;
 use serde::ser::Serializer as SerdeSerializer;
 

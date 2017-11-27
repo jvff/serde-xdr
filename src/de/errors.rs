@@ -1,5 +1,17 @@
+use std::error;
+use std::fmt;
+use std::fmt::{Display, Formatter};
+use std::result;
+
+use failure::{Compat, Fail};
+use serde::de;
+
 #[derive(Debug, Fail)]
 pub enum DeserializationError {
+    /// Custom error message.
+    #[fail(display = "custom error message: {}", message)]
+    Custom { message: String },
+
     /// Failure while deserializing a value.
     #[fail(display = "failed to deserialize a value of type: {}", type_name)]
     Failure { type_name: String },
@@ -45,3 +57,44 @@ impl DeserializationError {
         }
     }
 }
+
+impl From<CompatDeserializationError> for DeserializationError {
+    fn from(wrapped_error: CompatDeserializationError) -> Self {
+        match wrapped_error {
+            CompatDeserializationError(error) => error.into_inner(),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct CompatDeserializationError(Compat<DeserializationError>);
+
+impl From<DeserializationError> for CompatDeserializationError {
+    fn from(error: DeserializationError) -> Self {
+        CompatDeserializationError(error.compat())
+    }
+}
+
+impl Display for CompatDeserializationError {
+    fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
+        self.0.fmt(formatter)
+    }
+}
+
+impl error::Error for CompatDeserializationError {
+    fn description(&self) -> &str {
+        self.0.description()
+    }
+}
+
+impl de::Error for CompatDeserializationError {
+    fn custom<T: Display>(message: T) -> Self {
+        let error = DeserializationError::Custom {
+            message: message.to_string(),
+        };
+
+        CompatDeserializationError(error.compat())
+    }
+}
+
+pub type Result<T> = result::Result<T, CompatDeserializationError>;

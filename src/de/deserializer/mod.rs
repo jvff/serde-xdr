@@ -326,7 +326,7 @@ where
         let enum_deserializer =
             EnumDeserializer::new(name, variant, variant_name, self);
 
-        visitor.visit_enum(enum_deserializer)
+        Ok(visitor.visit_enum(enum_deserializer)?)
     }
 
     fn deserialize_identifier<V>(self, _visitor: V) -> Result<V::Value>

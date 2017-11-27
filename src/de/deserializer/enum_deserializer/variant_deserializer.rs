@@ -4,7 +4,7 @@ use serde::de::{DeserializeSeed, VariantAccess, Visitor};
 
 use super::Deserializer;
 use super::deserialize_enum_error;
-use super::super::super::super::errors::{Error, Result, ResultExt};
+use super::super::super::errors::{CompatDeserializationError, Result};
 
 pub struct VariantDeserializer<'a, 'r, R>
 where
@@ -39,7 +39,7 @@ where
     'r: 'a,
     R: ReadBytesExt + 'r,
 {
-    type Error = Error;
+    type Error = CompatDeserializationError;
 
     fn unit_variant(self) -> Result<()> {
         Ok(())
@@ -49,9 +49,9 @@ where
     where
         T: DeserializeSeed<'de>,
     {
-        seed.deserialize(&mut *self.deserializer).chain_err(
-            || deserialize_enum_error(self.enum_name, self.variant_name),
-        )
+        seed.deserialize(&mut *self.deserializer).map_err(|_| {
+            deserialize_enum_error(self.enum_name, self.variant_name).into()
+        })
     }
 
     fn tuple_variant<V>(self, length: usize, visitor: V) -> Result<V::Value>
@@ -60,9 +60,9 @@ where
     {
         self.deserializer
             .deserialize_tuple(length, visitor)
-            .chain_err(
-                || deserialize_enum_error(self.enum_name, self.variant_name),
-            )
+            .map_err(|_| {
+                deserialize_enum_error(self.enum_name, self.variant_name).into()
+            })
     }
 
     fn struct_variant<V>(
@@ -75,8 +75,8 @@ where
     {
         self.deserializer
             .deserialize_struct(self.variant_name, fields, visitor)
-            .chain_err(
-                || deserialize_enum_error(self.enum_name, self.variant_name),
-            )
+            .map_err(|_| {
+                deserialize_enum_error(self.enum_name, self.variant_name).into()
+            })
     }
 }

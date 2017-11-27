@@ -4,8 +4,8 @@ use serde::de::value::U32Deserializer;
 
 use self::variant_deserializer::VariantDeserializer;
 use super::Deserializer;
-use super::super::errors::DeserializationError;
-use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
+use super::super::errors::{CompatDeserializationError, DeserializationError,
+                           Result};
 
 pub struct EnumDeserializer<'a, 'r, R>
 where
@@ -43,20 +43,20 @@ where
     'r: 'a,
     R: ReadBytesExt + 'r,
 {
-    type Error = Error;
+    type Error = CompatDeserializationError;
     type Variant = VariantDeserializer<'a, 'r, R>;
 
     fn variant_seed<V>(self, seed: V) -> Result<(V::Value, Self::Variant)>
     where
         V: DeserializeSeed<'de>,
     {
-        let variant_code_deserializer: U32Deserializer<Error> =
+        let variant_code_deserializer: U32Deserializer<Self::Error> =
             self.variant.into_deserializer();
 
         let value = seed.deserialize(variant_code_deserializer)
-            .chain_err(
-                || deserialize_enum_error(self.enum_name, self.variant_name),
-            )?;
+            .map_err(|_| {
+                deserialize_enum_error(self.enum_name, self.variant_name)
+            })?;
 
         let variant_deserializer = VariantDeserializer::new(
             self.enum_name,
@@ -68,10 +68,13 @@ where
     }
 }
 
-fn deserialize_enum_error(enum_name: &str, variant_name: &str) -> ErrorKind {
+fn deserialize_enum_error(
+    enum_name: &str,
+    variant_name: &str,
+) -> DeserializationError {
     DeserializationError::failure(
         format!("enum variant {}::{}", enum_name, variant_name),
-    ).into()
+    )
 }
 
 mod variant_deserializer;

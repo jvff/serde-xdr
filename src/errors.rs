@@ -3,7 +3,7 @@ use std::io;
 
 use serde::{ser, de};
 
-use super::de::DeserializationError;
+use super::de::{CompatDeserializationError, DeserializationError};
 
 error_chain! {
     errors {
@@ -99,6 +99,20 @@ error_chain! {
 
     foreign_links {
         Io(io::Error);
+    }
+}
+
+impl From<CompatDeserializationError> for ErrorKind {
+    fn from(error: CompatDeserializationError) -> ErrorKind {
+        ErrorKind::DeserializationError(error.into())
+    }
+}
+
+impl From<CompatDeserializationError> for Error {
+    fn from(error: CompatDeserializationError) -> Error {
+        let error_kind: ErrorKind = error.into();
+
+        error_kind.into()
     }
 }
 

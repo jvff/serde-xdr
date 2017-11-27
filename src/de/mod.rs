@@ -5,7 +5,7 @@ use serde::Deserialize;
 
 use super::errors::{ErrorKind, Result, ResultExt};
 
-pub use self::errors::DeserializationError;
+pub use self::errors::{CompatDeserializationError, DeserializationError};
 
 /// Deserializer for the XDR format.
 ///

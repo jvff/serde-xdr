@@ -5,11 +5,12 @@ use serde::de;
 use serde::de::Visitor;
 
 use self::enum_deserializer::EnumDeserializer;
-use self::sequence_deserializer::SequenceDeserializer;
 use self::struct_deserializer::StructDeserializer;
 use super::Deserializer;
 use super::errors::DeserializationError;
 use super::super::errors::{Error, ErrorKind, Result, ResultExt};
+
+pub use self::sequence_deserializer::SequenceDeserializer;
 
 impl<'a, 'de, 'r, R> de::Deserializer<'de> for &'a mut Deserializer<'r, R>
 where
@@ -252,10 +253,8 @@ where
         let length = self.reader
             .read_u32::<BigEndian>()
             .chain_err(|| DeserializationError::failure("sequence"))?;
-        let type_name = "sequence";
-        let deserializer = SequenceDeserializer::new(length, &type_name, self);
 
-        Ok(visitor.visit_seq(deserializer)?)
+        self.deserialize_sequence(visitor, "sequence", length as u32)
     }
 
     fn deserialize_tuple<V>(self, length: usize, visitor: V) -> Result<V::Value>
@@ -266,11 +265,7 @@ where
             bail!(ErrorKind::TupleHasTooManyElements(length));
         }
 
-        let length = length as u32;
-        let type_name = "tuple";
-        let deserializer = SequenceDeserializer::new(length, &type_name, self);
-
-        Ok(visitor.visit_seq(deserializer)?)
+        self.deserialize_sequence(visitor, "tuple", length as u32)
     }
 
     fn deserialize_tuple_struct<V>(
@@ -286,11 +281,9 @@ where
             bail!(ErrorKind::TupleHasTooManyElements(length));
         }
 
-        let length = length as u32;
         let type_name = format!("tuple struct {}", name);
-        let deserializer = SequenceDeserializer::new(length, &type_name, self);
 
-        Ok(visitor.visit_seq(deserializer)?)
+        self.deserialize_sequence(visitor, type_name, length as u32)
     }
 
     fn deserialize_map<V>(self, _visitor: V) -> Result<V::Value>

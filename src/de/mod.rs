@@ -2,7 +2,9 @@ use std::io::{Cursor, Read};
 
 use byteorder::{BigEndian, ReadBytesExt};
 use serde::Deserialize;
+use serde::de::Visitor;
 
+use self::deserializer::SequenceDeserializer;
 use super::errors::{ErrorKind, Result, ResultExt};
 
 pub use self::errors::{CompatDeserializationError, DeserializationError};
@@ -64,6 +66,22 @@ where
         );
 
         Ok(value)
+    }
+
+    fn deserialize_sequence<'de, V, S>(
+        &mut self,
+        visitor: V,
+        type_name: S,
+        length: u32,
+    ) -> Result<V::Value>
+    where
+        V: Visitor<'de>,
+        S: AsRef<str>,
+    {
+        let type_name = type_name.as_ref();
+        let deserializer = SequenceDeserializer::new(length, &type_name, self);
+
+        Ok(visitor.visit_seq(deserializer)?)
     }
 
     fn deserialize_opaque(

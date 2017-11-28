@@ -6,7 +6,6 @@ use serde::de::Visitor;
 
 use self::deserializer::SequenceDeserializer;
 use self::errors::Result;
-use super::errors::Result as OldResult;
 
 pub use self::errors::{CompatDeserializationError, DeserializationError};
 
@@ -116,7 +115,7 @@ where
 /// The lifetimes of the deserialized data `'de` and of the reader `'r` are
 /// different because the deserializer currently is not zero-copy, which means
 /// the returned data owns everything it deserialized.
-pub fn from_reader<'de, 'r, R, T>(reader: &'r mut R) -> OldResult<T>
+pub fn from_reader<'de, 'r, R, T>(reader: &'r mut R) -> Result<T>
 where
     R: Read,
     T: Deserialize<'de>,
@@ -133,7 +132,7 @@ where
 ///
 /// The deserializer is currently zero-copy, which means that the returned data
 /// owns everything it deserialized.
-pub fn from_bytes<'de, B, T>(bytes: B) -> OldResult<T>
+pub fn from_bytes<'de, B, T>(bytes: B) -> Result<T>
 where
     B: AsRef<[u8]>,
     T: Deserialize<'de>,

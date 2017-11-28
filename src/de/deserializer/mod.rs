@@ -302,7 +302,9 @@ where
     where
         V: Visitor<'de>,
     {
-        visitor.visit_seq(StructDeserializer::new(name, fields, self))
+        let struct_deserializer = StructDeserializer::new(name, fields, self);
+
+        Ok(visitor.visit_seq(struct_deserializer)?)
     }
 
     fn deserialize_enum<V>(

@@ -2,8 +2,8 @@ use byteorder::ReadBytesExt;
 use serde::de::{DeserializeSeed, SeqAccess};
 
 use super::super::Deserializer;
-use super::super::errors::DeserializationError;
-use super::super::super::errors::{Error, Result, ResultExt};
+use super::super::errors::{CompatDeserializationError, DeserializationError,
+                           Result};
 
 pub struct StructDeserializer<'a, 'r, R>
 where
@@ -40,13 +40,13 @@ where
     'r: 'a,
     R: ReadBytesExt + 'r,
 {
-    type Error = Error;
+    type Error = CompatDeserializationError;
 
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
     where
         T: DeserializeSeed<'de>,
     {
-        let value = seed.deserialize(&mut *self.deserializer).chain_err(|| {
+        let value = seed.deserialize(&mut *self.deserializer).map_err(|_| {
             let struct_name = self.name;
             let field_name = self.fields[self.current_field];
 

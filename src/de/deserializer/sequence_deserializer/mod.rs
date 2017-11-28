@@ -2,8 +2,8 @@ use byteorder::ReadBytesExt;
 use serde::de::{DeserializeSeed, SeqAccess};
 
 use super::super::Deserializer;
-use super::super::errors::DeserializationError;
-use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
+use super::super::errors::{CompatDeserializationError, DeserializationError,
+                           Result};
 
 pub struct SequenceDeserializer<'a, 'r, 's, R, S>
 where
@@ -44,7 +44,7 @@ where
     R: ReadBytesExt + 'r,
     S: ToString,
 {
-    type Error = Error;
+    type Error = CompatDeserializationError;
 
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
     where
@@ -52,8 +52,8 @@ where
     {
         if self.current_index < self.length {
             let value = seed.deserialize(&mut *self.deserializer)
-                .chain_err(
-                    || deserialize_error(self.type_name, self.current_index),
+                .map_err(
+                    |_| deserialize_error(self.type_name, self.current_index),
                 )?;
 
             self.current_index += 1;
@@ -69,7 +69,7 @@ where
     }
 }
 
-fn deserialize_error<S>(type_name: &S, index: u32) -> ErrorKind
+fn deserialize_error<S>(type_name: &S, index: u32) -> DeserializationError
 where
     S: ToString,
 {
@@ -77,7 +77,7 @@ where
         "element {} of type {}",
         index,
         type_name.to_string()
-    )).into()
+    ))
 }
 
 #[cfg(test)]

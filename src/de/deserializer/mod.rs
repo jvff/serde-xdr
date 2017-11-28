@@ -252,8 +252,10 @@ where
         let length = self.reader
             .read_u32::<BigEndian>()
             .chain_err(|| DeserializationError::failure("sequence"))?;
+        let type_name = "sequence";
+        let deserializer = SequenceDeserializer::new(length, &type_name, self);
 
-        visitor.visit_seq(SequenceDeserializer::new(length, &"sequence", self))
+        Ok(visitor.visit_seq(deserializer)?)
     }
 
     fn deserialize_tuple<V>(self, length: usize, visitor: V) -> Result<V::Value>
@@ -265,8 +267,10 @@ where
         }
 
         let length = length as u32;
+        let type_name = "tuple";
+        let deserializer = SequenceDeserializer::new(length, &type_name, self);
 
-        visitor.visit_seq(SequenceDeserializer::new(length, &"tuple", self))
+        Ok(visitor.visit_seq(deserializer)?)
     }
 
     fn deserialize_tuple_struct<V>(
@@ -284,8 +288,9 @@ where
 
         let length = length as u32;
         let type_name = format!("tuple struct {}", name);
+        let deserializer = SequenceDeserializer::new(length, &type_name, self);
 
-        visitor.visit_seq(SequenceDeserializer::new(length, &type_name, self))
+        Ok(visitor.visit_seq(deserializer)?)
     }
 
     fn deserialize_map<V>(self, _visitor: V) -> Result<V::Value>

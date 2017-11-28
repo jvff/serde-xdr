@@ -46,6 +46,10 @@ pub enum DeserializationError {
     #[fail(display = "XDR does not support a map type")]
     MapIsNotSupported,
 
+    /// Attempt to serialize a tuple that has too many elements.
+    #[fail(display = "tuple has too many elements (maximum is ): {}", length)]
+    TupleHasTooManyElements { length: usize },
+
     /// Attempt to deserialize an unknown type.
     #[fail(display = "can't deserialize unknown type")]
     UnknownType,

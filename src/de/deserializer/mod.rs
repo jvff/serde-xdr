@@ -8,7 +8,7 @@ use self::enum_deserializer::EnumDeserializer;
 use self::struct_deserializer::StructDeserializer;
 use super::Deserializer;
 use super::errors::DeserializationError;
-use super::super::errors::{Error, ErrorKind, Result, ResultExt};
+use super::super::errors::{Error, Result, ResultExt};
 
 pub use self::sequence_deserializer::SequenceDeserializer;
 
@@ -262,7 +262,7 @@ where
         V: Visitor<'de>,
     {
         if length > u32::max_value() as usize {
-            bail!(ErrorKind::TupleHasTooManyElements(length));
+            bail!(DeserializationError::TupleHasTooManyElements { length });
         }
 
         self.deserialize_sequence(visitor, "tuple", length as u32)
@@ -278,7 +278,7 @@ where
         V: Visitor<'de>,
     {
         if length > u32::max_value() as usize {
-            bail!(ErrorKind::TupleHasTooManyElements(length));
+            bail!(DeserializationError::TupleHasTooManyElements { length });
         }
 
         let type_name = format!("tuple struct {}", name);

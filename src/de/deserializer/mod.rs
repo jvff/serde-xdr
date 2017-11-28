@@ -162,8 +162,8 @@ where
         V: Visitor<'de>,
     {
         let buffer = self.deserialize_opaque(
-            DeserializationError::failure("string").into(),
-            DeserializationError::failure("string").into(),
+            DeserializationError::failure("string"),
+            DeserializationError::failure("string"),
         )?;
 
         let string = String::from_utf8(buffer)
@@ -184,8 +184,8 @@ where
         V: Visitor<'de>,
     {
         let buffer = self.deserialize_opaque(
-            DeserializationError::failure("opaque").into(),
-            DeserializationError::failure("opaque").into(),
+            DeserializationError::failure("opaque"),
+            DeserializationError::failure("opaque"),
         )?;
 
         visitor.visit_byte_buf(buffer)
@@ -254,7 +254,7 @@ where
             .read_u32::<BigEndian>()
             .chain_err(|| DeserializationError::failure("sequence"))?;
 
-        self.deserialize_sequence(visitor, "sequence", length as u32)
+        Ok(self.deserialize_sequence(visitor, "sequence", length as u32)?)
     }
 
     fn deserialize_tuple<V>(self, length: usize, visitor: V) -> Result<V::Value>
@@ -265,7 +265,7 @@ where
             bail!(DeserializationError::TupleHasTooManyElements { length });
         }
 
-        self.deserialize_sequence(visitor, "tuple", length as u32)
+        Ok(self.deserialize_sequence(visitor, "tuple", length as u32)?)
     }
 
     fn deserialize_tuple_struct<V>(
@@ -283,7 +283,7 @@ where
 
         let type_name = format!("tuple struct {}", name);
 
-        self.deserialize_sequence(visitor, type_name, length as u32)
+        Ok(self.deserialize_sequence(visitor, type_name, length as u32)?)
     }
 
     fn deserialize_map<V>(self, _visitor: V) -> Result<V::Value>

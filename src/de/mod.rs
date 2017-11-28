@@ -5,7 +5,8 @@ use serde::Deserialize;
 use serde::de::Visitor;
 
 use self::deserializer::SequenceDeserializer;
-use super::errors::{ErrorKind, Result, ResultExt};
+use self::errors::Result;
+use super::errors::Result as OldResult;
 
 pub use self::errors::{CompatDeserializationError, DeserializationError};
 
@@ -32,7 +33,7 @@ where
     }
 
     fn deserialize_integer(&mut self, bits: u8) -> Result<i32> {
-        let value = self.reader.read_i32::<BigEndian>().chain_err(|| {
+        let value = self.reader.read_i32::<BigEndian>().map_err(|_| {
             DeserializationError::failure(
                 format!("signed {}-bit integer", bits),
             )
@@ -42,16 +43,15 @@ where
         let max_value = (most_significant_bit - 1) as i32;
         let min_value = -max_value - 1;
 
-        ensure!(
-            value >= min_value && value <= max_value,
-            DeserializationError::InvalidInteger { bits, value }
-        );
-
-        Ok(value)
+        if value >= min_value && value <= max_value {
+            Ok(value)
+        } else {
+            Err(DeserializationError::InvalidInteger { bits, value }.into())
+        }
     }
 
     fn deserialize_unsigned_integer(&mut self, bits: u8) -> Result<u32> {
-        let value = self.reader.read_u32::<BigEndian>().chain_err(|| {
+        let value = self.reader.read_u32::<BigEndian>().map_err(|_| {
             DeserializationError::failure(
                 format!("unsigned {}-bit integer", bits),
             )
@@ -86,12 +86,12 @@ where
 
     fn deserialize_opaque(
         &mut self,
-        read_length_error_kind: ErrorKind,
-        read_data_error_kind: ErrorKind,
+        read_length_error_kind: DeserializationError,
+        read_data_error_kind: DeserializationError,
     ) -> Result<Vec<u8>> {
         let length = self.reader
             .read_u32::<BigEndian>()
-            .chain_err(|| read_length_error_kind)?;
+            .map_err(|_| read_length_error_kind)?;
 
         let padding_size = 4 - (length + 3) % 4 - 1;
         let buffer_length = length + padding_size;
@@ -101,7 +101,7 @@ where
         buffer.resize(buffer_length as usize, 0);
         self.reader
             .read_exact(&mut buffer)
-            .chain_err(|| read_data_error_kind)?;
+            .map_err(|_| read_data_error_kind)?;
         buffer.truncate(length as usize);
 
         Ok(buffer)
@@ -116,7 +116,7 @@ where
 /// The lifetimes of the deserialized data `'de` and of the reader `'r` are
 /// different because the deserializer currently is not zero-copy, which means
 /// the returned data owns everything it deserialized.
-pub fn from_reader<'de, 'r, R, T>(reader: &'r mut R) -> Result<T>
+pub fn from_reader<'de, 'r, R, T>(reader: &'r mut R) -> OldResult<T>
 where
     R: Read,
     T: Deserialize<'de>,
@@ -133,7 +133,7 @@ where
 ///
 /// The deserializer is currently zero-copy, which means that the returned data
 /// owns everything it deserialized.
-pub fn from_bytes<'de, B, T>(bytes: B) -> Result<T>
+pub fn from_bytes<'de, B, T>(bytes: B) -> OldResult<T>
 where
     B: AsRef<[u8]>,
     T: Deserialize<'de>,

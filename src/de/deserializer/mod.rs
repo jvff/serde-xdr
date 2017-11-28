@@ -290,7 +290,7 @@ where
     where
         V: Visitor<'de>,
     {
-        bail!(ErrorKind::MapIsNotSupported);
+        bail!(DeserializationError::MapIsNotSupported);
     }
 
     fn deserialize_struct<V>(

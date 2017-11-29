@@ -204,7 +204,9 @@ where
             _ => bail!(DeserializationError::InvalidOption),
         };
 
-        result.map_err(|_| DeserializationError::failure("option").into())
+        result.map_err(|error| {
+            DeserializationError::failure("option", error).into()
+        })
     }
 
     fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value>
@@ -233,8 +235,9 @@ where
     where
         V: Visitor<'de>,
     {
-        visitor.visit_newtype_struct(self).map_err(|_| {
-            DeserializationError::failure(format!("struct {}", name)).into()
+        visitor.visit_newtype_struct(self).map_err(|error| {
+            DeserializationError::failure(format!("struct {}", name), error)
+                .into()
         })
     }
 

@@ -51,10 +51,11 @@ where
         T: DeserializeSeed<'de>,
     {
         if self.current_index < self.length {
-            let value = seed.deserialize(&mut *self.deserializer)
-                .map_err(
-                    |_| deserialize_error(self.type_name, self.current_index),
-                )?;
+            let value = seed.deserialize(&mut *self.deserializer).map_err(
+                |error| {
+                    deserialize_error(self.type_name, self.current_index, error)
+                },
+            )?;
 
             self.current_index += 1;
 
@@ -69,15 +70,18 @@ where
     }
 }
 
-fn deserialize_error<S>(type_name: &S, index: u32) -> DeserializationError
+fn deserialize_error<S>(
+    type_name: &S,
+    index: u32,
+    cause: CompatDeserializationError,
+) -> DeserializationError
 where
     S: ToString,
 {
-    DeserializationError::failure(format!(
-        "element {} of type {}",
-        index,
-        type_name.to_string()
-    ))
+    DeserializationError::failure(
+        format!("element {} of type {}", index, type_name.to_string()),
+        cause,
+    )
 }
 
 #[cfg(test)]

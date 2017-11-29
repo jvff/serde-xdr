@@ -49,8 +49,9 @@ where
     where
         T: DeserializeSeed<'de>,
     {
-        seed.deserialize(&mut *self.deserializer).map_err(|_| {
-            deserialize_enum_error(self.enum_name, self.variant_name).into()
+        seed.deserialize(&mut *self.deserializer).map_err(|error| {
+            deserialize_enum_error(self.enum_name, self.variant_name, error)
+                .into()
         })
     }
 
@@ -60,8 +61,9 @@ where
     {
         self.deserializer
             .deserialize_tuple(length, visitor)
-            .map_err(|_| {
-                deserialize_enum_error(self.enum_name, self.variant_name).into()
+            .map_err(|error| {
+                deserialize_enum_error(self.enum_name, self.variant_name, error)
+                    .into()
             })
     }
 
@@ -75,8 +77,9 @@ where
     {
         self.deserializer
             .deserialize_struct(self.variant_name, fields, visitor)
-            .map_err(|_| {
-                deserialize_enum_error(self.enum_name, self.variant_name).into()
+            .map_err(|error| {
+                deserialize_enum_error(self.enum_name, self.variant_name, error)
+                    .into()
             })
     }
 }

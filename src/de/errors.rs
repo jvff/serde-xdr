@@ -16,7 +16,11 @@ pub enum DeserializationError {
 
     /// Failure while deserializing a value.
     #[fail(display = "failed to deserialize a value of type: {}", type_name)]
-    Failure { type_name: String },
+    Failure {
+        type_name: String,
+        #[cause]
+        cause: Box<CompatDeserializationError>,
+    },
 
     /// Deserialization of an identifier (for meta-data) is not supported.
     #[fail(display = "deserialization of an identifier is not supported")]
@@ -71,12 +75,14 @@ pub enum DeserializationError {
 }
 
 impl DeserializationError {
-    pub fn failure<S>(type_name: S) -> Self
+    pub fn failure<S, E>(type_name: S, cause: E) -> Self
     where
         S: ToString,
+        E: Into<CompatDeserializationError>,
     {
         DeserializationError::Failure {
             type_name: type_name.to_string(),
+            cause: Box::new(cause.into()),
         }
     }
 

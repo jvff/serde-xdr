@@ -53,10 +53,11 @@ where
         let variant_code_deserializer: U32Deserializer<Self::Error> =
             self.variant.into_deserializer();
 
-        let value = seed.deserialize(variant_code_deserializer)
-            .map_err(|_| {
-                deserialize_enum_error(self.enum_name, self.variant_name)
-            })?;
+        let value = seed.deserialize(variant_code_deserializer).map_err(
+            |error| {
+                deserialize_enum_error(self.enum_name, self.variant_name, error)
+            },
+        )?;
 
         let variant_deserializer = VariantDeserializer::new(
             self.enum_name,
@@ -71,9 +72,11 @@ where
 fn deserialize_enum_error(
     enum_name: &str,
     variant_name: &str,
+    cause: CompatDeserializationError,
 ) -> DeserializationError {
     DeserializationError::failure(
         format!("enum variant {}::{}", enum_name, variant_name),
+        cause,
     )
 }
 

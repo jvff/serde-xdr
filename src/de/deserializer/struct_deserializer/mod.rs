@@ -46,14 +46,16 @@ where
     where
         T: DeserializeSeed<'de>,
     {
-        let value = seed.deserialize(&mut *self.deserializer).map_err(|_| {
-            let struct_name = self.name;
-            let field_name = self.fields[self.current_field];
+        let value =
+            seed.deserialize(&mut *self.deserializer).map_err(|error| {
+                let struct_name = self.name;
+                let field_name = self.fields[self.current_field];
 
-            DeserializationError::failure(
-                format!("struct field {}::{}", struct_name, field_name),
-            )
-        })?;
+                DeserializationError::failure(
+                    format!("struct field {}::{}", struct_name, field_name),
+                    error,
+                )
+            })?;
 
         self.current_field += 1;
 

@@ -162,7 +162,7 @@ where
     {
         let buffer = self.deserialize_opaque("string")?;
         let string = String::from_utf8(buffer)
-            .map_err(|_| DeserializationError::failure("string"))?;
+            .map_err(|cause| DeserializationError::InvalidString { cause })?;
 
         visitor.visit_string(string)
     }

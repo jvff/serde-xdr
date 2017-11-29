@@ -3,6 +3,7 @@ use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::io;
 use std::result;
+use std::string::FromUtf8Error;
 
 use failure::{Compat, Fail};
 use serde::de;
@@ -37,6 +38,10 @@ pub enum DeserializationError {
     /// Deserialized optional value is invalid.
     #[fail(display = "deserialized an invalid option")]
     InvalidOption,
+
+    /// Deserialized an invalid UTF-8 string.
+    #[fail(display = "deserialized an invalid UTF-8 string")]
+    InvalidString { cause: FromUtf8Error },
 
     /// Deserialized unsigned integer is invalid.
     #[fail(display = "deserialized invalid {}-bit unsigned integer: {}", bits,

@@ -32,9 +32,10 @@ where
     }
 
     fn deserialize_integer(&mut self, bits: u8) -> Result<i32> {
-        let value = self.reader.read_i32::<BigEndian>().map_err(|_| {
-            DeserializationError::failure(
+        let value = self.reader.read_i32::<BigEndian>().map_err(|error| {
+            DeserializationError::io_error(
                 format!("signed {}-bit integer", bits),
+                error,
             )
         })?;
 
@@ -50,9 +51,10 @@ where
     }
 
     fn deserialize_unsigned_integer(&mut self, bits: u8) -> Result<u32> {
-        let value = self.reader.read_u32::<BigEndian>().map_err(|_| {
-            DeserializationError::failure(
+        let value = self.reader.read_u32::<BigEndian>().map_err(|error| {
+            DeserializationError::io_error(
                 format!("unsigned {}-bit integer", bits),
+                error,
             )
         })?;
 

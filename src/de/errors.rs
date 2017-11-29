@@ -1,6 +1,7 @@
 use std::error;
 use std::fmt;
 use std::fmt::{Display, Formatter};
+use std::io;
 use std::result;
 
 use failure::{Compat, Fail};
@@ -42,6 +43,15 @@ pub enum DeserializationError {
            value)]
     InvalidUnsignedInteger { bits: u8, value: u32 },
 
+    /// IO error while deserializing a value.
+    #[fail(display = "IO error while deserializing a value of type {}: {}",
+           type_name, cause)]
+    IoError {
+        type_name: String,
+        #[cause]
+        cause: io::Error,
+    },
+
     /// Map types are not supported by XDR.
     #[fail(display = "XDR does not support a map type")]
     MapIsNotSupported,
@@ -62,6 +72,16 @@ impl DeserializationError {
     {
         DeserializationError::Failure {
             type_name: type_name.to_string(),
+        }
+    }
+
+    pub fn io_error<S>(type_name: S, cause: io::Error) -> Self
+    where
+        S: ToString,
+    {
+        DeserializationError::IoError {
+            type_name: type_name.to_string(),
+            cause,
         }
     }
 }

@@ -160,11 +160,7 @@ where
     where
         V: Visitor<'de>,
     {
-        let buffer = self.deserialize_opaque(
-            DeserializationError::failure("string"),
-            DeserializationError::failure("string"),
-        )?;
-
+        let buffer = self.deserialize_opaque("string")?;
         let string = String::from_utf8(buffer)
             .map_err(|_| DeserializationError::failure("string"))?;
 
@@ -182,10 +178,7 @@ where
     where
         V: Visitor<'de>,
     {
-        let buffer = self.deserialize_opaque(
-            DeserializationError::failure("opaque"),
-            DeserializationError::failure("opaque"),
-        )?;
+        let buffer = self.deserialize_opaque("opaque")?;
 
         visitor.visit_byte_buf(buffer)
     }

@@ -85,14 +85,10 @@ where
         Ok(visitor.visit_seq(deserializer)?)
     }
 
-    fn deserialize_opaque(
-        &mut self,
-        read_length_error_kind: DeserializationError,
-        read_data_error_kind: DeserializationError,
-    ) -> Result<Vec<u8>> {
+    fn deserialize_opaque(&mut self, type_name: &str) -> Result<Vec<u8>> {
         let length = self.reader
             .read_u32::<BigEndian>()
-            .map_err(|_| read_length_error_kind)?;
+            .map_err(|error| DeserializationError::io_error(type_name, error))?;
 
         let padding_size = 4 - (length + 3) % 4 - 1;
         let buffer_length = length + padding_size;
@@ -102,7 +98,7 @@ where
         buffer.resize(buffer_length as usize, 0);
         self.reader
             .read_exact(&mut buffer)
-            .map_err(|_| read_data_error_kind)?;
+            .map_err(|error| DeserializationError::io_error(type_name, error))?;
         buffer.truncate(length as usize);
 
         Ok(buffer)

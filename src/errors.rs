@@ -45,11 +45,6 @@ error_chain! {
             display("fatal failure while serializing {}", type_name)
         }
 
-        /// Sequences with unknown lengths are not supported.
-        SerializeSequenceWithUnknownLength {
-            description("can't serialize sequence with unknown length")
-        }
-
         /// Fatal error while serializing an object.
         ///
         /// This is probably caused by ignoring a previous error.

@@ -36,7 +36,7 @@ where
         if let Some(length) = length {
             serializer = Self::serialize_length(length, serializer)?;
         } else {
-            bail!(ErrorKind::SerializeSequenceWithUnknownLength);
+            bail!(SerializationError::SequenceWithUnknownLength);
         }
 
         Ok(SequenceSerializer::new(TypeName::Sequence, serializer))

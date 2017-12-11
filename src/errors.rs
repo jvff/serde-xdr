@@ -57,16 +57,6 @@ error_chain! {
             description("fatal failure while serializing struct")
             display("fatal failure while serializing struct: {}", name)
         }
-
-        /// Attempt to serialize a tuple that has too many elements.
-        TupleHasTooManyElements(count: usize) {
-            description("tuple has too many elements")
-            display(
-                "tuple has too many elements (maximum is {}): {}",
-                u32::max_value(),
-                count,
-            )
-        }
     }
 
     foreign_links {

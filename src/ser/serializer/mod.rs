@@ -6,6 +6,7 @@ use serde::ser::Serialize;
 
 use self::sequence_serializer::SequenceSerializer;
 use self::struct_serializer::StructSerializer;
+use super::errors::SerializationError;
 use super::Serializer;
 use super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
@@ -121,7 +122,7 @@ where
 
         ensure!(
             length <= u32::max_value() as usize,
-            ErrorKind::OpaqueDataIsTooLong(length)
+            SerializationError::OpaqueDataIsTooLong { length }
         );
 
         let full_padding = [0u8; 3];

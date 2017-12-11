@@ -58,16 +58,6 @@ error_chain! {
             display("fatal failure while serializing struct: {}", name)
         }
 
-        /// Attempt to serialize a string that's too long.
-        StringIsTooLong(string: String) {
-            description("string is too long")
-            display(
-                "string is too long (maximum length is {} bytes): {}",
-                u32::max_value(),
-                string,
-            )
-        }
-
         /// Attempt to serialize a tuple that has too many elements.
         TupleHasTooManyElements(count: usize) {
             description("tuple has too many elements")

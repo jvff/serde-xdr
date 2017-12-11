@@ -106,7 +106,9 @@ where
 
     fn serialize_str(self, value: &str) -> Result<Self> {
         if value.len() > u32::max_value() as usize {
-            bail!(ErrorKind::StringIsTooLong(value.to_string()));
+            let string = value.to_string();
+
+            bail!(SerializationError::StringIsTooLong { string });
         }
 
         if !value.is_ascii() {

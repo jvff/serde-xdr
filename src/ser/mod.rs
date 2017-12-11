@@ -7,6 +7,8 @@ use serde::ser::Serialize;
 
 use super::errors::{Error, ErrorKind, Result};
 
+pub use self::errors::SerializationError;
+
 /// Serializer for the XDR format.
 ///
 /// Structure that holds a mutable borrow of the writer it serializes data to.
@@ -98,3 +100,5 @@ where
 
     Ok(())
 }
+
+mod errors;

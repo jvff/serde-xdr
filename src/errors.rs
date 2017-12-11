@@ -4,6 +4,7 @@ use std::io;
 use serde::{ser, de};
 
 use super::de::{CompatDeserializationError, DeserializationError};
+use super::ser::SerializationError;
 
 error_chain! {
     errors {
@@ -41,6 +42,12 @@ error_chain! {
         SequenceTooLong(length: usize) {
             description("sequence is too long to be serialized")
             display("sequence is too long to be serialized: {}", length)
+        }
+
+        /// Wrapped serialization error in the new format.
+        SerializationError(error: SerializationError) {
+            description("serialization error")
+            display("serialization error: {}", error)
         }
 
         /// Failure to serialize a value.
@@ -124,6 +131,20 @@ impl From<DeserializationError> for ErrorKind {
 
 impl From<DeserializationError> for Error {
     fn from(error: DeserializationError) -> Error {
+        let error_kind: ErrorKind = error.into();
+
+        error_kind.into()
+    }
+}
+
+impl From<SerializationError> for ErrorKind {
+    fn from(error: SerializationError) -> ErrorKind {
+        ErrorKind::SerializationError(error)
+    }
+}
+
+impl From<SerializationError> for Error {
+    fn from(error: SerializationError) -> Error {
         let error_kind: ErrorKind = error.into();
 
         error_kind.into()

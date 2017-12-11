@@ -18,6 +18,12 @@ pub enum SerializationError {
     #[fail(display = "fatal failure while serializing {}", type_name)]
     SequenceOrTupleFatalError { type_name: String },
 
+    /// Fatal error while serializing an object.
+    ///
+    /// This is probably caused by ignoring a previous error.
+    #[fail(display = "fatal failure while serializing struct: {}", name)]
+    StructFatalError { name: String },
+
     /// Attempt to serialize a sequence that's too long.
     #[fail(display = "sequence is too long to be serialized: {}", length)]
     SequenceTooLong { length: usize },

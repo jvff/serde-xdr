@@ -31,14 +31,6 @@ error_chain! {
             description("failed to serialize a value")
             display("failed to serialize {}", what)
         }
-
-        /// Fatal error while serializing an object.
-        ///
-        /// This is probably caused by ignoring a previous error.
-        SerializeStructFatalError(name: String) {
-            description("fatal failure while serializing struct")
-            display("fatal failure while serializing struct: {}", name)
-        }
     }
 
     foreign_links {

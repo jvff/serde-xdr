@@ -3,6 +3,7 @@ use serde::ser;
 use serde::ser::Serialize;
 
 use self::type_name::TypeName;
+use super::super::errors::SerializationError;
 use super::super::Serializer;
 use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
@@ -109,7 +110,9 @@ where
 }
 
 fn fatal_error(struct_name: &TypeName) -> Error {
-    ErrorKind::SerializeStructFatalError(struct_name.to_string()).into()
+    let name = struct_name.to_string();
+
+    SerializationError::StructFatalError { name }.into()
 }
 
 fn serialization_error(struct_name: &TypeName, field_name: &str) -> ErrorKind {

@@ -38,12 +38,6 @@ error_chain! {
             )
         }
 
-        /// Attempt to serialize a sequence that's too long.
-        SequenceTooLong(length: usize) {
-            description("sequence is too long to be serialized")
-            display("sequence is too long to be serialized: {}", length)
-        }
-
         /// Wrapped serialization error in the new format.
         SerializationError(error: SerializationError) {
             description("serialization error")

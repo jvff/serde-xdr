@@ -4,6 +4,7 @@ use serde::ser::{SerializeSeq, SerializeTuple, SerializeTupleStruct,
                  SerializeTupleVariant};
 
 use self::type_name::TypeName;
+use super::super::errors::SerializationError;
 use super::super::Serializer;
 use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
 
@@ -77,7 +78,10 @@ where
     fn ensure_length_is_valid(length: usize) -> Result<()> {
         let max_length = u32::max_value() as usize;
 
-        ensure!(length <= max_length, ErrorKind::SequenceTooLong(length));
+        ensure!(
+            length <= max_length,
+            SerializationError::SequenceTooLong { length }
+        );
 
         Ok(())
     }

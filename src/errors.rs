@@ -20,11 +20,6 @@ error_chain! {
             display("deserialization error: {}", error)
         }
 
-        /// Map types are not supported by XDR.
-        MapIsNotSupported {
-            description("XDR does not support a map type")
-        }
-
         /// Wrapped serialization error in the new format.
         SerializationError(error: SerializationError) {
             description("serialization error")

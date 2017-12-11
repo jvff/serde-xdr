@@ -4,6 +4,10 @@ pub enum SerializationError {
     #[fail(display = "custom error message: {}", message)]
     Custom { message: String },
 
+    /// Map types are not supported by XDR.
+    #[fail(display = "XDR does not support a map type")]
+    MapIsNotSupported,
+
     /// Attempt to serialize opaque data with too many bytes.
     #[fail(display = "opaque data is too long: {} bytes", length)]
     OpaqueDataIsTooLong { length: usize },

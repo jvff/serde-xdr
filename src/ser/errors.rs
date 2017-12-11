@@ -12,6 +12,12 @@ pub enum SerializationError {
     #[fail(display = "opaque data is too long: {} bytes", length)]
     OpaqueDataIsTooLong { length: usize },
 
+    /// Fatal error while serializing a sequence or a tuple.
+    ///
+    /// This is probably caused by ignoring a previous error.
+    #[fail(display = "fatal failure while serializing {}", type_name)]
+    SequenceOrTupleFatalError { type_name: String },
+
     /// Attempt to serialize a sequence that's too long.
     #[fail(display = "sequence is too long to be serialized: {}", length)]
     SequenceTooLong { length: usize },

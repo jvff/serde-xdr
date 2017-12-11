@@ -191,8 +191,10 @@ where
     }
 }
 
-fn fatal_error(type_name: &TypeName) -> ErrorKind {
-    ErrorKind::SerializeSequenceOrTupleFatalError(type_name.to_string())
+fn fatal_error(type_name: &TypeName) -> SerializationError {
+    let type_name = type_name.to_string();
+
+    SerializationError::SequenceOrTupleFatalError { type_name }
 }
 
 fn serialize_element_error(type_name: &TypeName, index: usize) -> ErrorKind {

@@ -32,14 +32,6 @@ error_chain! {
             display("failed to serialize {}", what)
         }
 
-        /// Fatal error while serializing a sequence or a tuple.
-        ///
-        /// This is probably caused by ignoring a previous error.
-        SerializeSequenceOrTupleFatalError(type_name: String) {
-            description("fatal failure while serializing tuple or sequence")
-            display("fatal failure while serializing {}", type_name)
-        }
-
         /// Fatal error while serializing an object.
         ///
         /// This is probably caused by ignoring a previous error.

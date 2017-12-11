@@ -58,12 +58,6 @@ error_chain! {
             display("fatal failure while serializing struct: {}", name)
         }
 
-        /// Only ASCII strings can be serialized
-        StringIsNotAscii(string: String) {
-            description("string is not ASCII encoded")
-            display("string is not ASCII encoded: {}", string)
-        }
-
         /// Attempt to serialize a string that's too long.
         StringIsTooLong(string: String) {
             description("string is too long")

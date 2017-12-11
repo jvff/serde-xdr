@@ -110,7 +110,9 @@ where
         }
 
         if !value.is_ascii() {
-            bail!(ErrorKind::StringIsNotAscii(value.to_string()));
+            let string = value.to_string();
+
+            bail!(SerializationError::StringIsNotAscii { string });
         }
 
         self.serialize_bytes(value.as_bytes())

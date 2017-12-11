@@ -11,4 +11,8 @@ pub enum SerializationError {
     /// Attempt to serialize a sequence that's too long.
     #[fail(display = "sequence is too long to be serialized: {}", length)]
     SequenceTooLong { length: usize },
+
+    /// Only ASCII strings can be serialized.
+    #[fail(display = "string is not ASCII encoded: {}", string)]
+    StringIsNotAscii { string: String },
 }

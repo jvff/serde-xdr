@@ -116,9 +116,9 @@ fn fatal_error(struct_name: &TypeName) -> Error {
 }
 
 fn serialization_error(struct_name: &TypeName, field_name: &str) -> ErrorKind {
-    ErrorKind::SerializeFailure(
-        format!("struct field {}::{}", struct_name, field_name),
-    )
+    SerializationError::Failure {
+        what: format!("struct field {}::{}", struct_name, field_name),
+    }.into()
 }
 
 mod type_name;

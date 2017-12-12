@@ -35,13 +35,15 @@ where
     where
         T: Display,
     {
-        ErrorKind::SerializeFailure(
-            format!("a value {} of type {}", value, type_name),
-        )
+        SerializationError::Failure {
+            what: format!("a value {} of type {}", value, type_name),
+        }.into()
     }
 
     fn serialize_opaque_failure(length: usize) -> ErrorKind {
-        ErrorKind::SerializeFailure(format!("opaque data of length {}", length))
+        SerializationError::Failure {
+            what: format!("opaque data of length {}", length),
+        }.into()
     }
 }
 

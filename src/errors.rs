@@ -25,12 +25,6 @@ error_chain! {
             description("serialization error")
             display("serialization error: {}", error)
         }
-
-        /// Failure to serialize a value.
-        SerializeFailure(what: String) {
-            description("failed to serialize a value")
-            display("failed to serialize {}", what)
-        }
     }
 
     foreign_links {

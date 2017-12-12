@@ -4,6 +4,10 @@ pub enum SerializationError {
     #[fail(display = "custom error message: {}", message)]
     Custom { message: String },
 
+    /// Failure to serialize a value.
+    #[fail(display = "failed to serialize {}", what)]
+    Failure { what: String },
+
     /// Map types are not supported by XDR.
     #[fail(display = "XDR does not support a map type")]
     MapIsNotSupported,

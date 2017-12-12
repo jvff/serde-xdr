@@ -8,7 +8,7 @@ use self::sequence_serializer::SequenceSerializer;
 use self::struct_serializer::StructSerializer;
 use super::errors::SerializationError;
 use super::Serializer;
-use super::super::errors::{Error, ErrorKind, Result, ResultExt};
+use super::super::errors::{Error, Result, ResultExt};
 
 impl<'w, W> ser::Serializer for Serializer<'w, W>
 where
@@ -181,9 +181,9 @@ where
         variant: &'static str,
     ) -> Result<Self> {
         self.serialize_u32(variant_index).chain_err(|| {
-            ErrorKind::SerializeFailure(
-                format!("enum variant {}::{}", name, variant),
-            )
+            SerializationError::Failure {
+                what: format!("enum variant {}::{}", name, variant),
+            }
         })
     }
 
@@ -196,7 +196,9 @@ where
         T: ?Sized + Serialize,
     {
         value.serialize(self).chain_err(
-            || ErrorKind::SerializeFailure(format!("struct {}", name)),
+            || SerializationError::Failure {
+                what: format!("struct {}", name),
+            },
         )
     }
 
@@ -211,15 +213,15 @@ where
         T: ?Sized + Serialize,
     {
         let serializer = self.serialize_u32(variant_index).chain_err(|| {
-            ErrorKind::SerializeFailure(
-                format!("union variant {}::{}", name, variant),
-            )
+            SerializationError::Failure {
+                what: format!("union variant {}::{}", name, variant),
+            }
         })?;
 
         value.serialize(serializer).chain_err(|| {
-            ErrorKind::SerializeFailure(
-                format!("union variant {}::{}", name, variant),
-            )
+            SerializationError::Failure {
+                what: format!("union variant {}::{}", name, variant),
+            }
         })
     }
 

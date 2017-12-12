@@ -71,7 +71,9 @@ where
         Self::ensure_length_is_valid(length)?;
 
         serializer.serialize_u32(length as u32).chain_err(|| {
-            ErrorKind::SerializeFailure(format!("sequence length: {}", length))
+            SerializationError::Failure {
+                what: format!("sequence length: {}", length),
+            }
         })
     }
 
@@ -198,9 +200,9 @@ fn fatal_error(type_name: &TypeName) -> SerializationError {
 }
 
 fn serialize_element_error(type_name: &TypeName, index: usize) -> ErrorKind {
-    ErrorKind::SerializeFailure(
-        format!("element {} of the type {}", index, type_name),
-    )
+    SerializationError::Failure {
+        what: format!("element {} of the type {}", index, type_name),
+    }.into()
 }
 
 mod type_name;

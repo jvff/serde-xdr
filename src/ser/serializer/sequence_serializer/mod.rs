@@ -6,7 +6,7 @@ use serde::ser::{SerializeSeq, SerializeTuple, SerializeTupleStruct,
 use self::type_name::TypeName;
 use super::super::errors::SerializationError;
 use super::super::Serializer;
-use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
+use super::super::super::errors::{Error, Result, ResultExt};
 
 pub struct SequenceSerializer<'w, W>
 where
@@ -95,9 +95,7 @@ where
         if let Some(serializer) = self.serializer.take() {
             let serializer = value
                 .serialize(serializer)
-                .chain_err(|| {
-                    serialize_element_error(&self.type_name, self.current_index)
-                })?;
+                .chain_err(|| self.failure())?;
 
             self.current_index += 1;
             self.serializer = Some(serializer);
@@ -113,6 +111,15 @@ where
             Ok(serializer)
         } else {
             bail!(fatal_error(&self.type_name))
+        }
+    }
+
+    fn failure(&self) -> SerializationError {
+        let index = self.current_index;
+        let type_name = &self.type_name;
+
+        SerializationError::Failure {
+            what: format!("element {} of the type {}", index, type_name),
         }
     }
 }
@@ -197,12 +204,6 @@ fn fatal_error(type_name: &TypeName) -> SerializationError {
     let type_name = type_name.to_string();
 
     SerializationError::SequenceOrTupleFatalError { type_name }
-}
-
-fn serialize_element_error(type_name: &TypeName, index: usize) -> ErrorKind {
-    SerializationError::Failure {
-        what: format!("element {} of the type {}", index, type_name),
-    }.into()
 }
 
 mod type_name;

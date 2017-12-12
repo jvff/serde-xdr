@@ -5,7 +5,7 @@ use byteorder::WriteBytesExt;
 use serde::ser;
 use serde::ser::Serialize;
 
-use super::errors::{Error, ErrorKind, Result};
+use super::errors::{Error, Result};
 
 pub use self::errors::SerializationError;
 
@@ -31,19 +31,19 @@ where
         Serializer { writer }
     }
 
-    fn serialize_failure<T>(type_name: &str, value: T) -> ErrorKind
+    fn serialize_failure<T>(type_name: &str, value: T) -> SerializationError
     where
         T: Display,
     {
         SerializationError::Failure {
             what: format!("a value {} of type {}", value, type_name),
-        }.into()
+        }
     }
 
-    fn serialize_opaque_failure(length: usize) -> ErrorKind {
+    fn serialize_opaque_failure(length: usize) -> SerializationError {
         SerializationError::Failure {
             what: format!("opaque data of length {}", length),
-        }.into()
+        }
     }
 }
 

@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 use std::error;
 use std::fmt;
 use std::fmt::{Display, Formatter};

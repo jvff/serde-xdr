@@ -65,7 +65,6 @@
 //! }
 //! ```
 
-#![recursion_limit="256"]
 #![deny(missing_docs)]
 
 #[macro_use]
@@ -86,8 +85,6 @@ extern crate ordered_float;
 #[cfg(test)]
 extern crate serde_bytes;
 
-#[allow(missing_docs)]
-mod errors;
 mod ser;
 mod de;
 
@@ -97,6 +94,8 @@ mod tests;
 /// Serialization and deserialization functions for opaque data.
 pub mod opaque_data;
 
-pub use de::{from_bytes, from_reader, Deserializer};
-pub use errors::{Error, ErrorKind, Result};
-pub use ser::{to_bytes, to_writer, Serializer};
+
+pub use de::{from_bytes, from_reader, Deserializer, CompatDeserializationError,
+             DeserializationError};
+pub use ser::{to_bytes, to_writer, Serializer, CompatSerializationError,
+              SerializationError};

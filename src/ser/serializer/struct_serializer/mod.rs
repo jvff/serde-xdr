@@ -5,7 +5,7 @@ use serde::ser::Serialize;
 use self::type_name::TypeName;
 use super::super::errors::SerializationError;
 use super::super::Serializer;
-use super::super::super::errors::{Error, ErrorKind, Result, ResultExt};
+use super::super::super::errors::{Error, Result, ResultExt};
 
 pub struct StructSerializer<'w, W>
 where
@@ -115,10 +115,13 @@ fn fatal_error(struct_name: &TypeName) -> Error {
     SerializationError::StructFatalError { name }.into()
 }
 
-fn serialization_error(struct_name: &TypeName, field_name: &str) -> ErrorKind {
+fn serialization_error(
+    struct_name: &TypeName,
+    field_name: &str,
+) -> SerializationError {
     SerializationError::Failure {
         what: format!("struct field {}::{}", struct_name, field_name),
-    }.into()
+    }
 }
 
 mod type_name;

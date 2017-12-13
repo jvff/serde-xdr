@@ -3,9 +3,8 @@ use serde::ser;
 use serde::ser::Serialize;
 
 use self::type_name::TypeName;
-use super::super::errors::SerializationError;
+use super::super::errors::{CompatSerializationError, Result, SerializationError};
 use super::super::Serializer;
-use super::super::super::errors::{Error, Result, ResultExt};
 
 pub struct StructSerializer<'w, W>
 where
@@ -51,14 +50,14 @@ where
         if let Some(serializer) = self.serializer.take() {
             let serializer = value
                 .serialize(serializer)
-                .chain_err(|| serialization_error(&self.struct_name, key))?;
+                .map_err(|_| serialization_error(&self.struct_name, key))?;
 
             self.serializer = Some(serializer);
 
             Ok(())
         } else {
             Err(fatal_error(&self.struct_name))
-                .chain_err(|| serialization_error(&self.struct_name, key))
+                .map_err(|_| serialization_error(&self.struct_name, key).into())
         }
     }
 
@@ -76,7 +75,7 @@ where
     W: WriteBytesExt + 'w,
 {
     type Ok = Serializer<'w, W>;
-    type Error = Error;
+    type Error = CompatSerializationError;
 
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<()>
     where
@@ -95,7 +94,7 @@ where
     W: WriteBytesExt + 'w,
 {
     type Ok = Serializer<'w, W>;
-    type Error = Error;
+    type Error = CompatSerializationError;
 
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<()>
     where
@@ -109,7 +108,7 @@ where
     }
 }
 
-fn fatal_error(struct_name: &TypeName) -> Error {
+fn fatal_error(struct_name: &TypeName) -> CompatSerializationError {
     let name = struct_name.to_string();
 
     SerializationError::StructFatalError { name }.into()

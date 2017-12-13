@@ -5,9 +5,9 @@ use byteorder::WriteBytesExt;
 use serde::ser;
 use serde::ser::Serialize;
 
-use super::errors::{Error, Result};
+use super::errors::Result as OldResult;
 
-pub use self::errors::SerializationError;
+pub use self::errors::{CompatSerializationError, Result, SerializationError};
 
 /// Serializer for the XDR format.
 ///
@@ -31,13 +31,16 @@ where
         Serializer { writer }
     }
 
-    fn serialize_failure<T>(type_name: &str, value: T) -> SerializationError
+    fn serialize_failure<T>(
+        type_name: &str,
+        value: T,
+    ) -> CompatSerializationError
     where
         T: Display,
     {
         SerializationError::Failure {
             what: format!("a value {} of type {}", value, type_name),
-        }
+        }.into()
     }
 
     fn serialize_opaque_failure(length: usize) -> SerializationError {
@@ -54,7 +57,7 @@ where
     W: WriteBytesExt + 'w,
 {
     type Ok = Self;
-    type Error = Error;
+    type Error = CompatSerializationError;
 
     fn serialize_key<T>(&mut self, _key: &T) -> Result<()>
     where
@@ -78,7 +81,7 @@ where
 /// Serialize data into a vector of bytes.
 ///
 /// Serializes a generic data type into a new instance of `Vec<u8>`.
-pub fn to_bytes<T>(value: &T) -> Result<Vec<u8>>
+pub fn to_bytes<T>(value: &T) -> OldResult<Vec<u8>>
 where
     T: Serialize,
 {
@@ -93,7 +96,7 @@ where
 ///
 /// Serializes a generic data type through a borrowed instance that implements
 /// `Write`.
-pub fn to_writer<W, T>(writer: &mut W, value: &T) -> Result<()>
+pub fn to_writer<W, T>(writer: &mut W, value: &T) -> OldResult<()>
 where
     W: Write,
     T: Serialize,

@@ -4,9 +4,8 @@ use serde::ser::{SerializeSeq, SerializeTuple, SerializeTupleStruct,
                  SerializeTupleVariant};
 
 use self::type_name::TypeName;
-use super::super::errors::SerializationError;
+use super::super::errors::{CompatSerializationError, Result, SerializationError};
 use super::super::Serializer;
-use super::super::super::errors::{Error, Result, ResultExt};
 
 pub struct SequenceSerializer<'w, W>
 where
@@ -70,10 +69,10 @@ where
     ) -> Result<Serializer<'w, W>> {
         Self::ensure_length_is_valid(length)?;
 
-        serializer.serialize_u32(length as u32).chain_err(|| {
+        serializer.serialize_u32(length as u32).map_err(|_| {
             SerializationError::Failure {
                 what: format!("sequence length: {}", length),
-            }
+            }.into()
         })
     }
 
@@ -95,7 +94,7 @@ where
         if let Some(serializer) = self.serializer.take() {
             let serializer = value
                 .serialize(serializer)
-                .chain_err(|| self.failure())?;
+                .map_err(|_| self.failure())?;
 
             self.current_index += 1;
             self.serializer = Some(serializer);
@@ -129,7 +128,7 @@ where
     W: WriteBytesExt + 'w,
 {
     type Ok = Serializer<'w, W>;
-    type Error = Error;
+    type Error = CompatSerializationError;
 
     fn serialize_element<T>(&mut self, value: &T) -> Result<()>
     where
@@ -148,7 +147,7 @@ where
     W: WriteBytesExt + 'w,
 {
     type Ok = Serializer<'w, W>;
-    type Error = Error;
+    type Error = CompatSerializationError;
 
     fn serialize_element<T>(&mut self, value: &T) -> Result<()>
     where
@@ -167,7 +166,7 @@ where
     W: WriteBytesExt + 'w,
 {
     type Ok = Serializer<'w, W>;
-    type Error = Error;
+    type Error = CompatSerializationError;
 
     fn serialize_field<T>(&mut self, value: &T) -> Result<()>
     where
@@ -186,7 +185,7 @@ where
     W: WriteBytesExt + 'w,
 {
     type Ok = Serializer<'w, W>;
-    type Error = Error;
+    type Error = CompatSerializationError;
 
     fn serialize_field<T>(&mut self, value: &T) -> Result<()>
     where

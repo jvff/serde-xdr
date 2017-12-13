@@ -67,8 +67,6 @@
 
 #![deny(missing_docs)]
 
-#[macro_use]
-extern crate error_chain;
 extern crate failure;
 #[macro_use]
 extern crate failure_derive;
@@ -85,6 +83,9 @@ extern crate ordered_float;
 #[cfg(test)]
 extern crate serde_bytes;
 
+#[macro_use]
+mod errors;
+
 mod ser;
 mod de;
 
@@ -93,7 +94,6 @@ mod tests;
 
 /// Serialization and deserialization functions for opaque data.
 pub mod opaque_data;
-
 
 pub use de::{from_bytes, from_reader, Deserializer, CompatDeserializationError,
              DeserializationError};

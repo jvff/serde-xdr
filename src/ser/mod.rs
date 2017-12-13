@@ -6,8 +6,6 @@ use byteorder::WriteBytesExt;
 use serde::ser;
 use serde::ser::Serialize;
 
-use super::errors::Result as OldResult;
-
 pub use self::errors::{CompatSerializationError, Result, SerializationError};
 
 /// Serializer for the XDR format.
@@ -116,7 +114,7 @@ where
 /// Serialize data into a vector of bytes.
 ///
 /// Serializes a generic data type into a new instance of `Vec<u8>`.
-pub fn to_bytes<T>(value: &T) -> OldResult<Vec<u8>>
+pub fn to_bytes<T>(value: &T) -> Result<Vec<u8>>
 where
     T: Serialize,
 {
@@ -131,7 +129,7 @@ where
 ///
 /// Serializes a generic data type through a borrowed instance that implements
 /// `Write`.
-pub fn to_writer<W, T>(writer: &mut W, value: &T) -> OldResult<()>
+pub fn to_writer<W, T>(writer: &mut W, value: &T) -> Result<()>
 where
     W: Write,
     T: Serialize,

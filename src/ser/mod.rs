@@ -1,4 +1,5 @@
 use std::fmt::Display;
+use std::io;
 use std::io::Write;
 
 use byteorder::WriteBytesExt;
@@ -31,21 +32,55 @@ where
         Serializer { writer }
     }
 
-    fn serialize_failure<T>(
+    fn serialize_failure<T, S>(
         type_name: &str,
         value: T,
+        error: S,
     ) -> CompatSerializationError
     where
         T: Display,
+        S: Into<CompatSerializationError>,
     {
         SerializationError::Failure {
             what: format!("a value {} of type {}", value, type_name),
+            cause: Box::new(error.into()),
         }.into()
     }
 
-    fn serialize_opaque_failure(length: usize) -> SerializationError {
+    fn serialize_opaque_failure<S>(
+        length: usize,
+        error: S,
+    ) -> SerializationError
+    where
+        S: Into<CompatSerializationError>,
+    {
         SerializationError::Failure {
             what: format!("opaque data of length {}", length),
+            cause: Box::new(error.into()),
+        }
+    }
+
+    fn io_error<T>(
+        type_name: &str,
+        value: T,
+        error: io::Error,
+    ) -> SerializationError
+    where
+        T: Display,
+    {
+        SerializationError::IoError {
+            what: format!("a value {} of type {}", value, type_name),
+            cause: error,
+        }
+    }
+
+    fn serialize_opaque_io_error(
+        length: usize,
+        error: io::Error,
+    ) -> SerializationError {
+        SerializationError::IoError {
+            what: format!("opaque data of length {}", length),
+            cause: error,
         }
     }
 }

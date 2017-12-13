@@ -50,14 +50,18 @@ where
         if let Some(serializer) = self.serializer.take() {
             let serializer = value
                 .serialize(serializer)
-                .map_err(|_| serialization_error(&self.struct_name, key))?;
+                .map_err(|error| {
+                    serialization_error(&self.struct_name, key, error)
+                })?;
 
             self.serializer = Some(serializer);
 
             Ok(())
         } else {
             Err(fatal_error(&self.struct_name))
-                .map_err(|_| serialization_error(&self.struct_name, key).into())
+                .map_err(|error| {
+                    serialization_error(&self.struct_name, key, error).into()
+                })
         }
     }
 
@@ -114,12 +118,17 @@ fn fatal_error(struct_name: &TypeName) -> CompatSerializationError {
     SerializationError::StructFatalError { name }.into()
 }
 
-fn serialization_error(
+fn serialization_error<E>(
     struct_name: &TypeName,
     field_name: &str,
-) -> SerializationError {
+    error: E,
+) -> SerializationError
+where
+    E: Into<CompatSerializationError>,
+{
     SerializationError::Failure {
         what: format!("struct field {}::{}", struct_name, field_name),
+        cause: Box::new(error.into()),
     }
 }
 

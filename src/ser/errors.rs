@@ -1,6 +1,7 @@
 use std::error;
 use std::fmt;
 use std::fmt::{Display, Formatter};
+use std::io;
 use std::result;
 
 use failure::{Compat, Fail};
@@ -14,7 +15,19 @@ pub enum SerializationError {
 
     /// Failure to serialize a value.
     #[fail(display = "failed to serialize {}", what)]
-    Failure { what: String },
+    Failure {
+        what: String,
+        #[cause]
+        cause: Box<CompatSerializationError>,
+    },
+
+    /// IO error while serializing a value.
+    #[fail(display = "IO error while serializing {}: {}", what, cause)]
+    IoError {
+        what: String,
+        #[cause]
+        cause: io::Error,
+    },
 
     /// Map types are not supported by XDR.
     #[fail(display = "XDR does not support a map type")]

@@ -69,9 +69,10 @@ where
     ) -> Result<Serializer<'w, W>> {
         Self::ensure_length_is_valid(length)?;
 
-        serializer.serialize_u32(length as u32).map_err(|_| {
+        serializer.serialize_u32(length as u32).map_err(|error| {
             SerializationError::Failure {
                 what: format!("sequence length: {}", length),
+                cause: Box::new(error.into()),
             }.into()
         })
     }
@@ -94,7 +95,7 @@ where
         if let Some(serializer) = self.serializer.take() {
             let serializer = value
                 .serialize(serializer)
-                .map_err(|_| self.failure())?;
+                .map_err(|error| self.failure(error))?;
 
             self.current_index += 1;
             self.serializer = Some(serializer);
@@ -113,12 +114,16 @@ where
         }
     }
 
-    fn failure(&self) -> SerializationError {
+    fn failure<E>(&self, error: E) -> SerializationError
+    where
+        E: Into<CompatSerializationError>,
+    {
         let index = self.current_index;
         let type_name = &self.type_name;
 
         SerializationError::Failure {
             what: format!("element {} of the type {}", index, type_name),
+            cause: Box::new(error.into()),
         }
     }
 }

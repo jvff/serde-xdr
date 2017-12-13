@@ -4,7 +4,7 @@ use std::io;
 use serde::{ser, de};
 
 use super::de::{CompatDeserializationError, DeserializationError};
-use super::ser::SerializationError;
+use super::ser::{CompatSerializationError, SerializationError};
 
 error_chain! {
     errors {
@@ -54,6 +54,20 @@ impl From<DeserializationError> for ErrorKind {
 
 impl From<DeserializationError> for Error {
     fn from(error: DeserializationError) -> Error {
+        let error_kind: ErrorKind = error.into();
+
+        error_kind.into()
+    }
+}
+
+impl From<CompatSerializationError> for ErrorKind {
+    fn from(error: CompatSerializationError) -> ErrorKind {
+        ErrorKind::SerializationError(error.into())
+    }
+}
+
+impl From<CompatSerializationError> for Error {
+    fn from(error: CompatSerializationError) -> Error {
         let error_kind: ErrorKind = error.into();
 
         error_kind.into()

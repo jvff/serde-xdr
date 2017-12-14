@@ -1,5 +1,3 @@
-#![allow(missing_docs)]
-
 use std::error;
 use std::fmt;
 use std::fmt::{Display, Formatter};
@@ -10,16 +8,22 @@ use std::string::FromUtf8Error;
 use failure::{Compat, Fail};
 use serde::de;
 
+/// Error during deserialization.
 #[derive(Debug, Fail)]
 pub enum DeserializationError {
     /// Custom error message.
     #[fail(display = "custom error message: {}", message)]
-    Custom { message: String },
+    Custom {
+        /// The message of the custom error.
+        message: String,
+    },
 
     /// Failure while deserializing a value.
     #[fail(display = "failed to deserialize a value of type: {}", type_name)]
     Failure {
+        /// The name of the type that was being deserialized.
         type_name: String,
+        /// The error that ocurred during deserialization.
         #[cause]
         cause: Box<CompatDeserializationError>,
     },
@@ -30,16 +34,27 @@ pub enum DeserializationError {
 
     /// Deserialized boolean value is invalid.
     #[fail(display = "deserialized an invalid bool: {}", raw_value)]
-    InvalidBool { raw_value: u32 },
+    InvalidBool {
+        /// The deserialized value that's not a zero or a one.
+        raw_value: u32,
+    },
 
     /// Deserialized character value is invalid.
     #[fail(display = "deserialized an invalid char: 0x{:X}", raw_value)]
-    InvalidChar { raw_value: u32 },
+    InvalidChar {
+        /// The deserialized value that's larger than a byte.
+        raw_value: u32,
+    },
 
     /// Deserialized signed integer is invalid.
     #[fail(display = "deserialized invalid {}-bit signed integer: {}", bits,
            value)]
-    InvalidInteger { bits: u8, value: i32 },
+    InvalidInteger {
+        /// The maximum number of bits expected.
+        bits: u8,
+        /// The deserialized value that has more bits than expected.
+        value: i32,
+    },
 
     /// Deserialized optional value is invalid.
     #[fail(display = "deserialized an invalid option")]
@@ -47,18 +62,29 @@ pub enum DeserializationError {
 
     /// Deserialized an invalid UTF-8 string.
     #[fail(display = "deserialized an invalid UTF-8 string")]
-    InvalidString { cause: FromUtf8Error },
+    InvalidString {
+        /// The error that ocurred while converting the deserialized bytes into
+        /// a string.
+        cause: FromUtf8Error,
+    },
 
     /// Deserialized unsigned integer is invalid.
     #[fail(display = "deserialized invalid {}-bit unsigned integer: {}", bits,
            value)]
-    InvalidUnsignedInteger { bits: u8, value: u32 },
+    InvalidUnsignedInteger {
+        /// The maximum number of bits expected.
+        bits: u8,
+        /// The deserialized value that has more bits than expected.
+        value: u32,
+    },
 
     /// IO error while deserializing a value.
     #[fail(display = "IO error while deserializing a value of type {}: {}",
            type_name, cause)]
     IoError {
+        /// The name of the type that was being deserialized.
         type_name: String,
+        /// The error that ocurred during deserialization.
         #[cause]
         cause: io::Error,
     },
@@ -69,7 +95,10 @@ pub enum DeserializationError {
 
     /// Attempt to serialize a tuple that has too many elements.
     #[fail(display = "tuple has too many elements (maximum is ): {}", length)]
-    TupleHasTooManyElements { length: usize },
+    TupleHasTooManyElements {
+        /// Number of elements that were expected, but can't be represented.
+        length: usize,
+    },
 
     /// Attempt to deserialize an unknown type.
     #[fail(display = "can't deserialize unknown type")]
@@ -77,6 +106,7 @@ pub enum DeserializationError {
 }
 
 impl DeserializationError {
+    /// Create a deserialization failure error.
     pub fn failure<S, E>(type_name: S, cause: E) -> Self
     where
         S: ToString,
@@ -88,6 +118,7 @@ impl DeserializationError {
         }
     }
 
+    /// Create a deserialization IO error.
     pub fn io_error<S>(type_name: S, cause: io::Error) -> Self
     where
         S: ToString,
@@ -107,6 +138,9 @@ impl From<CompatDeserializationError> for DeserializationError {
     }
 }
 
+/// An `Error`-compatible wrapper for `DeserializationError`.
+///
+/// Contains helper methods to convert to and from the wrapped type.
 #[derive(Debug)]
 pub struct CompatDeserializationError(Compat<DeserializationError>);
 

@@ -319,7 +319,13 @@ where
             .map_err(|error| {
                 DeserializationError::io_error(format!("enum {}", name), error)
             })?;
-        let variant_name = variants[variant as usize];
+
+        let variant_name = match variants.get(variant as usize) {
+                Some(val) => val,
+                None => Err(DeserializationError::Custom {
+                    message: format!("Cant match received variant {} with possible variants {:?}", variant, variants)
+                })?,
+        };
 
         let enum_deserializer =
             EnumDeserializer::new(name, variant, variant_name, self);

@@ -72,7 +72,7 @@ fn deserialize_inexistent_enum_variant() {
         .unwrap_err();
 
     let expected_error = format!(
-        "custom error message: Cant match received variant 3 with possible variants {:?}",
+        "deserialized an invalid enum variant: variant index is 3, valid variants are {:?}",
         VARIANT_NAMES
     );
 

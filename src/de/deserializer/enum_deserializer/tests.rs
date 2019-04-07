@@ -62,6 +62,7 @@ fn deserialize_third_enum_variant() {
 }
 
 #[test]
+#[cfg(not(feature = "ignore-enum-variant-names"))]
 fn deserialize_inexistent_enum_variant() {
     static VARIANT_NAMES: [&str; 3] = ["bool", "string", "integer"];
 

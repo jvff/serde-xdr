@@ -48,6 +48,7 @@ pub enum DeserializationError {
     },
 
     /// Deserialized enum variant is invalid.
+    #[cfg(not(feature = "ignore-enum-variant-names"))]
     #[fail(
         display = "deserialized an invalid enum variant: variant index is {}, valid variants are {:?}",
         variant, variants

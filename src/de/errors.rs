@@ -47,6 +47,18 @@ pub enum DeserializationError {
         raw_value: u32,
     },
 
+    /// Deserialized enum variant is invalid.
+    #[fail(
+        display = "deserialized an invalid enum variant: variant index is {}, valid variants are {:?}",
+        variant, variants
+    )]
+    InvalidEnumVariant {
+        /// The invalid variant index.
+        variant: u32,
+        /// The valid variants.
+        variants: &'static [&'static str],
+    },
+
     /// Deserialized signed integer is invalid.
     #[fail(
         display = "deserialized invalid {}-bit signed integer: {}",

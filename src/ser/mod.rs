@@ -42,7 +42,8 @@ where
         SerializationError::Failure {
             what: format!("a value {} of type {}", value, type_name),
             cause: Box::new(error.into()),
-        }.into()
+        }
+        .into()
     }
 
     fn serialize_opaque_failure<S>(

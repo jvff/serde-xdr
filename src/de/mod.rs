@@ -1,8 +1,8 @@
 use std::io::{Cursor, Read};
 
 use byteorder::{BigEndian, ReadBytesExt};
-use serde::Deserialize;
 use serde::de::Visitor;
+use serde::Deserialize;
 
 use self::deserializer::SequenceDeserializer;
 use self::errors::Result;
@@ -86,9 +86,9 @@ where
     }
 
     fn deserialize_opaque(&mut self, type_name: &str) -> Result<Vec<u8>> {
-        let length = self.reader
-            .read_u32::<BigEndian>()
-            .map_err(|error| DeserializationError::io_error(type_name, error))?;
+        let length = self.reader.read_u32::<BigEndian>().map_err(|error| {
+            DeserializationError::io_error(type_name, error)
+        })?;
 
         let padding_size = 4 - (length + 3) % 4 - 1;
         let buffer_length = length + padding_size;
@@ -96,9 +96,9 @@ where
         let mut buffer = Vec::with_capacity(buffer_length as usize);
 
         buffer.resize(buffer_length as usize, 0);
-        self.reader
-            .read_exact(&mut buffer)
-            .map_err(|error| DeserializationError::io_error(type_name, error))?;
+        self.reader.read_exact(&mut buffer).map_err(|error| {
+            DeserializationError::io_error(type_name, error)
+        })?;
         buffer.truncate(length as usize);
 
         Ok(buffer)

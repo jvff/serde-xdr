@@ -1,9 +1,10 @@
 use byteorder::ReadBytesExt;
 use serde::de::{DeserializeSeed, SeqAccess};
 
+use super::super::errors::{
+    CompatDeserializationError, DeserializationError, Result,
+};
 use super::super::Deserializer;
-use super::super::errors::{CompatDeserializationError, DeserializationError,
-                           Result};
 
 pub struct SequenceDeserializer<'a, 'r, 's, R, S>
 where
@@ -51,11 +52,10 @@ where
         T: DeserializeSeed<'de>,
     {
         if self.current_index < self.length {
-            let value = seed.deserialize(&mut *self.deserializer).map_err(
-                |error| {
+            let value =
+                seed.deserialize(&mut *self.deserializer).map_err(|error| {
                     deserialize_error(self.type_name, self.current_index, error)
-                },
-            )?;
+                })?;
 
             self.current_index += 1;
 

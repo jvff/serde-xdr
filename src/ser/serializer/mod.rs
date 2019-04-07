@@ -62,19 +62,17 @@ where
     }
 
     fn serialize_u32(self, value: u32) -> Result<Self> {
-        self.writer
-            .write_u32::<BigEndian>(value)
-            .map_err(|error| Self::io_error("unsigned integer", value, error))?;
+        self.writer.write_u32::<BigEndian>(value).map_err(|error| {
+            Self::io_error("unsigned integer", value, error)
+        })?;
 
         Ok(self)
     }
 
     fn serialize_u64(self, value: u64) -> Result<Self> {
-        self.writer
-            .write_u64::<BigEndian>(value)
-            .map_err(|error| {
-                Self::io_error("unsigned hyper integer", value, error)
-            })?;
+        self.writer.write_u64::<BigEndian>(value).map_err(|error| {
+            Self::io_error("unsigned hyper integer", value, error)
+        })?;
 
         Ok(self)
     }
@@ -132,7 +130,8 @@ where
         let padding_size = 4 - (length + 3) % 4 - 1;
         let (padding, _) = full_padding.split_at(padding_size);
 
-        let serializer = self.serialize_u32(length as u32)
+        let serializer = self
+            .serialize_u32(length as u32)
             .map_err(|error| Self::serialize_opaque_failure(length, error))?;
 
         serializer
@@ -149,26 +148,22 @@ where
     }
 
     fn serialize_none(self) -> Result<Self> {
-        self.serialize_u32(0)
-            .map_err(|error| {
-                Self::serialize_failure("'none'", "optional data", error)
-            })
+        self.serialize_u32(0).map_err(|error| {
+            Self::serialize_failure("'none'", "optional data", error)
+        })
     }
 
     fn serialize_some<T>(self, value: &T) -> Result<Self>
     where
         T: ?Sized + Serialize,
     {
-        let serializer = self.serialize_u32(1)
-            .map_err(|error| {
-                Self::serialize_failure("'some'", "optional data", error)
-            })?;
+        let serializer = self.serialize_u32(1).map_err(|error| {
+            Self::serialize_failure("'some'", "optional data", error)
+        })?;
 
-        value
-            .serialize(serializer)
-            .map_err(|error| {
-                Self::serialize_failure("'some'", "optional data", error)
-            })
+        value.serialize(serializer).map_err(|error| {
+            Self::serialize_failure("'some'", "optional data", error)
+        })
     }
 
     fn serialize_unit(self) -> Result<Self> {
@@ -189,7 +184,8 @@ where
             SerializationError::Failure {
                 what: format!("enum variant {}::{}", name, variant),
                 cause: Box::new(error.into()),
-            }.into()
+            }
+            .into()
         })
     }
 
@@ -205,7 +201,8 @@ where
             SerializationError::Failure {
                 what: format!("struct {}", name),
                 cause: Box::new(error.into()),
-            }.into()
+            }
+            .into()
         })
     }
 
@@ -219,18 +216,20 @@ where
     where
         T: ?Sized + Serialize,
     {
-        let serializer = self.serialize_u32(variant_index).map_err(|error| {
-            SerializationError::Failure {
-                what: format!("union variant {}::{}", name, variant),
-                cause: Box::new(error.into()),
-            }
-        })?;
+        let serializer =
+            self.serialize_u32(variant_index).map_err(|error| {
+                SerializationError::Failure {
+                    what: format!("union variant {}::{}", name, variant),
+                    cause: Box::new(error.into()),
+                }
+            })?;
 
         value.serialize(serializer).map_err(|error| {
             SerializationError::Failure {
                 what: format!("union variant {}::{}", name, variant),
                 cause: Box::new(error.into()),
-            }.into()
+            }
+            .into()
         })
     }
 

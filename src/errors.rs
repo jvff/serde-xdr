@@ -1,10 +1,8 @@
 macro_rules! bail {
-    ($error:expr $(,)*) => {
-        {
-            let _ = Err($error)?;
-            unreachable!();
-        }
-    }
+    ($error:expr $(,)*) => {{
+        let _ = Err($error)?;
+        unreachable!();
+    }};
 }
 
 macro_rules! ensure {
@@ -12,5 +10,5 @@ macro_rules! ensure {
         if !$condition {
             bail!($error)
         }
-    }
+    };
 }

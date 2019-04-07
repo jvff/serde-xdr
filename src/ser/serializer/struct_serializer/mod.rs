@@ -3,7 +3,9 @@ use serde::ser;
 use serde::ser::Serialize;
 
 use self::type_name::TypeName;
-use super::super::errors::{CompatSerializationError, Result, SerializationError};
+use super::super::errors::{
+    CompatSerializationError, Result, SerializationError,
+};
 use super::super::Serializer;
 
 pub struct StructSerializer<'w, W>
@@ -48,20 +50,17 @@ where
         T: ?Sized + Serialize,
     {
         if let Some(serializer) = self.serializer.take() {
-            let serializer = value
-                .serialize(serializer)
-                .map_err(|error| {
-                    serialization_error(&self.struct_name, key, error)
-                })?;
+            let serializer = value.serialize(serializer).map_err(|error| {
+                serialization_error(&self.struct_name, key, error)
+            })?;
 
             self.serializer = Some(serializer);
 
             Ok(())
         } else {
-            Err(fatal_error(&self.struct_name))
-                .map_err(|error| {
-                    serialization_error(&self.struct_name, key, error).into()
-                })
+            Err(fatal_error(&self.struct_name)).map_err(|error| {
+                serialization_error(&self.struct_name, key, error).into()
+            })
         }
     }
 

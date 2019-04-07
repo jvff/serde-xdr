@@ -1,11 +1,3 @@
-condense_wildcard_suffixes = true
-format_strings = true
-imports_indent = "Block"
 max_width = 80
-multiline_closure_forces_block = true
-multiline_match_arm_forces_block = true
-normalize_comments = true
 reorder_imports = true
-reorder_imports_in_group = true
 use_try_shorthand = true
-wrap_comments = true

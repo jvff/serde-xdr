@@ -47,8 +47,10 @@ pub enum DeserializationError {
     },
 
     /// Deserialized signed integer is invalid.
-    #[fail(display = "deserialized invalid {}-bit signed integer: {}", bits,
-           value)]
+    #[fail(
+        display = "deserialized invalid {}-bit signed integer: {}",
+        bits, value
+    )]
     InvalidInteger {
         /// The maximum number of bits expected.
         bits: u8,
@@ -69,8 +71,10 @@ pub enum DeserializationError {
     },
 
     /// Deserialized unsigned integer is invalid.
-    #[fail(display = "deserialized invalid {}-bit unsigned integer: {}", bits,
-           value)]
+    #[fail(
+        display = "deserialized invalid {}-bit unsigned integer: {}",
+        bits, value
+    )]
     InvalidUnsignedInteger {
         /// The maximum number of bits expected.
         bits: u8,
@@ -79,8 +83,10 @@ pub enum DeserializationError {
     },
 
     /// IO error while deserializing a value.
-    #[fail(display = "IO error while deserializing a value of type {}: {}",
-           type_name, cause)]
+    #[fail(
+        display = "IO error while deserializing a value of type {}: {}",
+        type_name, cause
+    )]
     IoError {
         /// The name of the type that was being deserialized.
         type_name: String,

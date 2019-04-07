@@ -168,7 +168,6 @@ fn deserialize_char() {
         .deserialize_char(Visitor)
         .unwrap();
 
-
     assert_eq!(cursor.position(), 4);
     assert_eq!(result, Value::Char('\u{1f355}'));
 }
@@ -176,14 +175,7 @@ fn deserialize_char() {
 #[test]
 fn deserialize_str_with_1_byte_padding() {
     let mut cursor = Cursor::new(vec![
-        0x00,
-        0x00,
-        0x00,
-        0x03,
-        'H' as u8,
-        'i' as u8,
-        '!' as u8,
-        0x00,
+        0x00, 0x00, 0x00, 0x03, 'H' as u8, 'i' as u8, '!' as u8, 0x00,
     ]);
 
     let result = Deserializer::new(&mut cursor)
@@ -197,14 +189,7 @@ fn deserialize_str_with_1_byte_padding() {
 #[test]
 fn deserialize_str_with_2_byte_padding() {
     let mut cursor = Cursor::new(vec![
-        0x00,
-        0x00,
-        0x00,
-        0x02,
-        'H' as u8,
-        'i' as u8,
-        0x00,
-        0x00,
+        0x00, 0x00, 0x00, 0x02, 'H' as u8, 'i' as u8, 0x00, 0x00,
     ]);
 
     let result = Deserializer::new(&mut cursor)
@@ -218,18 +203,8 @@ fn deserialize_str_with_2_byte_padding() {
 #[test]
 fn deserialize_str_with_3_byte_padding() {
     let mut cursor = Cursor::new(vec![
-        0x00,
-        0x00,
-        0x00,
-        0x05,
-        'H' as u8,
-        'e' as u8,
-        'l' as u8,
-        'l' as u8,
-        'o' as u8,
-        0x00,
-        0x00,
-        0x00,
+        0x00, 0x00, 0x00, 0x05, 'H' as u8, 'e' as u8, 'l' as u8, 'l' as u8,
+        'o' as u8, 0x00, 0x00, 0x00,
     ]);
 
     let result = Deserializer::new(&mut cursor)
@@ -243,14 +218,7 @@ fn deserialize_str_with_3_byte_padding() {
 #[test]
 fn deserialize_str_without_padding() {
     let mut cursor = Cursor::new(vec![
-        0x00,
-        0x00,
-        0x00,
-        0x04,
-        'H' as u8,
-        'e' as u8,
-        'y' as u8,
-        '!' as u8,
+        0x00, 0x00, 0x00, 0x04, 'H' as u8, 'e' as u8, 'y' as u8, '!' as u8,
     ]);
 
     let result = Deserializer::new(&mut cursor)
@@ -264,18 +232,7 @@ fn deserialize_str_without_padding() {
 #[test]
 fn deserialize_opaque_without_padding() {
     let mut cursor = Cursor::new(vec![
-        0x00,
-        0x00,
-        0x00,
-        0x08,
-        0x01,
-        0x02,
-        0x03,
-        0x04,
-        0xff,
-        0xfe,
-        0xfd,
-        0xfc,
+        0x00, 0x00, 0x00, 0x08, 0x01, 0x02, 0x03, 0x04, 0xff, 0xfe, 0xfd, 0xfc,
     ]);
 
     let result = Deserializer::new(&mut cursor)
@@ -291,18 +248,7 @@ fn deserialize_opaque_without_padding() {
 #[test]
 fn deserialize_opaque_with_1_byte_padding() {
     let mut cursor = Cursor::new(vec![
-        0x00,
-        0x00,
-        0x00,
-        0x07,
-        0x01,
-        0x02,
-        0x03,
-        0x04,
-        0xff,
-        0xfe,
-        0xfd,
-        0x00,
+        0x00, 0x00, 0x00, 0x07, 0x01, 0x02, 0x03, 0x04, 0xff, 0xfe, 0xfd, 0x00,
     ]);
 
     let result = Deserializer::new(&mut cursor)
@@ -318,18 +264,7 @@ fn deserialize_opaque_with_1_byte_padding() {
 #[test]
 fn deserialize_opaque_with_2_byte_padding() {
     let mut cursor = Cursor::new(vec![
-        0x00,
-        0x00,
-        0x00,
-        0x06,
-        0x01,
-        0x02,
-        0x03,
-        0x04,
-        0xff,
-        0xfe,
-        0x00,
-        0x00,
+        0x00, 0x00, 0x00, 0x06, 0x01, 0x02, 0x03, 0x04, 0xff, 0xfe, 0x00, 0x00,
     ]);
 
     let result = Deserializer::new(&mut cursor)
@@ -345,18 +280,7 @@ fn deserialize_opaque_with_2_byte_padding() {
 #[test]
 fn deserialize_opaque_with_3_byte_padding() {
     let mut cursor = Cursor::new(vec![
-        0x00,
-        0x00,
-        0x00,
-        0x05,
-        0x01,
-        0x02,
-        0x03,
-        0x04,
-        0xff,
-        0x00,
-        0x00,
-        0x00,
+        0x00, 0x00, 0x00, 0x05, 0x01, 0x02, 0x03, 0x04, 0xff, 0x00, 0x00, 0x00,
     ]);
 
     let result = Deserializer::new(&mut cursor)

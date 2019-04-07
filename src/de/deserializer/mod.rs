@@ -6,8 +6,8 @@ use serde::de::Visitor;
 
 use self::enum_deserializer::EnumDeserializer;
 use self::struct_deserializer::StructDeserializer;
-use super::Deserializer;
 use super::errors::{CompatDeserializationError, DeserializationError, Result};
+use super::Deserializer;
 
 pub use self::sequence_deserializer::SequenceDeserializer;
 
@@ -29,7 +29,8 @@ where
     where
         V: Visitor<'de>,
     {
-        let value = self.reader
+        let value = self
+            .reader
             .read_u32::<BigEndian>()
             .map_err(|error| DeserializationError::io_error("bool", error))?;
 
@@ -71,11 +72,9 @@ where
     where
         V: Visitor<'de>,
     {
-        let value = self.reader
-            .read_i64::<BigEndian>()
-            .map_err(|error| {
-                DeserializationError::io_error("signed 64-bit integer", error)
-            })?;
+        let value = self.reader.read_i64::<BigEndian>().map_err(|error| {
+            DeserializationError::io_error("signed 64-bit integer", error)
+        })?;
 
         visitor.visit_i64(value)
     }
@@ -111,11 +110,9 @@ where
     where
         V: Visitor<'de>,
     {
-        let value = self.reader
-            .read_u64::<BigEndian>()
-            .map_err(|error| {
-                DeserializationError::io_error("unsigned 64-bit integer", error)
-            })?;
+        let value = self.reader.read_u64::<BigEndian>().map_err(|error| {
+            DeserializationError::io_error("unsigned 64-bit integer", error)
+        })?;
 
         visitor.visit_u64(value)
     }
@@ -124,7 +121,8 @@ where
     where
         V: Visitor<'de>,
     {
-        let value = self.reader
+        let value = self
+            .reader
             .read_f32::<BigEndian>()
             .map_err(|error| DeserializationError::io_error("float", error))?;
 
@@ -135,7 +133,8 @@ where
     where
         V: Visitor<'de>,
     {
-        let value = self.reader
+        let value = self
+            .reader
             .read_f64::<BigEndian>()
             .map_err(|error| DeserializationError::io_error("double", error))?;
 
@@ -146,7 +145,8 @@ where
     where
         V: Visitor<'de>,
     {
-        let raw_value = self.reader
+        let raw_value = self
+            .reader
             .read_u32::<BigEndian>()
             .map_err(|error| DeserializationError::io_error("char", error))?;
 
@@ -194,7 +194,8 @@ where
     where
         V: Visitor<'de>,
     {
-        let option = self.reader
+        let option = self
+            .reader
             .read_i32::<BigEndian>()
             .map_err(|error| DeserializationError::io_error("option", error))?;
 
@@ -245,12 +246,9 @@ where
     where
         V: Visitor<'de>,
     {
-        let length =
-            self.reader
-                .read_u32::<BigEndian>()
-                .map_err(
-                    |error| DeserializationError::io_error("sequence", error),
-                )?;
+        let length = self.reader.read_u32::<BigEndian>().map_err(|error| {
+            DeserializationError::io_error("sequence", error)
+        })?;
 
         self.deserialize_sequence(visitor, "sequence", length as u32)
     }
@@ -314,11 +312,9 @@ where
     where
         V: Visitor<'de>,
     {
-        let variant = self.reader
-            .read_u32::<BigEndian>()
-            .map_err(|error| {
-                DeserializationError::io_error(format!("enum {}", name), error)
-            })?;
+        let variant = self.reader.read_u32::<BigEndian>().map_err(|error| {
+            DeserializationError::io_error(format!("enum {}", name), error)
+        })?;
 
         let variant_name = match variants.get(variant as usize) {
                 Some(val) => val,

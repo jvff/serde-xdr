@@ -1,11 +1,12 @@
 use byteorder::ReadBytesExt;
-use serde::de::{DeserializeSeed, EnumAccess, IntoDeserializer};
 use serde::de::value::U32Deserializer;
+use serde::de::{DeserializeSeed, EnumAccess, IntoDeserializer};
 
 use self::variant_deserializer::VariantDeserializer;
+use super::super::errors::{
+    CompatDeserializationError, DeserializationError, Result,
+};
 use super::Deserializer;
-use super::super::errors::{CompatDeserializationError, DeserializationError,
-                           Result};
 
 pub struct EnumDeserializer<'a, 'r, R>
 where
@@ -53,11 +54,15 @@ where
         let variant_code_deserializer: U32Deserializer<Self::Error> =
             self.variant.into_deserializer();
 
-        let value = seed.deserialize(variant_code_deserializer).map_err(
-            |error| {
-                deserialize_enum_error(self.enum_name, self.variant_name, error)
-            },
-        )?;
+        let value =
+            seed.deserialize(variant_code_deserializer)
+                .map_err(|error| {
+                    deserialize_enum_error(
+                        self.enum_name,
+                        self.variant_name,
+                        error,
+                    )
+                })?;
 
         let variant_deserializer = VariantDeserializer::new(
             self.enum_name,

@@ -316,9 +316,21 @@ where
             DeserializationError::io_error(format!("enum {}", name), error)
         })?;
 
-        let variant_name = variants.get(variant as usize).ok_or_else(|| {
-            DeserializationError::InvalidEnumVariant { variant, variants }
-        })?;
+        let variant_name = {
+            #[cfg(feature = "ignore-enum-variant-names")]
+            {
+                ""
+            }
+            #[cfg(not(feature = "ignore-enum-variant-names"))]
+            {
+                variants.get(variant as usize).ok_or_else(|| {
+                    DeserializationError::InvalidEnumVariant {
+                        variant,
+                        variants,
+                    }
+                })?
+            }
+        };
 
         let enum_deserializer =
             EnumDeserializer::new(name, variant, variant_name, self);

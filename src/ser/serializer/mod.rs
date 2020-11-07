@@ -258,11 +258,21 @@ where
     fn serialize_tuple_variant(
         self,
         name: &'static str,
-        _variant_index: u32,
+        variant_index: u32,
         variant: &'static str,
         _length: usize,
     ) -> Result<Self::SerializeTupleVariant> {
-        Ok(SequenceSerializer::start_tuple_variant(name, variant, self))
+        let serializer =
+            self.serialize_u32(variant_index).map_err(|error| {
+                SerializationError::Failure {
+                    what: format!("tuple variant {}::{}", name, variant),
+                    cause: Box::new(error.into()),
+                }
+            })?;
+
+        Ok(SequenceSerializer::start_tuple_variant(
+            name, variant, serializer,
+        ))
     }
 
     fn serialize_map(

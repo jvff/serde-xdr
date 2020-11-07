@@ -293,11 +293,21 @@ where
     fn serialize_struct_variant(
         self,
         name: &'static str,
-        _variant_index: u32,
+        variant_index: u32,
         variant: &'static str,
         _length: usize,
     ) -> Result<Self::SerializeStructVariant> {
-        Ok(StructSerializer::start_struct_variant(name, variant, self))
+        let serializer =
+            self.serialize_u32(variant_index).map_err(|error| {
+                SerializationError::Failure {
+                    what: format!("struct variant {}::{}", name, variant),
+                    cause: Box::new(error.into()),
+                }
+            })?;
+
+        Ok(StructSerializer::start_struct_variant(
+            name, variant, serializer,
+        ))
     }
 }
 

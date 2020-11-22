@@ -86,8 +86,8 @@ extern crate serde_bytes;
 #[macro_use]
 mod errors;
 
-mod ser;
 mod de;
+mod ser;
 
 #[cfg(test)]
 mod tests;
@@ -95,7 +95,11 @@ mod tests;
 /// Serialization and deserialization functions for opaque data.
 pub mod opaque_data;
 
-pub use de::{from_bytes, from_reader, Deserializer, CompatDeserializationError,
-             DeserializationError};
-pub use ser::{to_bytes, to_writer, Serializer, CompatSerializationError,
-              SerializationError};
+pub use de::{
+    from_bytes, from_reader, CompatDeserializationError, DeserializationError,
+    Deserializer,
+};
+pub use ser::{
+    to_bytes, to_writer, CompatSerializationError, SerializationError,
+    Serializer,
+};

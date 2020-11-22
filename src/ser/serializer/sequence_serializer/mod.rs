@@ -1,10 +1,13 @@
 use byteorder::WriteBytesExt;
+use serde::ser::{
+    SerializeSeq, SerializeTuple, SerializeTupleStruct, SerializeTupleVariant,
+};
 use serde::{Serialize, Serializer as SerdeSerializer};
-use serde::ser::{SerializeSeq, SerializeTuple, SerializeTupleStruct,
-                 SerializeTupleVariant};
 
 use self::type_name::TypeName;
-use super::super::errors::{CompatSerializationError, Result, SerializationError};
+use super::super::errors::{
+    CompatSerializationError, Result, SerializationError,
+};
 use super::super::Serializer;
 
 pub struct SequenceSerializer<'w, W>
@@ -73,7 +76,8 @@ where
             SerializationError::Failure {
                 what: format!("sequence length: {}", length),
                 cause: Box::new(error.into()),
-            }.into()
+            }
+            .into()
         })
     }
 

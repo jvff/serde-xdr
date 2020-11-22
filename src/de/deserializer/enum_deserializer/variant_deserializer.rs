@@ -1,10 +1,10 @@
 use byteorder::ReadBytesExt;
-use serde::Deserializer as SerdeDeserializer;
 use serde::de::{DeserializeSeed, VariantAccess, Visitor};
+use serde::Deserializer as SerdeDeserializer;
 
-use super::Deserializer;
-use super::deserialize_enum_error;
 use super::super::super::errors::{CompatDeserializationError, Result};
+use super::deserialize_enum_error;
+use super::Deserializer;
 
 pub struct VariantDeserializer<'a, 'r, R>
 where

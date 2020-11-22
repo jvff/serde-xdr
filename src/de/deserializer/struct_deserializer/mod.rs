@@ -1,9 +1,10 @@
 use byteorder::ReadBytesExt;
 use serde::de::{DeserializeSeed, SeqAccess};
 
+use super::super::errors::{
+    CompatDeserializationError, DeserializationError, Result,
+};
 use super::super::Deserializer;
-use super::super::errors::{CompatDeserializationError, DeserializationError,
-                           Result};
 
 pub struct StructDeserializer<'a, 'r, R>
 where

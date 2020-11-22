@@ -1,7 +1,7 @@
 use std::io::Cursor;
 
-use super::super::fixed_length;
 use super::super::super::{from_reader, to_bytes};
+use super::super::fixed_length;
 
 #[derive(Deserialize, Serialize)]
 struct FourBytes {

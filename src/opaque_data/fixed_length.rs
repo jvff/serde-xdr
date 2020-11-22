@@ -4,7 +4,7 @@ use std::iter;
 use std::marker::PhantomData;
 
 use serde::de::{Deserializer, Error, SeqAccess, Visitor};
-use serde::ser::{Serializer, SerializeTuple};
+use serde::ser::{SerializeTuple, Serializer};
 
 use super::byte_array::ByteArray;
 
@@ -144,7 +144,6 @@ where
             let bytes = byte_array.as_mut();
 
             for block_index in 0..(num_blocks - 1) {
-
                 self.visit_full_block(block_index, bytes, &mut sequence)?;
             }
 

@@ -394,3 +394,39 @@ fn serialize_tuple_variant() {
 
     assert_eq!(buffer, expected_bytes);
 }
+
+#[test]
+fn serialize_struct_variant() {
+    use serde::ser::SerializeStruct as _;
+
+    let mut buffer = Vec::new();
+
+    let variant_index = 3;
+    let struct_fields = 2;
+    let first_field_value = false;
+    let second_field_value = -3i16;
+
+    let mut serializer = Serializer::new(&mut buffer)
+        .serialize_struct_variant(
+            "MyEnum",
+            variant_index,
+            "FourthVariant",
+            struct_fields,
+        )
+        .unwrap();
+
+    serializer
+        .serialize_field("first_field", &first_field_value)
+        .unwrap();
+    serializer
+        .serialize_field("second_field", &second_field_value)
+        .unwrap();
+    serializer.end().unwrap();
+
+    let mut expected_bytes = bytes_of(variant_index);
+
+    expected_bytes.append(&mut bytes_of(0));
+    expected_bytes.append(&mut bytes_of(second_field_value as u32));
+
+    assert_eq!(buffer, expected_bytes);
+}

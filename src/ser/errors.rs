@@ -1,11 +1,12 @@
-use std::error;
-use std::fmt;
-use std::fmt::{Display, Formatter};
-use std::io;
-use std::result;
-
-use failure::{Compat, Fail};
-use serde::ser;
+use {
+    failure::{Compat, Fail},
+    serde::ser,
+    std::{
+        error,
+        fmt::{self, Display, Formatter},
+        io, result,
+    },
+};
 
 /// Error during serialization.
 #[derive(Debug, Fail)]

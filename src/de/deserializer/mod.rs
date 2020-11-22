@@ -1,13 +1,16 @@
-use std::char;
-
-use byteorder::{BigEndian, ReadBytesExt};
-use serde::de;
-use serde::de::Visitor;
-
-use self::enum_deserializer::EnumDeserializer;
-use self::struct_deserializer::StructDeserializer;
-use super::errors::{CompatDeserializationError, DeserializationError, Result};
-use super::Deserializer;
+use {
+    self::{
+        enum_deserializer::EnumDeserializer,
+        struct_deserializer::StructDeserializer,
+    },
+    super::{
+        errors::{CompatDeserializationError, DeserializationError, Result},
+        Deserializer,
+    },
+    byteorder::{BigEndian, ReadBytesExt},
+    serde::de::{self, Visitor},
+    std::char,
+};
 
 pub use self::sequence_deserializer::SequenceDeserializer;
 

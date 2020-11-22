@@ -1,14 +1,9 @@
 mod value;
 mod visitor;
 
-use std::io::Cursor;
+use {super::Deserializer, serde::Deserializer as _, std::io::Cursor};
 
-use serde::Deserializer as SerdeDeserializer;
-
-use super::Deserializer;
-
-pub use self::value::Value;
-pub use self::visitor::Visitor;
+pub use self::{value::Value, visitor::Visitor};
 
 #[test]
 fn deserialize_false() {

@@ -1,13 +1,16 @@
-use std::ascii::AsciiExt;
-
-use byteorder::{BigEndian, WriteBytesExt};
-use serde::ser;
-use serde::ser::Serialize;
-
-use self::sequence_serializer::SequenceSerializer;
-use self::struct_serializer::StructSerializer;
-use super::errors::{CompatSerializationError, Result, SerializationError};
-use super::Serializer;
+use {
+    self::{
+        sequence_serializer::SequenceSerializer,
+        struct_serializer::StructSerializer,
+    },
+    super::{
+        errors::{CompatSerializationError, Result, SerializationError},
+        Serializer,
+    },
+    byteorder::{BigEndian, WriteBytesExt},
+    serde::ser::{self, Serialize},
+    std::ascii::AsciiExt,
+};
 
 impl<'w, W> ser::Serializer for Serializer<'w, W>
 where

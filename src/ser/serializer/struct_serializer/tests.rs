@@ -1,8 +1,7 @@
-use serde::ser::SerializeStruct;
-use serde::ser::Serializer as SerdeSerializer;
-
-use super::super::tests::*;
-use super::*;
+use {
+    super::{super::tests::*, *},
+    serde::ser::{SerializeStruct as _, Serializer as _},
+};
 
 #[test]
 fn serialize_struct() {

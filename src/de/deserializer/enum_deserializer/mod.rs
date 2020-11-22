@@ -1,12 +1,16 @@
-use byteorder::ReadBytesExt;
-use serde::de::value::U32Deserializer;
-use serde::de::{DeserializeSeed, EnumAccess, IntoDeserializer};
-
-use self::variant_deserializer::VariantDeserializer;
-use super::super::errors::{
-    CompatDeserializationError, DeserializationError, Result,
+use {
+    self::variant_deserializer::VariantDeserializer,
+    super::{
+        super::errors::{
+            CompatDeserializationError, DeserializationError, Result,
+        },
+        Deserializer,
+    },
+    byteorder::ReadBytesExt,
+    serde::de::{
+        value::U32Deserializer, DeserializeSeed, EnumAccess, IntoDeserializer,
+    },
 };
-use super::Deserializer;
 
 pub struct EnumDeserializer<'a, 'r, R>
 where

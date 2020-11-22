@@ -1,12 +1,12 @@
-use byteorder::WriteBytesExt;
-use serde::ser;
-use serde::ser::Serialize;
-
-use self::type_name::TypeName;
-use super::super::errors::{
-    CompatSerializationError, Result, SerializationError,
+use {
+    self::type_name::TypeName,
+    super::super::{
+        errors::{CompatSerializationError, Result, SerializationError},
+        Serializer,
+    },
+    byteorder::WriteBytesExt,
+    serde::ser::{self, Serialize},
 };
-use super::super::Serializer;
 
 pub struct StructSerializer<'w, W>
 where

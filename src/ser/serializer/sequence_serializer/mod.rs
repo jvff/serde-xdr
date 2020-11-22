@@ -1,14 +1,18 @@
-use byteorder::WriteBytesExt;
-use serde::ser::{
-    SerializeSeq, SerializeTuple, SerializeTupleStruct, SerializeTupleVariant,
+use {
+    self::type_name::TypeName,
+    super::super::{
+        errors::{CompatSerializationError, Result, SerializationError},
+        Serializer,
+    },
+    byteorder::WriteBytesExt,
+    serde::{
+        ser::{
+            SerializeSeq, SerializeTuple, SerializeTupleStruct,
+            SerializeTupleVariant,
+        },
+        Serialize, Serializer as SerdeSerializer,
+    },
 };
-use serde::{Serialize, Serializer as SerdeSerializer};
-
-use self::type_name::TypeName;
-use super::super::errors::{
-    CompatSerializationError, Result, SerializationError,
-};
-use super::super::Serializer;
 
 pub struct SequenceSerializer<'w, W>
 where

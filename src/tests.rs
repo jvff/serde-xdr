@@ -1,8 +1,8 @@
-use std::io::Cursor;
-
-use serde_bytes;
-
-use super::{from_bytes, from_reader, to_bytes, to_writer};
+use {
+    super::{from_bytes, from_reader, to_bytes, to_writer},
+    serde_bytes,
+    std::io::Cursor,
+};
 
 #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
 enum FileType {

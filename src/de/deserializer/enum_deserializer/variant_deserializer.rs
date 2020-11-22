@@ -1,10 +1,14 @@
-use byteorder::ReadBytesExt;
-use serde::de::{DeserializeSeed, VariantAccess, Visitor};
-use serde::Deserializer as SerdeDeserializer;
-
-use super::super::super::errors::{CompatDeserializationError, Result};
-use super::deserialize_enum_error;
-use super::Deserializer;
+use {
+    super::{
+        super::super::errors::{CompatDeserializationError, Result},
+        deserialize_enum_error, Deserializer,
+    },
+    byteorder::ReadBytesExt,
+    serde::{
+        de::{DeserializeSeed, VariantAccess, Visitor},
+        Deserializer as _,
+    },
+};
 
 pub struct VariantDeserializer<'a, 'r, R>
 where

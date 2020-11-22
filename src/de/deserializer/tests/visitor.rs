@@ -1,10 +1,8 @@
-use std::fmt;
-use std::fmt::Formatter;
-
-use serde::de;
-use serde::de::{EnumAccess, SeqAccess, VariantAccess};
-
-use super::value::Value;
+use {
+    super::value::Value,
+    serde::de::{self, EnumAccess, SeqAccess, VariantAccess},
+    std::fmt::{self, Formatter},
+};
 
 pub struct Visitor;
 

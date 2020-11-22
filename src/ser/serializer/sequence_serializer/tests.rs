@@ -1,7 +1,7 @@
-use serde::ser::Serializer as SerdeSerializer;
-
-use super::super::super::Serializer;
-use super::super::tests::*;
+use {
+    super::super::{super::Serializer, tests::*},
+    serde::ser::Serializer as _,
+};
 
 #[test]
 fn serialize_sequence() {

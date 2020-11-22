@@ -1,10 +1,11 @@
-use std::fmt::Display;
-use std::io;
-use std::io::Write;
-
-use byteorder::WriteBytesExt;
-use serde::ser;
-use serde::ser::Serialize;
+use {
+    byteorder::WriteBytesExt,
+    serde::ser::{self, Serialize},
+    std::{
+        fmt::Display,
+        io::{self, Write},
+    },
+};
 
 pub use self::errors::{CompatSerializationError, Result, SerializationError};
 

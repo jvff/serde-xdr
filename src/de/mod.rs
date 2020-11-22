@@ -1,11 +1,9 @@
-use std::io::{Cursor, Read};
-
-use byteorder::{BigEndian, ReadBytesExt};
-use serde::de::Visitor;
-use serde::Deserialize;
-
-use self::deserializer::SequenceDeserializer;
-use self::errors::Result;
+use {
+    self::{deserializer::SequenceDeserializer, errors::Result},
+    byteorder::{BigEndian, ReadBytesExt},
+    serde::{de::Visitor, Deserialize},
+    std::io::{Cursor, Read},
+};
 
 pub use self::errors::{CompatDeserializationError, DeserializationError};
 

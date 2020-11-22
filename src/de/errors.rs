@@ -1,12 +1,13 @@
-use std::error;
-use std::fmt;
-use std::fmt::{Display, Formatter};
-use std::io;
-use std::result;
-use std::string::FromUtf8Error;
-
-use failure::{Compat, Fail};
-use serde::de;
+use {
+    failure::{Compat, Fail},
+    serde::de,
+    std::{
+        error,
+        fmt::{self, Display, Formatter},
+        io, result,
+        string::FromUtf8Error,
+    },
+};
 
 /// Error during deserialization.
 #[derive(Debug, Fail)]

@@ -1,12 +1,15 @@
-use std::fmt;
-use std::fmt::Formatter;
-use std::iter;
-use std::marker::PhantomData;
-
-use serde::de::{Deserializer, Error, SeqAccess, Visitor};
-use serde::ser::{SerializeTuple, Serializer};
-
-use super::byte_array::ByteArray;
+use {
+    super::byte_array::ByteArray,
+    serde::{
+        de::{Deserializer, Error, SeqAccess, Visitor},
+        ser::{SerializeTuple, Serializer},
+    },
+    std::{
+        fmt::{self, Formatter},
+        iter,
+        marker::PhantomData,
+    },
+};
 
 /// Serialize a slice of bytes as opaque data with a known fixed length.
 pub fn serialize<T, S>(bytes: &T, serializer: S) -> Result<S::Ok, S::Error>

@@ -1,8 +1,4 @@
-use std::mem;
-
-use serde::ser::Serializer as SerdeSerializer;
-
-use super::Serializer;
+use {super::Serializer, serde::ser::Serializer as _, std::mem};
 
 pub fn bytes_of(mut value: u32) -> Vec<u8> {
     let mut bytes = Vec::with_capacity(4);

@@ -1,10 +1,12 @@
-use std::io::Cursor;
-
-use serde::Deserializer as SerdeDeserializer;
-
-use super::super::super::errors::DeserializationError;
-use super::super::tests::{Value, Visitor};
-use super::super::Deserializer;
+use {
+    super::super::{
+        super::errors::DeserializationError,
+        tests::{Value, Visitor},
+        Deserializer,
+    },
+    serde::Deserializer as _,
+    std::io::Cursor,
+};
 
 #[test]
 fn deserialize_first_enum_variant() {

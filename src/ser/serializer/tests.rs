@@ -362,3 +362,35 @@ fn serialize_some() {
 
     assert_eq!(buffer, expected_bytes);
 }
+
+#[test]
+fn serialize_tuple_variant() {
+    use serde::ser::SerializeTuple as _;
+
+    let mut buffer = Vec::new();
+
+    let variant_index = 5;
+    let tuple_elements = 2;
+    let first_element = false;
+    let second_element = -3i16;
+
+    let mut serializer = Serializer::new(&mut buffer)
+        .serialize_tuple_variant(
+            "MyEnum",
+            variant_index,
+            "SixthVariant",
+            tuple_elements,
+        )
+        .unwrap();
+
+    serializer.serialize_element(&first_element).unwrap();
+    serializer.serialize_element(&second_element).unwrap();
+    serializer.end().unwrap();
+
+    let mut expected_bytes = bytes_of(variant_index);
+
+    expected_bytes.append(&mut bytes_of(0));
+    expected_bytes.append(&mut bytes_of(second_element as u32));
+
+    assert_eq!(buffer, expected_bytes);
+}

@@ -8,6 +8,7 @@ readme = "README.md"
 license = "GPL-3.0"
 keywords = ["xdr", "serde", "serialization", "deserialization"]
 categories = ["encoding"]
+edition = "2018"
 
 [features]
 ignore-enum-variant-names = []

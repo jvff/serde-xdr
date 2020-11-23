@@ -1,6 +1,5 @@
 use {
     super::super::{
-        super::errors::DeserializationError,
         tests::{Value, Visitor},
         Deserializer,
     },

@@ -9,7 +9,6 @@ use {
     },
     byteorder::{BigEndian, WriteBytesExt},
     serde::ser::{self, Serialize},
-    std::ascii::AsciiExt,
 };
 
 impl<'w, W> ser::Serializer for Serializer<'w, W>

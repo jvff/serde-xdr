@@ -1,7 +1,7 @@
 [package]
 name = "serde-xdr"
 description = "XDR serialization and deserialization for Serde"
-version = "0.5.1"
+version = "0.6.0"
 authors = ["Janito Vaqueiro Ferreira Filho <janito.vff@gmail.com>"]
 homepage = "https://github.com/jvff/serde-xdr"
 readme = "README.md"
